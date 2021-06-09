@@ -8,8 +8,8 @@ import TextInput from '@/Shared/TextInput';
 
 export default () => {
   const { data, setData, errors, post, processing } = useForm({
-    email: 'johndoe@example.com',
-    password: 'secret',
+    email: '',
+    password: '',
     remember: true
   });
 
@@ -19,23 +19,26 @@ export default () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-6 bg-indigo-900">
+    <div className="flex items-center justify-center min-h-screen p-6 bg-scroll bg-opacity-50" style={{ background : "url(https://i.ibb.co/kqtWn1R/72427551-475479973059127-1491202135386226688-n.jpg)"  }}>
       <Helmet title="Login" />
       <div className="w-full max-w-md">
-        <Logo
-          className="block w-full max-w-xs mx-auto text-white fill-current"
-          height={50}
-        />
+      
         <form
           onSubmit={handleSubmit}
-          className="mt-8 overflow-hidden bg-white rounded-lg shadow-xl"
+          className="mt-8 overflow-hidden bg-white bg-opacity-90 rounded-lg shadow-xl"
         >
-          <div className="px-10 py-12">
-            <h1 className="text-3xl font-bold text-center">Welcome Back!</h1>
+          <div className="flex items_center justify-center pt-5">
+          <Logo
+          className="block w-22 h-22 max-w-xs mx-auto text-white fill-current rounded-full"
+          height={50}
+        />
+        </div>
+          <div className="px-10 pt-5">
+            <h1 className="text-3xl font-bold text-center">Jhiret Cell Administración</h1>
             <div className="w-24 mx-auto mt-6 border-b-2" />
             <TextInput
-              className="mt-10"
-              label="Email"
+              className="mt-5"
+              label="Correo Electrónico"
               name="email"
               type="email"
               errors={errors.email}
@@ -44,38 +47,23 @@ export default () => {
             />
             <TextInput
               className="mt-6"
-              label="Password"
+              label="Contraseña"
               name="password"
               type="password"
               errors={errors.password}
               value={data.password}
               onChange={e => setData('password', e.target.value)}
             />
-            <label
-              className="flex items-center mt-6 select-none"
-              htmlFor="remember"
-            >
-              <input
-                name="remember"
-                id="remember"
-                className="mr-1"
-                type="checkbox"
-                checked={data.remember}
-                onChange={e => setData('remember', e.target.checked)}
-              />
-              <span className="text-sm">Remember Me</span>
-            </label>
+            
           </div>
-          <div className="flex items-center justify-between px-10 py-4 bg-gray-100 border-t border-gray-200">
-            <a className="hover:underline" tabIndex="-1" href="#reset-password">
-              Forgot password?
-            </a>
+          <div className="flex items-center justify-center px-10 py-4 bg-gray-100 border-t border-gray-200">
             <LoadingButton
+            
               type="submit"
               loading={processing}
-              className="btn-indigo"
+              className="btn-indigo w-40 flex justify-center"
             >
-              Login
+                         INICIAR SESION
             </LoadingButton>
           </div>
         </form>

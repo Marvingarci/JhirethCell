@@ -5,14 +5,16 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Models\Account;
 use App\Models\Contact;
+use App\Models\Category;
 use App\Models\Organization;
+use App\Models\Product;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
     public function run()
     {
-        $account = Account::create(['name' => 'Acme Corporation']);
+        $account = Account::create(['name' => 'Jhiret Cell 1']);
 
         User::factory()->create([
             'account_id' => $account->id,
@@ -20,6 +22,16 @@ class DatabaseSeeder extends Seeder
             'last_name' => 'Doe',
             'email' => 'johndoe@example.com',
             'owner' => true,
+        ]);
+
+        Category::factory()->create([
+            'name' => 'Pantallas',
+        ]);
+        Category::factory()->create([
+            'name' => 'Celulares',
+        ]);
+        Category::factory()->create([
+            'name' => 'Accesorios',
         ]);
 
         User::factory()->count(5)->create([

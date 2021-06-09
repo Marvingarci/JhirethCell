@@ -51,17 +51,17 @@ export default () => {
   }
 
   return (
-    <div className="flex items-center w-full max-w-md mr-4">
-      <div className="relative flex w-full bg-white rounded shadow">
-        <div
+    <div className="flex items-center w-full max-w-md mr-4 rounded-xl">
+      <div className="relative flex w-full bg-white rounded-xl shadow">
+        {/* <div
           style={{ top: '100%' }}
           className={`absolute ${opened ? '' : 'hidden'}`}
-        >
-          <div
+        > */}
+          {/* <div
             onClick={() => setOpened(false)}
             className="fixed inset-0 z-20 bg-black opacity-25"
-          ></div>
-          <div className="relative z-30 w-64 px-4 py-6 mt-2 bg-white rounded shadow-lg">
+          ></div> */}
+          {/* <div className="relative z-30 w-64 px-4 py-6 mt-2 bg-white rounded shadow-lg">
             {filters.hasOwnProperty('role') && (
               <SelectInput
                 className="mb-4"
@@ -85,9 +85,9 @@ export default () => {
               <option value="with">With Trashed</option>
               <option value="only">Only Trashed</option>
             </SelectInput>
-          </div>
-        </div>
-        <button
+          </div> */}
+        {/* </div> */}
+        {/* <button
           onClick={() => setOpened(true)}
           className="px-4 border-r rounded-l md:px-6 hover:bg-gray-100 focus:outline-none focus:border-white focus:ring-2 focus:ring-indigo-400 focus:z-10"
         >
@@ -101,16 +101,17 @@ export default () => {
               <path d="M239.998 239.999L0 0h961.243L721.246 240c-131.999 132-240.28 240-240.624 239.999-.345-.001-108.625-108.001-240.624-240z" />
             </svg>
           </div>
-        </button>
+        </button> */}
         <input
           className="relative w-full px-6 py-3 rounded-r focus:outline-none focus:ring-2 focus:ring-indigo-400"
           autoComplete="off"
+          autoFocus
           type="text"
           name="search"
           name="search"
           value={values.search}
           onChange={handleChange}
-          placeholder="Search…"
+          placeholder="Buscar..."
         />
       </div>
       <button

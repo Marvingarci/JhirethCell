@@ -78,7 +78,7 @@ const Edit = () => {
               className="w-full pb-8 pr-6 lg:w-1/2"
               label="Código del Producto"
               name="email"
-              type="number"
+              type="text"
               errors={errors.product_code}
               value={data.product_code}
               onChange={e => setData('product_code', e.target.value)}

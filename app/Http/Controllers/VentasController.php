@@ -38,6 +38,8 @@ class VentasController extends Controller
         ]);
     }
 
+  
+
     /**
      * Show the form for creating a new resource.
      *
@@ -62,22 +64,31 @@ class VentasController extends Controller
     public function store(VentaStoreRequest $request)
     {
      
-
+        $productos = Product::all();
         Auth::user()->account->ventas()->create($request->validated());
         $last = Ventas::latest('id')->first();
         $registro = Ventas::find($last);
         $ventas = $request->ventas;
         foreach ($ventas as $venta) {
             $ven = VentaDetalle::create([
-                'venta_id'=>$last->id, 'producto'=> $venta['name'], 'cantidad'=>$venta['cantidad'], 'precio'=> $venta['sell_price'], 'descuento'=>'0', 'total_producto'=>$venta['total_producto']
+                'ventas_id'=>$last->id, 'producto'=> $venta['name'], 'cantidad'=>$venta['cantidad'], 'precio'=> $venta['sell_price'], 'descuento'=>$venta['descuento'], 'total_producto'=>$venta['total_producto'], 'estado' => $request->tipoPago
             ]);
+            foreach ($productos as $producto) {
+                if($venta['id'] == $producto->id){
+                    $producto->existencia = $producto->existencia - $venta['cantidad'];
+                    $producto->update();
+                }
+            }
         }
 
+        
 
 
 
         return Redirect::route('ventas')->with('success', 'Venta agregada.');
     }
+
+ 
 
     /**
      * Display the specified resource.
@@ -99,9 +110,10 @@ class VentasController extends Controller
     public function edit($id)
     {
 
-        $product = Product::find($id);
+        
         return Inertia::render('Sells/Edit', [
-            'product' => new ProductResource($product),
+            'venta' => Ventas::with('venta_detalles')->where('id',$id)->get(),
+            'usuarios'=> User::all(['id','first_name','last_name']),
             'categorias'=> Category::All()
         ]);
     }

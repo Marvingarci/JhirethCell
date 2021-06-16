@@ -15,14 +15,15 @@ class CreateVentaDetallesTable extends Migration
     {
         Schema::create('venta_detalles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('venta_id')->constrained('ventas')
+            $table->foreignId('ventas_id')->constrained('ventas')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->string('producto');
             $table->integer('cantidad');
             $table->float('precio', 8,2);
-            $table->integer('descuento');
+            $table->float('descuento');
             $table->string('total_producto');
+            $table->enum('estado', ['efectivo', ' en_stock', 'devuelto', 'credito', 'pendiente']);
             $table->timestamps();
         });
     }

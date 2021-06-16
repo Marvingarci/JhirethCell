@@ -6,6 +6,7 @@ export default ({ className }) => {
     <div className={className}>
       <MainMenuItem text="Principal" link="dashboard" icon="dashboard" />
       <MainMenuItem text="Caja" link="ventas" icon="shopping-cart" />
+      <MainMenuItem text="Caja Rápida" link="ventas_rapidas" icon="store-front" />
       <MainMenuItem text="Inventario" link="products" icon="book" />
       <MainMenuItem text="Compañias" link="organizations" icon="office" />
       <MainMenuItem text="Usuarios" link="contacts" icon="users" />

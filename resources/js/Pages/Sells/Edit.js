@@ -1,183 +1,228 @@
-import React from 'react';
-import Helmet from 'react-helmet';
+import React, { useEffect, useState, useRef } from 'react';
 import { Inertia } from '@inertiajs/inertia';
 import { InertiaLink, usePage, useForm } from '@inertiajs/inertia-react';
 import Layout from '@/Shared/Layout';
-import DeleteButton from '@/Shared/DeleteButton';
 import LoadingButton from '@/Shared/LoadingButton';
 import TextInput from '@/Shared/TextInput';
 import SelectInput from '@/Shared/SelectInput';
-import TrashedMessage from '@/Shared/TrashedMessage';
+import SearchFilter from '@/Shared/SearchFilterForCode';
 
 const Edit = () => {
-  const { contact, organizations } = usePage().props;
-  const { data, setData, errors, put, processing } = useForm({
-    first_name: contact.first_name || '',
-    last_name: contact.last_name || '',
-    organization_id: contact.organization_id || '',
-    email: contact.email || '',
-    phone: contact.phone || '',
-    address: contact.address || '',
-    city: contact.city || '',
-    region: contact.region || '',
-    country: contact.country || '',
-    postal_code: contact.postal_code || ''
+  const { categorias, usuarios, producto, venta } = usePage().props;
+  const { data, setData, errors, post, processing } = useForm({
+    vendedor: '',
+    cliente: venta[0].cliente,
+    total: venta[0].total,
+    tipoPago: venta[0].tipoPago
   });
+
+  console.log(venta)
+  const [carrito, setCarrito] = useState(venta[0].venta_detalles);
+  const date = new Date();
+  const ahora =
+    date.getDate() +
+    '-' +
+    (date.getMonth() + 1 > 9
+      ? date.getMonth() + 1
+      : '0' + (date.getMonth() + 1)) +
+    '-' +
+    date.getFullYear();
 
   function handleSubmit(e) {
     e.preventDefault();
-    put(route('contacts.update', contact.id));
+    data.ventas = carrito;
+    console.log(data);
+    post(route('ventas.store'));
   }
 
-  function destroy() {
-    if (confirm('Are you sure you want to delete this contact?')) {
-      Inertia.delete(route('contacts.destroy', contact.id));
+  useEffect(() => {
+    if (producto != null) {
+      const newProduct = producto;
+      newProduct.cantidad = 0;
+      newProduct.real_sell_price = newProduct.sell_price;
+      newProduct.descuento = 0;
+      newProduct.total_producto = newProduct.cantidad * newProduct.sell_price;
+      if (carrito.length == 0) {
+        setCarrito([...carrito, newProduct]);
+      } else {
+        if (carrito.find(item => item.id === newProduct.id)) {
+        } else {
+          setCarrito([...carrito, newProduct]);
+        }
+      }
+      reset();
+      SumaTotal();
     }
-  }
+  }, [producto]);
+  setDescuento
 
-  function restore() {
-    if (confirm('Are you sure you want to restore this contact?')) {
-      Inertia.put(route('contacts.restore', contact.id));
-    }
-  }
+  const setDescuento = (index, descuento) => {
+    carrito[index].descuento = descuento;
+    carrito[index].real_sell_price = carrito[index].sell_price - (carrito[index].sell_price * descuento);
+    carrito[index].total_producto = carrito[index].cantidad * carrito[index].real_sell_price;
+    setCarrito([...carrito]);
+    SumaTotal();
+  };
 
+  const setCantidad = (index, cantidad) => {
+    carrito[index].cantidad = parseFloat(cantidad);
+    carrito[index].total_producto =
+      carrito[index].cantidad * carrito[index].real_sell_price;
+    setCarrito([...carrito]);
+    SumaTotal();
+  };
+ 
+
+  const SumaTotal = () => {
+    let contar = 0;
+    carrito.map(item => {
+      contar = contar + item.total_producto;
+    });
+    setData('total', contar);
+  };
+
+  const eliminar = codigo => {
+    const newP = carrito.filter(item => item.product_code !== codigo);
+    setCarrito([...newP]);
+    let contar = 0;
+    newP.map(item => {
+      contar = contar + item.total_producto;
+    });
+    setData('total', contar);
+  };
+
+  const myref = useRef();
+  const reset = () => {
+    myref.current.reset();
+  };
   return (
     <div>
-      <Helmet title={`${data.first_name} ${data.last_name}`} />
       <h1 className="mb-8 text-3xl font-bold">
         <InertiaLink
-          href={route('contacts')}
+          href={route('ventas')}
           className="text-indigo-600 hover:text-indigo-700"
         >
-          Contacts
+          Ventas
         </InertiaLink>
-        <span className="mx-2 font-medium text-indigo-600">/</span>
-        {data.first_name} {data.last_name}
+        <span className="font-medium text-indigo-600"> /</span> Detalle Venta
       </h1>
-      {contact.deleted_at && (
-        <TrashedMessage onRestore={restore}>
-          This contact has been deleted.
-        </TrashedMessage>
-      )}
-      <div className="max-w-3xl overflow-hidden bg-white rounded shadow">
-        <form onSubmit={handleSubmit}>
+      <div className=" overflow-hidden bg-white rounded shadow">
+        <div className="flex items-center justify-center py-5">
+          <p className="text-2xl text-gray-500 text-center font-bold">
+            Detalle de Venta
+          </p>
+        </div>
           <div className="flex flex-wrap p-8 -mb-8 -mr-6">
             <TextInput
-              className="w-full pb-8 pr-6 lg:w-1/2"
-              label="First Name"
+              className="w-full pb-8 pr-6 lg:w-1/4"
+              label="Cliente"
               name="first_name"
-              errors={errors.first_name}
-              value={data.first_name}
-              onChange={e => setData('first_name', e.target.value)}
+              disabled
+              value={data.cliente}
             />
             <TextInput
-              className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Last Name"
-              name="last_name"
-              errors={errors.last_name}
-              value={data.last_name}
-              onChange={e => setData('last_name', e.target.value)}
-            />
-            <SelectInput
-              className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Organization"
-              name="organization_id"
-              errors={errors.organization_id}
-              value={data.organization_id}
-              onChange={e => setData('organization_id', e.target.value)}
-            >
-              <option value=""></option>
-              {organizations.map(({ id, name }) => (
-                <option key={id} value={id}>
-                  {name}
-                </option>
-              ))}
-            </SelectInput>
-            <TextInput
-              className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Email"
-              name="email"
-              type="email"
-              errors={errors.email}
-              value={data.email}
-              onChange={e => setData('email', e.target.value)}
+              className="w-full pb-8 pr-6 lg:w-1/4"
+              label="Vendedor"
+              name="first_name"
+              disabled
+              value={usuarios.filter((u)=> venta[0].vendedor_id == u.id ).map(filter => filter.first_name+' '+filter.last_name)}
             />
             <TextInput
-              className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Phone"
-              name="phone"
-              type="text"
-              errors={errors.phone}
-              value={data.phone}
-              onChange={e => setData('phone', e.target.value)}
+              className="w-full pb-8 pr-6 lg:w-1/4"
+              label="Fecha"
+              name="first_name"
+              disabled
+              value={ahora}
             />
-            <TextInput
-              className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Address"
-              name="address"
-              type="text"
-              errors={errors.address}
-              value={data.address}
-              onChange={e => setData('address', e.target.value)}
+             <TextInput
+              className="w-full pb-8 pr-6 lg:w-1/4"
+              label="Tipo de Pago"
+              name="first_name"
+              disabled
+              value={data.tipoPago}
             />
-            <TextInput
-              className="w-full pb-8 pr-6 lg:w-1/2"
-              label="City"
-              name="city"
-              type="text"
-              errors={errors.city}
-              value={data.city}
-              onChange={e => setData('city', e.target.value)}
-            />
-            <TextInput
-              className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Province/State"
-              name="region"
-              type="text"
-              errors={errors.region}
-              value={data.region}
-              onChange={e => setData('region', e.target.value)}
-            />
-            <SelectInput
-              className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Country"
-              name="country"
-              errors={errors.country}
-              value={data.country}
-              onChange={e => setData('country', e.target.value)}
-            >
-              <option value=""></option>
-              <option value="CA">Canada</option>
-              <option value="US">United States</option>
-            </SelectInput>
-            <TextInput
-              className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Postal Code"
-              name="postal_code"
-              type="text"
-              errors={errors.postal_code}
-              value={data.postal_code}
-              onChange={e => setData('postal_code', e.target.value)}
-            />
+            
+            {/* Comienzo tabla */}
+            <div className="overflow-x-auto   bg-white rounded shadow">
+              <table className=" whitespace-nowrap">
+                <thead>
+                  <tr className="font-bold text-left">
+                    <th className="px-6 pt-5 pb-4">Producto</th>
+                    <th className="px-3 pt-5 pb-4">Cantidad</th>
+                    <th className="px-6 pt-5 pb-4">Precio</th>
+                    <th className="px-6 pt-5 pb-4">Descuento</th>
+                    <th className="px-6 pt-5 pb-4 " colSpan="2">
+                      Total
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {carrito.map(
+                    (
+                      {
+                        producto,
+                        precio,
+                        descuento,
+                        cantidad,
+                        total_producto,
+                        real_sell_price
+                      },
+                      index
+                    ) => (
+                      <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                        <td className="border-t px-6 pt-5 pb-4">
+                            {producto}
+                        </td>
+                        <td className="border-t px-6 pt-5 pb-4">
+                          {cantidad}
+                        </td>
+                        <td className="border-t px-6 pt-5 pb-4">
+                          {precio}
+                          </td>
+                        <td className="border-t px-6 pt-5 pb-4">
+                          {descuento}
+                        </td>
+                        <td className="border-t px-6 pt-5 pb-4">
+                         {total_producto}
+                        </td>
+
+                        
+                      </tr>
+                    )
+                  )}
+                  <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                    <td className="px-6 py-4 border-t" colSpan="3"></td>
+                    <td className="px-6 py-4 border-t font-bold">Total</td>
+                    <td className="px-6 py-4 border-t font-bold">
+                      {data.total}
+                    </td>
+                  </tr>
+                  {carrito.length === 0 && (
+                    <tr>
+                      <td className="px-6 py-4 border-t" colSpan="4">
+                        No hay productos aun
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+            {/* fin tabla */}
           </div>
-          <div className="flex items-center px-8 py-4 bg-gray-100 border-t border-gray-200">
-            {!contact.deleted_at && (
-              <DeleteButton onDelete={destroy}>Delete Contact</DeleteButton>
-            )}
+          <div className="flex items-center justify-end px-8 py-4 bg-gray-100 border-t border-gray-200">
             <LoadingButton
               loading={processing}
-              type="submit"
-              className="ml-auto btn-indigo"
+              onClick={e=> Inertia.get(route('ventas'))}
+              className="btn-indigo"
             >
-              Update Contact
+              Atras
             </LoadingButton>
           </div>
-        </form>
       </div>
     </div>
   );
 };
 
-Edit.layout = page => <Layout children={page} />;
+Edit.layout = page => <Layout title="Create Contact" children={page} />;
 
 export default Edit;

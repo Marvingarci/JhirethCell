@@ -67,10 +67,21 @@ Route::delete('products/{contact}')->name('products.destroy')->uses('ProductCont
 Route::put('products/{contact}/restore')->name('products.restore')->uses('ProductController@restore')->middleware('auth');
 
 //Ventas
+
 Route::get('ventas')->name('ventas')->uses('VentasController@index')->middleware('remember', 'auth');
+Route::get('ventas/ventas_rapidas')->name('ventas_rapidas')->uses('VentasController@ventas_rapidas')->middleware('remember', 'auth');
 Route::get('ventas/create')->name('ventas.create')->uses('VentasController@create')->middleware('auth');
 Route::post('ventas')->name('ventas.store')->uses('VentasController@store')->middleware('auth');
 Route::get('ventas/{venta}/edit')->name('ventas.edit')->uses('VentasController@edit')->middleware('auth');
 Route::put('ventas/{venta}')->name('ventas.update')->uses('VentasController@update')->middleware('auth');
 Route::delete('ventas/{venta}')->name('ventas.destroy')->uses('VentasController@destroy')->middleware('auth');
 Route::put('ventas/{venta}/restore')->name('ventas.restore')->uses('VentasController@restore')->middleware('auth');
+
+//Ventas_Rapida
+Route::get('ventasR')->name('ventas_rapidas')->uses('VentaRapidaController@index')->middleware('remember', 'auth');
+Route::get('ventasR/create')->name('ventas_rapidas.create')->uses('VentaRapidaController@create')->middleware('auth');
+Route::post('ventasR')->name('ventas_rapidas.store')->uses('VentaRapidaController@store')->middleware('auth');
+Route::get('ventasR/{venta}/edit')->name('ventas_rapidas.edit')->uses('VentaRapidaController@edit')->middleware('auth');
+Route::put('ventasR/{venta}')->name('ventas_rapidas.update')->uses('VentaRapidaController@update')->middleware('auth');
+Route::delete('ventasR/{venta}')->name('ventas_rapidas.destroy')->uses('VentaRapidaController@destroy')->middleware('auth');
+Route::put('ventasR/{venta}/restore')->name('ventas_rapidas.restore')->uses('VentaRapidaController@restore')->middleware('auth');

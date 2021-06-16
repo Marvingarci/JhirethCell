@@ -27,7 +27,7 @@ class ProductStoreRequest extends FormRequest
     {
         return [
             'name' => ['required', 'max:50'],
-            'product_code' => ['required', 'max:50'],
+            'product_code' => ['required', 'max:50', 'unique:products'],
             // 'organization_id' => ['nullable', Rule::exists('organizations', 'id')->where(function ($query) {
             //     $query->where('account_id', Auth::user()->account_id);
             // })],

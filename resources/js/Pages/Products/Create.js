@@ -51,7 +51,7 @@ const Create = () => {
               className="w-full pb-8 pr-6 lg:w-1/2"
               label="Codigo del producto"
               name="email"
-              type="number"
+              type="text"
               placeholder="Escanear el codigo de barra"
               errors={errors.product_code}
               value={data.product_code}

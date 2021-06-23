@@ -21,7 +21,7 @@ class CreateVentasTable extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->float('total', 8,2);
-            $table->enum('tipoPago', ['efectivo', 'credito']);
+            $table->enum('tipoPago', ['efectivo', 'credito', 'pendiente']);
             $table->timestamps();
         });
     }

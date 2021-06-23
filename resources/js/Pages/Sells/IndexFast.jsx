@@ -8,14 +8,16 @@ import SelectInput from '@/Shared/SelectInput';
 import SearchFilter from '@/Shared/SearchFilterForCode';
 
 const IndexFast = () => {
-  const { categorias, usuarios, producto } = usePage().props;
+  const { categorias, usuarios, producto, ventasRapidas } = usePage().props;
   const { data, setData, errors, post, processing } = useForm({
     vendedor_id: '',
     cliente: '',
     total: 0,
-    tipoPago: '',
+    tipoPago: 'pendiente',
     ventas: []
   });
+
+  console.log(ventasRapidas)
 
   const [carrito, setCarrito] = useState([]);
   const [cuenta, setCuenta] = useState(0);
@@ -34,7 +36,11 @@ const IndexFast = () => {
     e.preventDefault();
     data.ventas = carrito;
     console.log(data);
-    post(route('ventas.store'));
+    post(route('ventas.store'),{
+      onSuccess: page => {
+        setCarrito([])
+      },
+    });
   }
 
   useEffect(() => {
@@ -43,6 +49,7 @@ const IndexFast = () => {
       newProduct.cantidad = 0;
       newProduct.real_sell_price = newProduct.sell_price;
       newProduct.descuento = 0;
+      newProduct.estado = 'pendiente'
       newProduct.total_producto = newProduct.cantidad * newProduct.sell_price;
       if (carrito.length == 0) {
         setCarrito([...carrito, newProduct]);
@@ -94,8 +101,27 @@ const IndexFast = () => {
     setData('total', contar);
   };
 
-  const agregar = codido =>{
-    
+  const handleConfirm = venta =>{
+    Inertia.put(route('ventas.actualizar', {id: venta.id, venta_detalles : venta.venta_detalles[0]}),{id: venta.id, venta_detalles : venta.venta_detalles[0]}, {
+      onSuccess: page =>{
+
+      },
+      onError: error =>{
+        console.log(error);
+      }
+    })
+  }
+
+  const handleCancel= venta =>{
+    console.log(venta)
+    Inertia.put(route('ventas.destroy', {id: venta.id, venta_detalles : venta.venta_detalles}), {id: venta.id, venta_detalles : venta.venta_detalles[0]}, {
+      onSuccess: page =>{
+
+      },
+      onError: error =>{
+        console.log(error);
+      }
+    })
   }
 
   const myref = useRef();
@@ -105,7 +131,6 @@ const IndexFast = () => {
   return (
     <div>
       <h1 className="mb-8 text-3xl font-bold">Caja Rápida</h1>
-
       <div className=" overflow-hidden bg-white rounded shadow">
         <div className="flex items-center justify-center py-5">
           <p className="text-2xl text-gray-500 text-center font-bold">
@@ -215,7 +240,8 @@ const IndexFast = () => {
 
                       <td className="border-t">
                         <button
-                          onClick={e => eliminar(product_code)}
+                          onClick={handleSubmit}
+
                           className="bg-newblue-200 ring-2 text-white py-2 px-1 rounded-xl m-1"
                         >
                           Agregar
@@ -228,25 +254,106 @@ const IndexFast = () => {
                 {carrito.length === 0 && (
                   <tr>
                     <td className="px-6 py-4 border-t" colSpan="4">
-                      No hay productos aun
+                      Escanea un producto
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
           </div>
+
           {/* fin tabla */}
         </div>
-        <div className="flex items-center justify-end px-8 py-4 bg-gray-100 border-t border-gray-200">
-          <LoadingButton
-            loading={processing}
-            type="submit"
-            className="btn-indigo"
-          >
-            Cerrar venta
-          </LoadingButton>
+        <div className="flex items-center justify-center py-5">
+          <p className="text-lg text-gray-500 text-center font-bold">
+            Cola de Ventas
+          </p>
         </div>
+
+       {/* Comienzo tabla pendiente */}
+       <div className="overflow-x-auto bg-white rounded shadow w-full">
+            <table className=" whitespace-nowrap w-full">
+              <thead>
+                <tr className="font-bold text-left">
+                  <th className="px-6 pt-5 pb-4">Nombre</th>
+                  <th className="px-6 pt-5 pb-4">Cliente</th>
+                  <th className="px-6 pt-5 pb-4">Vendedor</th>
+                  <th className="px-3 pt-5 pb-4">Cantidad</th>
+                  <th className="px-6 pt-5 pb-4">Precio</th>
+                  <th className="px-6 pt-5 pb-4">Descuento</th>
+                  <th className="px-6 pt-5 pb-4 " colSpan="2">
+                    Total
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {ventasRapidas.map(
+                  (
+                    venta,
+                    index
+                  ) => (
+                    venta.venta_detalles.map(({producto, cantidad, precio, descuento, total_producto})=>(
+                      <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                      <td className="border-t justify-center text-center items-center">
+                        {producto}
+                      </td>
+                      <td
+                        className={`border-t justify-center text-center items-center`}
+                      >
+                        {venta.cliente}
+                      </td>
+                      <td className="border-t justify-center text-center items-center">
+                          {usuarios.filter((user)=> user.id == venta.vendedor_id).map(({ id, first_name, last_name }) => (
+                              first_name + ' ' + last_name
+                          ))}
+                        
+                      </td>
+                      <td className="border-t justify-center text-center items-center">
+                        {cantidad}
+                      </td>
+                     
+
+                      <td className="border-t justify-center text-center items-center">
+                        {precio}
+                      </td>
+                      <td className="border-t justify-center text-center items-center">
+                        {
+                          descuento
+                        }
+                      </td>
+                      <td className="border-t justify-center text-center items-center">
+                        {total_producto}
+                      </td>
+
+                      <td className="border-t">
+                        <button
+                          onClick={e=>handleConfirm(venta)}
+
+                          className="bg-green-500 ring-2 text-white py-2 px-1 rounded-xl m-1"
+                        >
+                          Vendido
+                        </button>
+                        <button
+                          onClick={e=>handleCancel(venta)}
+
+                          className="bg-red-500 ring-2 text-white py-2 px-1 rounded-xl m-1"
+                        >
+                          Devuelto
+                        </button>
+                      </td>
+                    </tr>
+                    ))
+                    
+                  )
+                )}
+               
+                
+              </tbody>
+            </table>
+          </div>
+          {/* fin tabla pendiente */}
       </div>
+
     </div>
   );
 };

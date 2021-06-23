@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\VentaRapida;
+use App\Models\Ventas;
 use App\Models\VentaDetalle;
 use Illuminate\Http\Request as HttpRequest;
 use App\Http\Requests\VentaStoreRequest;
@@ -33,9 +34,20 @@ class VentaRapidaController extends Controller
             'categorias' => Category::all(),
             'usuarios'=> User::all(['id','first_name','last_name']),
             'producto'=> DB::table('products')->where('product_code',Request::only('search', 'trashed'))->first(),
+            'ventasRapidas' => Ventas::with('venta_detalles')->where('tipoPago', 'pendiente')->get()
         ]);
     }
 
+    public function verGarantias()
+    {
+        return Inertia::render('Dashboard/GarantiaIndex', [
+            'filters' => Request::all('search', 'trashed'),
+            'categorias' => Category::all(),
+            'usuarios'=> User::all(['id','first_name','last_name']),
+            'ventaRapida'=> VentaDetalle::where('product_code',Request::only('search', 'trashed'))->with('venta')->first(),
+        ]);
+    }
+    
     /**
      * Show the form for creating a new resource.
      *

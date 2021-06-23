@@ -18,11 +18,15 @@ class CreateVentaDetallesTable extends Migration
             $table->foreignId('ventas_id')->constrained('ventas')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
+            $table->string('product_id');
             $table->string('producto');
+            $table->string('product_code');
             $table->integer('cantidad');
             $table->float('precio', 8,2);
             $table->float('descuento');
             $table->string('total_producto');
+            $table->string('garantia');
+            $table->date('fin_garantia');
             $table->enum('estado', ['efectivo', ' en_stock', 'devuelto', 'credito', 'pendiente']);
             $table->timestamps();
         });

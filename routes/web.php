@@ -73,8 +73,8 @@ Route::get('ventas/ventas_rapidas')->name('ventas_rapidas')->uses('VentasControl
 Route::get('ventas/create')->name('ventas.create')->uses('VentasController@create')->middleware('auth');
 Route::post('ventas')->name('ventas.store')->uses('VentasController@store')->middleware('auth');
 Route::get('ventas/{venta}/edit')->name('ventas.edit')->uses('VentasController@edit')->middleware('auth');
-Route::put('ventas/{venta}')->name('ventas.update')->uses('VentasController@update')->middleware('auth');
-Route::delete('ventas/{venta}')->name('ventas.destroy')->uses('VentasController@destroy')->middleware('auth');
+Route::put('ventas/{venta}')->name('ventas.actualizar')->uses('VentasController@update')->middleware('auth');
+Route::put('ventaToDestroy/{venta}')->name('ventas.destroy')->uses('VentasController@destroy')->middleware('auth');
 Route::put('ventas/{venta}/restore')->name('ventas.restore')->uses('VentasController@restore')->middleware('auth');
 
 //Ventas_Rapida
@@ -85,3 +85,24 @@ Route::get('ventasR/{venta}/edit')->name('ventas_rapidas.edit')->uses('VentaRapi
 Route::put('ventasR/{venta}')->name('ventas_rapidas.update')->uses('VentaRapidaController@update')->middleware('auth');
 Route::delete('ventasR/{venta}')->name('ventas_rapidas.destroy')->uses('VentaRapidaController@destroy')->middleware('auth');
 Route::put('ventasR/{venta}/restore')->name('ventas_rapidas.restore')->uses('VentaRapidaController@restore')->middleware('auth');
+
+//Garantias
+Route::get('ver-garantias')->name('garantias')->uses('VentaRapidaController@verGarantias')->middleware('remember', 'auth');
+
+//Servicios
+//Products
+Route::get('servicios')->name('servicios')->uses('ServiciosController@index')->middleware('remember', 'auth');
+Route::get('servicios/create')->name('servicios.create')->uses('ServiciosController@create')->middleware('auth');
+Route::post('servicios')->name('servicios.store')->uses('ServiciosController@store')->middleware('auth');
+Route::get('servicios/{contact}/edit')->name('servicios.edit')->uses('ServiciosController@edit')->middleware('auth');
+Route::put('servicios/{contact}')->name('servicios.update')->uses('ServiciosController@update')->middleware('auth');
+Route::delete('servicios/{contact}')->name('servicios.destroy')->uses('ServiciosController@destroy')->middleware('auth');
+Route::put('servicios/{contact}/restore')->name('servicios.restore')->uses('ServiciosController@restore')->middleware('auth');
+
+
+
+
+
+
+
+

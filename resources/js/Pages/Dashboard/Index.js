@@ -3,6 +3,8 @@ import { InertiaLink } from '@inertiajs/inertia-react';
 import Layout from '@/Shared/Layout';
 import { usePage } from '@inertiajs/inertia-react';
 import { Pie } from 'react-chartjs-2';
+import LoadingButton from '@/Shared/LoadingButton';
+import { Inertia } from '@inertiajs/inertia';
 
 const Dashboard = () => {
   const { mas_vendidos, best_clientes } = usePage().props;
@@ -77,6 +79,20 @@ const Dashboard = () => {
 
         </div>
 
+        {/* Tercer div */}
+
+        <div className="flex flex-row justify-center py-12 text-center gap-2 items-center h-full bg-white shadow-xl rounded-xl">
+        <p className="text-lg font-bold">Buscador de Garantias</p>
+          <div className="">
+          <LoadingButton
+              onClick={e=> Inertia.get("ver-garantias")}
+              className="btn-indigo"
+            >
+              Verificar garantía
+            </LoadingButton>
+            </div>
+
+        </div>
       </div>
     </div>
   );

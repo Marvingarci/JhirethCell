@@ -14,7 +14,7 @@ const colores = [
 ]
 const Edit = () => {
   const { product , categorias} = usePage().props;
-  const { data, setData, errors, put, processing } = useForm({
+  const { data, setData, errors, post, processing } = useForm({
     id: product.id || '',
     name: product.name || '',
     product_code: product.product_code || '',
@@ -23,14 +23,18 @@ const Edit = () => {
     sell_price: product.sell_price || '',
     color : product.color || '',
     category_id : product.category.id || '',
-    created_at: product.created_at || ''
+    created_at: product.created_at || '',
+     // NOTE: When working with Laravel PUT/PATCH requests and FormData
+    // you SHOULD send POST request and fake the PUT request like this.
+    _method: 'PUT'
   });
 
   console.log(product)
 
   function handleSubmit(e) {
     e.preventDefault();
-    put(route('products.update', product.id));
+        // NOTE: We are using POST method here, not PUT/PACH. See comment above.
+    post(route('products.update', product.id));
   }
 
   function destroy() {

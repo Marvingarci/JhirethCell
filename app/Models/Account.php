@@ -26,4 +26,9 @@ class Account extends Model
     {
         return $this->hasMany(Ventas::class);
     }
+    public function servicios()
+    {
+        return $this->hasMany(Servicios::class);
+    }
+    
 }

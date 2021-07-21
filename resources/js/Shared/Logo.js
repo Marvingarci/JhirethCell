@@ -10,6 +10,6 @@ import React from 'react';
 
 export default props => (
   <div  className="h-28 w-28 rounded-full flex justify-center">
-    <img className="rounded-full" src="https://scontent.ftgu2-2.fna.fbcdn.net/v/t1.6435-9/124130361_745408852732903_7871543938865722485_n.png?_nc_cat=107&ccb=1-3&_nc_sid=174925&_nc_ohc=D2JQH40yjA4AX9CsUrU&_nc_ht=scontent.ftgu2-2.fna&oh=a17fd7c5a1fa4edd2d06c756a3d9ca51&oe=60DB54E5"></img>
+    <img className="rounded-full" src="https://i.ibb.co/Th3RQy6/Logo-Jhiret-Mesa-de-trabajo-1-Mesa-de-trabajo-1.jpg"></img>
   </div>
 );

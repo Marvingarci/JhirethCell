@@ -15,6 +15,14 @@ class CreateServiciosTable extends Migration
     {
         Schema::create('servicios', function (Blueprint $table) {
             $table->id();
+            $table->integer('account_id')->index();
+            $table->string('nombre');
+            $table->string('cliente');
+            $table->float('pago');
+            $table->foreignId('venta_id')->constrained('ventas')
+                ->onUpdate('cascade')
+                ->onDelete('cascade')
+                ->nullable();
             $table->timestamps();
         });
     }

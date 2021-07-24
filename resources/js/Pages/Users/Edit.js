@@ -129,6 +129,9 @@ const Edit = () => {
             {!user.deleted_at && (
               <DeleteButton onDelete={destroy}>Delete User</DeleteButton>
             )}
+            <button className="m-5 focus:outline-none hover:underline text-newblue-200 font-bold">
+              Permisos
+            </button>
             <LoadingButton
               loading={processing}
               type="submit"
@@ -136,6 +139,7 @@ const Edit = () => {
             >
               Update User
             </LoadingButton>
+            
           </div>
         </form>
       </div>

@@ -8,10 +8,12 @@ use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use Illuminate\Http\Request as HttpRequest;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
+use Spatie\Permission\Models\Permission;
 
 class UsersController extends Controller
 {
@@ -21,11 +23,13 @@ class UsersController extends Controller
             'filters' => Request::all('search', 'role', 'trashed'),
             'users' => new UserCollection(
                 Auth::user()->account->users()
+                    ->with('permissions')
                     ->orderByName()
                     ->filter(Request::only('search', 'role', 'trashed'))
                     ->paginate()
                     ->appends(Request::all())
             ),
+            'permissions' => Permission::all('id', 'name'),
         ]);
     }
 
@@ -71,5 +75,17 @@ class UsersController extends Controller
         $user->restore();
 
         return Redirect::back()->with('success', 'User restored.');
+    }
+
+    public function assignPermissions(HttpRequest $request, User $user)
+    {
+
+        $request->validate([
+            'permissions' => 'required',
+        ]);
+
+        $user->syncPermissions($request->permissions);
+
+        return back()->with(["success" => "¡Permisos asignados con éxito!"]);
     }
 }

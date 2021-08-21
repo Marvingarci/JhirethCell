@@ -13,6 +13,7 @@
 
 // Auth
 
+use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('login')->name('login')->uses('Auth\LoginController@showLoginForm')->middleware('guest');
@@ -23,13 +24,16 @@ Route::post('logout')->name('logout')->uses('Auth\LoginController@logout');
 Route::get('/')->name('dashboard')->uses('DashboardController')->middleware('auth');
 
 // Users
-Route::get('users')->name('users')->uses('UsersController@index')->middleware('remember', 'auth');
-Route::get('users/create')->name('users.create')->uses('UsersController@create')->middleware('auth');
-Route::post('users')->name('users.store')->uses('UsersController@store')->middleware('auth');
-Route::get('users/{user}/edit')->name('users.edit')->uses('UsersController@edit')->middleware('auth');
-Route::put('users/{user}')->name('users.update')->uses('UsersController@update')->middleware('auth');
-Route::delete('users/{user}')->name('users.destroy')->uses('UsersController@destroy')->middleware('auth');
-Route::put('users/{user}/restore')->name('users.restore')->uses('UsersController@restore')->middleware('auth');
+Route::get('users')->name('users')->uses('UsersController@index')->middleware('remember', 'permission:Usuarios');
+Route::get('users/create')->name('users.create')->uses('UsersController@create')->middleware('permission:Usuarios');
+Route::post('users')->name('users.store')->uses('UsersController@store')->middleware('permission:Usuarios');
+Route::get('users/{user}/edit')->name('users.edit')->uses('UsersController@edit')->middleware('permission:Usuarios');
+Route::put('users/{user}')->name('users.update')->uses('UsersController@update')->middleware('permission:Usuarios');
+Route::delete('users/{user}')->name('users.destroy')->uses('UsersController@destroy')->middleware('permission:Usuarios');
+Route::put('users/{user}/restore')->name('users.restore')->uses('UsersController@restore')->middleware('permission:Usuarios');
+Route::post('assign-permissions/{user}')->name('permisos.assign')->uses('UsersController@assignPermissions')
+    ->middleware('permission:Usuarios');
+            
 
 // Images
 Route::get('/img/{path}', 'ImagesController@show')->where('path', '.*');
@@ -70,37 +74,36 @@ Route::delete('products/{contact}')->name('products.destroy')->uses('ProductCont
 Route::put('products/{contact}/restore')->name('products.restore')->uses('ProductController@restore')->middleware('auth');
 
 //Ventas
-
-Route::get('ventas')->name('ventas')->uses('VentasController@index')->middleware('remember', 'auth');
-Route::get('ventas/ventas_rapidas')->name('ventas_rapidas')->uses('VentasController@ventas_rapidas')->middleware('remember', 'auth');
-Route::get('ventas/create')->name('ventas.create')->uses('VentasController@create')->middleware('auth');
-Route::post('ventas')->name('ventas.store')->uses('VentasController@store')->middleware('auth');
-Route::get('ventas/{venta}/edit')->name('ventas.edit')->uses('VentasController@edit')->middleware('auth');
-Route::put('ventas/{venta}')->name('ventas.actualizar')->uses('VentasController@update')->middleware('auth');
-Route::put('ventaToDestroy/{venta}')->name('ventas.destroy')->uses('VentasController@destroy')->middleware('auth');
-Route::put('ventas/{venta}/restore')->name('ventas.restore')->uses('VentasController@restore')->middleware('auth');
+Route::get('ventas')->name('ventas')->uses('VentasController@index')->middleware('remember', 'permission:Caja');
+Route::get('ventas/ventas_rapidas')->name('ventas_rapidas')->uses('VentasController@ventas_rapidas')->middleware('remember', 'permission:Caja');
+Route::get('ventas/create')->name('ventas.create')->uses('VentasController@create')->middleware('permission:Caja');
+Route::post('ventas')->name('ventas.store')->uses('VentasController@store')->middleware('permission:Caja');
+Route::get('ventas/{venta}/edit')->name('ventas.edit')->uses('VentasController@edit')->middleware('permission:Caja');
+Route::put('ventas/{venta}')->name('ventas.actualizar')->uses('VentasController@update')->middleware('permission:Caja');
+Route::put('ventaToDestroy/{venta}')->name('ventas.destroy')->uses('VentasController@destroy')->middleware('permission:Caja');
+Route::put('ventas/{venta}/restore')->name('ventas.restore')->uses('VentasController@restore')->middleware('permission:Caja');
 
 //Ventas_Rapida
-Route::get('ventasR')->name('ventas_rapidas')->uses('VentaRapidaController@index')->middleware('remember', 'auth');
-Route::get('ventasR/create')->name('ventas_rapidas.create')->uses('VentaRapidaController@create')->middleware('auth');
-Route::post('ventasR')->name('ventas_rapidas.store')->uses('VentaRapidaController@store')->middleware('auth');
-Route::get('ventasR/{venta}/edit')->name('ventas_rapidas.edit')->uses('VentaRapidaController@edit')->middleware('auth');
-Route::put('ventasR/{venta}')->name('ventas_rapidas.update')->uses('VentaRapidaController@update')->middleware('auth');
-Route::delete('ventasR/{venta}')->name('ventas_rapidas.destroy')->uses('VentaRapidaController@destroy')->middleware('auth');
-Route::put('ventasR/{venta}/restore')->name('ventas_rapidas.restore')->uses('VentaRapidaController@restore')->middleware('auth');
+Route::get('ventasR')->name('ventas_rapidas')->uses('VentaRapidaController@index')->middleware('remember', 'permission:Caja Rapida');
+Route::get('ventasR/create')->name('ventas_rapidas.create')->uses('VentaRapidaController@create')->middleware('permission:Caja Rapida');
+Route::post('ventasR')->name('ventas_rapidas.store')->uses('VentaRapidaController@store')->middleware('permission:Caja Rapida');
+Route::get('ventasR/{venta}/edit')->name('ventas_rapidas.edit')->uses('VentaRapidaController@edit')->middleware('permission:Caja Rapida');
+Route::put('ventasR/{venta}')->name('ventas_rapidas.update')->uses('VentaRapidaController@update')->middleware('permission:Caja Rapida');
+Route::delete('ventasR/{venta}')->name('ventas_rapidas.destroy')->uses('VentaRapidaController@destroy')->middleware('permission:Caja Rapida');
+Route::put('ventasR/{venta}/restore')->name('ventas_rapidas.restore')->uses('VentaRapidaController@restore')->middleware('permission:Caja Rapida');
 
 //Garantias
 Route::get('ver-garantias')->name('garantias')->uses('VentaRapidaController@verGarantias')->middleware('remember', 'auth');
 
 //Servicios
 //Products
-Route::get('servicios')->name('servicios')->uses('ServiciosController@index')->middleware('remember', 'auth');
-Route::get('servicios/create')->name('servicios.create')->uses('ServiciosController@create')->middleware('auth');
-Route::post('servicios')->name('servicios.store')->uses('ServiciosController@store')->middleware('auth');
-Route::get('servicios/{contact}/edit')->name('servicios.edit')->uses('ServiciosController@edit')->middleware('auth');
-Route::put('servicios/{contact}')->name('servicios.update')->uses('ServiciosController@update')->middleware('auth');
-Route::delete('servicios/{contact}')->name('servicios.destroy')->uses('ServiciosController@destroy')->middleware('auth');
-Route::put('servicios/{contact}/restore')->name('servicios.restore')->uses('ServiciosController@restore')->middleware('auth');
+Route::get('servicios')->name('servicios')->uses('ServiciosController@index')->middleware('remember', 'permission:Inventario');
+Route::get('servicios/create')->name('servicios.create')->uses('ServiciosController@create')->middleware('permission:Inventario');
+Route::post('servicios')->name('servicios.store')->uses('ServiciosController@store')->middleware('permission:Inventario');
+Route::get('servicios/{contact}/edit')->name('servicios.edit')->uses('ServiciosController@edit')->middleware('permission:Inventario');
+Route::put('servicios/{contact}')->name('servicios.update')->uses('ServiciosController@update')->middleware('permission:Inventario');
+Route::delete('servicios/{contact}')->name('servicios.destroy')->uses('ServiciosController@destroy')->middleware('permission:Inventario');
+Route::put('servicios/{contact}/restore')->name('servicios.restore')->uses('ServiciosController@restore')->middleware('permission:Inventario');
 
 
 

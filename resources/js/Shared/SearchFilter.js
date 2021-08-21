@@ -119,7 +119,7 @@ export default () => {
         className="ml-3 text-sm text-gray-600 hover:text-gray-700 focus:text-indigo-700 focus:outline-none"
         type="button"
       >
-        Reset
+        Borrar
       </button>
     </div>
   );

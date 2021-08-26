@@ -17,7 +17,7 @@ const IndexFast = () => {
     ventas: []
   });
 
-  console.log(ventasRapidas)
+  console.log(ventasRapidas);
 
   const [carrito, setCarrito] = useState([]);
   const [cuenta, setCuenta] = useState(0);
@@ -36,20 +36,26 @@ const IndexFast = () => {
     e.preventDefault();
     data.ventas = carrito;
     console.log(data);
-    post(route('ventas.store'),{
+    post(route('ventas.store'), {
       onSuccess: page => {
-        setCarrito([])
-      },
+        setCarrito([]);
+      }
     });
   }
 
   useEffect(() => {
     if (producto != null) {
-      const newProduct = producto;
-      newProduct.cantidad = 0;
+      //If product has been sold, just scape
+      if (producto.status == 'vendido') {
+        reset();
+        return false;
+      }
+      const newProduct = producto.product;
+      newProduct.cantidad = 1;
+      newProduct.codebar = producto.codebar;
       newProduct.real_sell_price = newProduct.sell_price;
       newProduct.descuento = 0;
-      newProduct.estado = 'pendiente'
+      newProduct.estado = 'pendiente';
       newProduct.total_producto = newProduct.cantidad * newProduct.sell_price;
       if (carrito.length == 0) {
         setCarrito([...carrito, newProduct]);
@@ -101,28 +107,44 @@ const IndexFast = () => {
     setData('total', contar);
   };
 
-  const handleConfirm = venta =>{
-    Inertia.put(route('ventas.actualizar', {id: venta.id, venta_detalles : venta.venta_detalles[0]}),{id: venta.id, venta_detalles : venta.venta_detalles[0]}, {
-      onSuccess: page =>{
+  
 
-      },
-      onError: error =>{
-        console.log(error);
-      }
-    })
-  }
+  const handleConfirm = venta => {
+    if (confirm('¿Está seguro de desea dar por hecho esta venta?')) {
+      Inertia.put(
+        route('ventas.actualizar', {
+          id: venta.id,
+          venta_detalles: venta.venta_detalles[0]
+        }),
+        { id: venta.id, venta_detalles: venta.venta_detalles[0] },
+        {
+          onSuccess: page => {},
+          onError: error => {
+            console.log(error);
+          }
+        }
+      );
+    }
+  };
 
-  const handleCancel= venta =>{
-    console.log(venta)
-    Inertia.put(route('ventas.destroy', {id: venta.id, venta_detalles : venta.venta_detalles}), {id: venta.id, venta_detalles : venta.venta_detalles[0]}, {
-      onSuccess: page =>{
-
-      },
-      onError: error =>{
-        console.log(error);
-      }
-    })
-  }
+  const handleCancel = venta => {
+    if (confirm('¿Está seguro de desea eliminar esta venta?')) {
+      console.log(venta);
+      Inertia.put(
+        route('ventas.destroy', {
+          id: venta.id,
+          venta_detalles: venta.venta_detalles
+        }),
+        { id: venta.id, venta_detalles: venta.venta_detalles[0] },
+        {
+          onSuccess: page => {},
+          onError: error => {
+            console.log(error);
+          }
+        }
+      );
+    }
+  };
 
   const myref = useRef();
   const reset = () => {
@@ -147,7 +169,7 @@ const IndexFast = () => {
                   <th className="px-6 pt-5 pb-4">Nombre</th>
                   <th className="px-6 pt-5 pb-4">Cliente</th>
                   <th className="px-6 pt-5 pb-4">Vendedor</th>
-                  <th className="px-3 pt-5 pb-4">Cantidad</th>
+                  {/* <th className="px-3 pt-5 pb-4">Cantidad</th> */}
                   <th className="px-6 pt-5 pb-4">Precio</th>
                   <th className="px-6 pt-5 pb-4">Descuento</th>
                   <th className="px-6 pt-5 pb-4 " colSpan="2">
@@ -200,7 +222,7 @@ const IndexFast = () => {
                           ))}
                         </SelectInput>
                       </td>
-                      <td className="border-t justify-center text-center items-center">
+                      {/* <td className="border-t justify-center text-center items-center">
                         <TextInput
                           className="w-20"
                           type="number"
@@ -210,8 +232,7 @@ const IndexFast = () => {
                           }}
                           onChange={e => setCantidad(index, e.target.value)}
                         />
-                      </td>
-                     
+                      </td> */}
 
                       <td className="border-t justify-center text-center items-center">
                         {real_sell_price}
@@ -241,7 +262,6 @@ const IndexFast = () => {
                       <td className="border-t">
                         <button
                           onClick={handleSubmit}
-
                           className="bg-newblue-200 ring-2 text-white py-2 px-1 rounded-xl m-1"
                         >
                           Agregar
@@ -250,7 +270,7 @@ const IndexFast = () => {
                     </tr>
                   )
                 )}
-               
+
                 {carrito.length === 0 && (
                   <tr>
                     <td className="px-6 py-4 border-t" colSpan="4">
@@ -270,30 +290,33 @@ const IndexFast = () => {
           </p>
         </div>
 
-       {/* Comienzo tabla pendiente */}
-       <div className="overflow-x-auto bg-white rounded shadow w-full">
-            <table className=" whitespace-nowrap w-full">
-              <thead>
-                <tr className="font-bold text-left">
-                  <th className="px-6 pt-5 pb-4">Nombre</th>
-                  <th className="px-6 pt-5 pb-4">Cliente</th>
-                  <th className="px-6 pt-5 pb-4">Vendedor</th>
-                  <th className="px-3 pt-5 pb-4">Cantidad</th>
-                  <th className="px-6 pt-5 pb-4">Precio</th>
-                  <th className="px-6 pt-5 pb-4">Descuento</th>
-                  <th className="px-6 pt-5 pb-4 " colSpan="2">
-                    Total
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {ventasRapidas.map(
-                  (
-                    venta,
-                    index
-                  ) => (
-                    venta.venta_detalles.map(({producto, cantidad, precio, descuento, total_producto})=>(
-                      <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+        {/* Comienzo tabla pendiente */}
+        <div className="overflow-x-auto bg-white rounded shadow w-full">
+          <table className=" whitespace-nowrap w-full">
+            <thead>
+              <tr className="font-bold text-left">
+                <th className="px-6 pt-5 pb-4">Nombre</th>
+                <th className="px-6 pt-5 pb-4">Cliente</th>
+                <th className="px-6 pt-5 pb-4">Vendedor</th>
+                <th className="px-3 pt-5 pb-4">Cantidad</th>
+                <th className="px-6 pt-5 pb-4">Precio</th>
+                <th className="px-6 pt-5 pb-4">Descuento</th>
+                <th className="px-6 pt-5 pb-4 " colSpan="2">
+                  Total
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {ventasRapidas.map((venta, index) =>
+                venta.venta_detalles.map(
+                  ({
+                    producto,
+                    cantidad,
+                    precio,
+                    descuento,
+                    total_producto
+                  }) => (
+                    <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                       <td className="border-t justify-center text-center items-center">
                         {producto}
                       </td>
@@ -303,23 +326,22 @@ const IndexFast = () => {
                         {venta.cliente}
                       </td>
                       <td className="border-t justify-center text-center items-center">
-                          {usuarios.filter((user)=> user.id == venta.vendedor_id).map(({ id, first_name, last_name }) => (
+                        {usuarios
+                          .filter(user => user.id == venta.vendedor_id)
+                          .map(
+                            ({ id, first_name, last_name }) =>
                               first_name + ' ' + last_name
-                          ))}
-                        
+                          )}
                       </td>
                       <td className="border-t justify-center text-center items-center">
                         {cantidad}
                       </td>
-                     
 
                       <td className="border-t justify-center text-center items-center">
                         {precio}
                       </td>
                       <td className="border-t justify-center text-center items-center">
-                        {
-                          descuento
-                        }
+                        {descuento}
                       </td>
                       <td className="border-t justify-center text-center items-center">
                         {total_producto}
@@ -327,33 +349,27 @@ const IndexFast = () => {
 
                       <td className="border-t">
                         <button
-                          onClick={e=>handleConfirm(venta)}
-
+                          onClick={e => handleConfirm(venta)}
                           className="bg-green-500 ring-2 text-white py-2 px-1 rounded-xl m-1"
                         >
                           Vendido
                         </button>
                         <button
-                          onClick={e=>handleCancel(venta)}
-
+                          onClick={e => handleCancel(venta)}
                           className="bg-red-500 ring-2 text-white py-2 px-1 rounded-xl m-1"
                         >
                           Devuelto
                         </button>
                       </td>
                     </tr>
-                    ))
-                    
                   )
-                )}
-               
-                
-              </tbody>
-            </table>
-          </div>
-          {/* fin tabla pendiente */}
+                )
+              )}
+            </tbody>
+          </table>
+        </div>
+        {/* fin tabla pendiente */}
       </div>
-
     </div>
   );
 };

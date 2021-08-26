@@ -5,34 +5,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Product extends Model
+class Inventario extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'id',
-        'name',
-        'sell_price',
-        'cost_price',
-        'color',
-        'category_id'
+        'product_id',
+        'codebar',
+        'imei',
+        'status'
     ];
 
-
-    public function category()
+    public function product()
     {
-        return $this->belongsTo(Category::class);
-    }
-
-    public function inventarios()
-    {
-        return $this->hasMany(Inventario::class);
+        return $this->belongsTo(Product::class);
     }
     
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where('name', 'like', '%'.$search.'%');
+            $query->where('code', 'like', '%'.$search.'%');
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             // if ($trashed === 'with') {
             //     $query->withTrashed();

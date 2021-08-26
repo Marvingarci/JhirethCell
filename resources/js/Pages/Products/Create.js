@@ -7,16 +7,16 @@ import TextInput from '@/Shared/TextInput';
 import SelectInput from '@/Shared/SelectInput';
 
 const colores = [
-  'verde','azul','naranja','negro','blanco','morado','amarillo','rojo','gris'
+  'Indefinido','verde','azul','naranja','negro','blanco','morado','amarillo','rojo','gris'
 ]
 const Create = () => {
   const { categorias } = usePage().props;
   const { data, setData, errors, post, processing } = useForm({
     name: '',
-    product_code: '',
+    //product_code: '',
     category_id: '',
     color: '',
-    existencia: '',
+    //existencia: '',
     cost_price: 0,
     sell_price: 0,
   });
@@ -47,7 +47,7 @@ const Create = () => {
               value={data.name}
               onChange={e => setData('name', e.target.value)}
             />
-            <TextInput
+            {/* <TextInput
               className="w-full pb-8 pr-6 lg:w-1/2"
               label="Codigo del producto"
               name="email"
@@ -56,7 +56,7 @@ const Create = () => {
               errors={errors.product_code}
               value={data.product_code}
               onChange={e => setData('product_code', e.target.value)}
-            />
+            /> */}
            <SelectInput
               className="w-full pb-8 pr-6 lg:w-1/2"
               label="Color"
@@ -72,7 +72,7 @@ const Create = () => {
                 })
               }              
             </SelectInput>
-            <TextInput
+            {/* <TextInput
               className="w-full pb-8 pr-6 lg:w-1/2"
               label="Existencia"
               name="address"
@@ -80,7 +80,7 @@ const Create = () => {
               errors={errors.existencia}
               value={data.existencia}
               onChange={e => setData('existencia', e.target.value)}
-            />
+            /> */}
             <TextInput
               className="w-full pb-8 pr-6 lg:w-1/2"
               label="Precio de compra"

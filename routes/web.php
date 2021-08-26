@@ -51,6 +51,10 @@ Route::put('contacts/{contact}/restore')->name('contacts.restore')->uses('Contac
 
 // Reports
 Route::get('reports')->name('reports')->uses('ReportsController')->middleware('auth');
+Route::get('reports/diarios')->name('reports.diarios')->uses('ReportsController@dailyReport')->middleware('auth');
+Route::get('reports/creditos')->name('reports.creditos')->uses('ReportsController@creditReport')->middleware('auth');
+Route::get('reports/separados')->name('reports.divididos')->uses('ReportsController@separateReport')->middleware('auth');
+
 
 // 500 error
 Route::get('500', function () {
@@ -99,6 +103,14 @@ Route::put('servicios/{contact}')->name('servicios.update')->uses('ServiciosCont
 Route::delete('servicios/{contact}')->name('servicios.destroy')->uses('ServiciosController@destroy')->middleware('auth');
 Route::put('servicios/{contact}/restore')->name('servicios.restore')->uses('ServiciosController@restore')->middleware('auth');
 
+//Inventarios
+Route::get('inventario')->name('inventario')->uses('InventarioController@index')->middleware('remember', 'auth');
+Route::get('inventario/create')->name('inventario.create')->uses('InventarioController@create')->middleware('auth');
+Route::post('inventario')->name('inventario.store')->uses('InventarioController@store')->middleware('auth');
+Route::get('inventario/{contact}/edit')->name('inventario.edit')->uses('InventarioController@edit')->middleware('auth');
+Route::put('inventario/{contact}')->name('inventario.update')->uses('InventarioController@update')->middleware('auth');
+Route::delete('inventario/{id}')->name('inventario.destroy')->uses('InventarioController@destroy')->middleware('auth');
+Route::put('inventario/{contact}/restore')->name('inventario.restore')->uses('InventarioController@restore')->middleware('auth');
 
 
 

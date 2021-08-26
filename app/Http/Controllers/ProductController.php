@@ -10,7 +10,9 @@ use App\Http\Resources\ProductResource;
 use Inertia\Inertia;
 use App\Models\Organization;
 use App\Models\Category;
+use App\Models\Inventario;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
 
@@ -23,8 +25,14 @@ class ProductController extends Controller
      */
     public function index()
     {
+        $existenciaPorP = DB::table("inventarios")
+        ->select(DB::raw("product_id ,  COUNT(*) as existencia "))
+        ->where('status', 'stock')
+        ->groupBy('product_id')
+        ->get();
         return Inertia::render('Products/Index', [
             'filters' => Request::all('search', 'trashed'),
+            'existencia' => $existenciaPorP,
             'products' => new ProductCollection(
                 Auth::user()->account->products()
                     ->orderBy('name')

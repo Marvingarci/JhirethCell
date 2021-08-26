@@ -27,14 +27,16 @@ class ProductStoreRequest extends FormRequest
     {
         return [
             'name' => ['required', 'max:50'],
-            'product_code' => ['required', 'max:50', 'unique:products'],
+
+            //'product_code' => ['required', 'max:50', 'unique:products'],
+
             // 'organization_id' => ['nullable', Rule::exists('organizations', 'id')->where(function ($query) {
             //     $query->where('account_id', Auth::user()->account_id);
             // })],
             'category_id' => ['required', 'max:50'],
             'color' => ['nullable', 'max:50'],
             'cost_price' => ['required','numeric'],
-            'existencia' => ['required','numeric'],
+            //'existencia' => ['required','numeric'],
             'sell_price' => ['required', 'numeric'],
             
         ];

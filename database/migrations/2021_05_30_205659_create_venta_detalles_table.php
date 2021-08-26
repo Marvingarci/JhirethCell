@@ -21,6 +21,7 @@ class CreateVentaDetallesTable extends Migration
             $table->string('product_id');
             $table->string('producto');
             $table->string('product_code');
+            $table->integer('category_id');
             $table->integer('cantidad');
             $table->float('precio', 8,2);
             $table->float('descuento');

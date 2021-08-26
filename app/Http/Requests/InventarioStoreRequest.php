@@ -6,7 +6,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ProductUpdateRequest extends FormRequest
+class InventarioStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,12 +26,11 @@ class ProductUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'id'=>['required'],
-            'name' => ['required', 'max:50'],
-            'category_id' => ['required', 'max:50'],
-            'color' => ['nullable', 'max:50'],
-            'cost_price' => ['required','numeric'],
-            'sell_price' => ['required' , 'numeric'],
+            'product_id' => ['required', 'max:50'],
+            'codebar' => ['required', 'max:50', 'unique:inventarios,codebar'],
+            'imei' => ['required', 'max:50', 'unique:inventarios,imei'],    
+            'status' => ['required']    
+
         ];
     }
 }

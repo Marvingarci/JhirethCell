@@ -2,26 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\VentaRapida;
-use App\Models\Ventas;
-use App\Models\VentaDetalle;
+use App\Http\Requests\InventarioStoreRequest;
+use App\Models\Inventario;
 use Illuminate\Http\Request as HttpRequest;
 use App\Http\Requests\VentaStoreRequest;
-use App\Http\Requests\ProductUpdateRequest;
+use App\Http\Requests\VentaUpdateRequest;
 use App\Http\Resources\VentaCollection;
 use App\Http\Resources\ProductResource;
 use Inertia\Inertia;
 use App\Models\Organization;
 use App\Models\Category;
-use App\Models\Inventario;
 use App\Models\User;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
-class VentaRapidaController extends Controller
+class InventarioController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -30,25 +29,19 @@ class VentaRapidaController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Sells/IndexFast', [
+        return Inertia::render('Sells/Index', [
             'filters' => Request::all('search', 'trashed'),
-            'categorias' => Category::all(),
             'usuarios'=> User::all(['id','first_name','last_name']),
-            'producto'=> Inventario::where('codebar',Request::only('search', 'trashed'))->with('product')->first(),
-            'ventasRapidas' => Ventas::with('venta_detalles')->where('tipoPago', 'pendiente')->get()
+            'ventas_dia' => new VentaCollection(
+                Auth::user()->account->ventas()
+                    ->orderBy('created_at')
+                    ->filter(Request::only('search', 'trashed'))
+                    ->paginate()
+                    ->appends(Request::all())
+            ),
         ]);
     }
 
-    public function verGarantias()
-    {
-        return Inertia::render('Dashboard/GarantiaIndex', [
-            'filters' => Request::all('search', 'trashed'),
-            'categorias' => Category::all(),
-            'usuarios'=> User::all(['id','first_name','last_name']),
-            'ventaRapida'=> VentaDetalle::where('product_code',Request::only('search', 'trashed'))->with('venta')->first(),
-        ]);
-    }
-    
     /**
      * Show the form for creating a new resource.
      *
@@ -65,18 +58,19 @@ class VentaRapidaController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(InventarioStoreRequest $request)
     {
-        //
+        Auth::user()->account->inventario()->create($request->validated());
+        return Redirect::back()->with('success', 'Registro agregado correctamente.');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\VentaRapida  $ventaRapida
+     * @param  \App\Models\Inventario  $inventario
      * @return \Illuminate\Http\Response
      */
-    public function show(VentaRapida $ventaRapida)
+    public function show(Inventario $inventario)
     {
         //
     }
@@ -84,22 +78,28 @@ class VentaRapidaController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\VentaRapida  $ventaRapida
+     * @param  \App\Models\Inventario  $inventario
      * @return \Illuminate\Http\Response
      */
-    public function edit(VentaRapida $ventaRapida)
+    public function edit($id)
     {
-        //
+        $product = Product::find($id);
+        return Inertia::render('Inventories/Edit', [
+            'filters' => Request::all('search', 'trashed'),
+            'inventario' => Inventario::where('product_id', $id)->get(),
+            'product' => new ProductResource($product),
+            'categorias'=> Category::All()
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\VentaRapida  $ventaRapida
+     * @param  \App\Models\Inventario  $inventario
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, VentaRapida $ventaRapida)
+    public function update(Request $request, Inventario $inventario)
     {
         //
     }
@@ -107,11 +107,13 @@ class VentaRapidaController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\VentaRapida  $ventaRapida
+     * @param  \App\Models\Inventario  $inventario
      * @return \Illuminate\Http\Response
      */
-    public function destroy(VentaRapida $ventaRapida)
+    public function destroy($id)
     {
-        //
+        $eliminar = Inventario::find($id);
+        $eliminar->delete();
+        return Redirect::back()->with('success', 'Eliminado con éxito');
     }
 }

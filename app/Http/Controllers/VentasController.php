@@ -12,6 +12,7 @@ use App\Http\Resources\ProductResource;
 use Inertia\Inertia;
 use App\Models\Organization;
 use App\Models\Category;
+use App\Models\Inventario;
 use App\Models\User;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
@@ -29,8 +30,8 @@ class VentasController extends Controller
             'filters' => Request::all('search', 'trashed'),
             'usuarios'=> User::all(['id','first_name','last_name']),
             'ventas_dia' => new VentaCollection(
-                Auth::user()->account->ventas()
-                    ->orderBy('created_at')
+                Ventas::
+                    orderBy('created_at')
                     ->filter(Request::only('search', 'trashed'))
                     ->paginate()
                     ->appends(Request::all())
@@ -51,7 +52,7 @@ class VentasController extends Controller
             'filters' => Request::all('search', 'trashed'),
             'categorias' => Category::all(),
             'usuarios'=> User::all(['id','first_name','last_name']),
-            'producto'=> DB::table('products')->where('product_code',Request::only('search', 'trashed'))->first(),
+            'producto'=> Inventario::where('codebar',Request::only('search', 'trashed'))->with('product')->first(),
         ]);
     }
 
@@ -65,12 +66,11 @@ class VentasController extends Controller
     {
         $hoy = Carbon::now();
         $productos = Product::all();
-        Auth::user()->account->ventas()->create($request->validated());
-        $last = Ventas::latest('id')->first();
-        $registro = Ventas::find($last);
+        $registro = Ventas::create($request->validated());
+      
+         
         $ventas = $request->ventas;
         foreach ($ventas as $venta) {
-
             if($venta['category_id'] == 2){
                 $venta['garantia'] = '60 dias';
                 $hoyEn60 = $hoy->add(60, 'day');
@@ -79,15 +79,16 @@ class VentasController extends Controller
                 $venta['garantia'] = '30 dias';
                 $hoyEn30 = $hoy->add(30, 'day');
                 $venta['fin_garantia'] = $hoyEn30;
-            }else if($venta['category_id'] == 1){
+            }else if($venta['category_id'] == 3){
                 $venta['garantia'] = 'No aplica';
                 $venta['fin_garantia'] = $hoy;
             }
 
             $ven = VentaDetalle::create([
-                'ventas_id'=>$last->id, 
+                'ventas_id'=>$registro->id, 
                 'product_id' => $venta['id'], 
-                'product_code' => $venta['product_code'],
+                'product_code' => $venta['codebar'],
+                'category_id' => $venta['category_id'], 
                 'producto'=> $venta['name'], 
                 'cantidad'=>$venta['cantidad'], 
                 'precio'=> $venta['sell_price'], 
@@ -99,18 +100,24 @@ class VentasController extends Controller
 
             ]);
 
-            foreach ($productos as $producto) {
-                if($venta['id'] == $producto->id){
-                    $producto->existencia = $producto->existencia - $venta['cantidad'];
-                    $producto->update();
-                }
+            if($request->tipoPago == 'efectivo' || $request->tipoPago == 'credito'){
+                $inventario = Inventario::where('codebar', $venta['codebar'])->update(['status' => 'vendido']);
+            }else {
+                $inventario = Inventario::where('codebar', $venta['codebar'])->update(['status' => 'pendiente']);
             }
+
+            // foreach ($productos as $producto) {
+            //     if($venta['id'] == $producto->id){
+            //         $producto->existencia = $producto->existencia - $venta['cantidad'];
+            //         $producto->update();
+            //     }
+            // }
         }
         if($request->tipoPago == 'pendiente'){
             return Redirect::back()->with('success', 'Venta rapida agregada.');
 
         }else{
-            return Redirect::route('ventas')->with('success', 'Venta agregada.');
+            return Redirect::route('ventas.edit', $registro->id)->with('success', 'Venta agregada.');
         }
     }
 
@@ -157,16 +164,13 @@ class VentasController extends Controller
         $venta->tipoPago = 'efectivo';
         $venta->update($request->validated());
 
+        Inventario::where('codebar', $request->venta_detalles['product_code'])->update(['status' => 'vendido']);
+
         $venta_detalle = VentaDetalle::find($request->venta_detalles['id']);
         $venta_detalle->estado = 'efectivo';
         $venta_detalle->save();
-        // foreach ($ventas as $vent) {
-        //     $ven = VentaDetalle::create([
-        //         'ventas_id'=>$last->id, 'producto'=> $venta['name'], 'cantidad'=>$venta['cantidad'], 'precio'=> $venta['sell_price'], 'descuento'=>$venta['descuento'], 'total_producto'=>$venta['total_producto'], 'estado' => $request->tipoPago
-        //     ]);
-           
-        // }
-        return Redirect::back()->with('success', 'Venta Editada.');
+        
+        return Redirect::back()->with('success', 'Venta convertida a efectivo.');
     }
 
     /**
@@ -178,15 +182,15 @@ class VentasController extends Controller
     public function destroy(HttpRequest $request)
     {   
         $venta = Ventas::find($request['id']);
-        $venta_detalle = VentaDetalle::find($request->venta_detalles['id']);
-        $productos = Product::all();
-
-        foreach ($productos as $producto) {
-            if($producto->id == $venta_detalle['product_id']){
-                $producto->existencia = $producto->existencia + $venta_detalle['cantidad'];
-                $producto->update();
-            }
-        }
+        //$venta_detalle = VentaDetalle::find($request->venta_detalles['id']);
+        
+        Inventario::where('codebar', $request->venta_detalles['product_code'])->update(['status' => 'stock']);
+        // foreach ($productos as $producto) {
+        //     if($producto->id == $venta_detalle['product_id']){
+        //         $producto->existencia = $producto->existencia + $venta_detalle['cantidad'];
+        //         $producto->update();
+        //     }
+        // }
 
         $venta->delete();
       

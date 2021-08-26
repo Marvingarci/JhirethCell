@@ -30,5 +30,10 @@ class Account extends Model
     {
         return $this->hasMany(Servicios::class);
     }
+
+    public function inventario()
+    {
+        return $this->hasMany(Inventario::class);
+    }
     
 }

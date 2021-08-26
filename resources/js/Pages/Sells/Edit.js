@@ -28,68 +28,23 @@ const Edit = () => {
     '-' +
     date.getFullYear();
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    data.ventas = carrito;
-    console.log(data);
-    post(route('ventas.store'));
-  }
-
-  useEffect(() => {
-    if (producto != null) {
-      const newProduct = producto;
-      newProduct.cantidad = 0;
-      newProduct.real_sell_price = newProduct.sell_price;
-      newProduct.descuento = 0;
-      newProduct.total_producto = newProduct.cantidad * newProduct.sell_price;
-      if (carrito.length == 0) {
-        setCarrito([...carrito, newProduct]);
-      } else {
-        if (carrito.find(item => item.id === newProduct.id)) {
-        } else {
-          setCarrito([...carrito, newProduct]);
+  function becomeSold() {
+    if (confirm('Esta venta se pondrá como efectiva, ¿Está seguro?')) {
+      Inertia.put(
+        route('ventas.actualizar', {
+          id: venta[0].id,
+          venta_detalles: venta[0].venta_detalles
+        }),
+        { id: venta[0].id, venta_detalles: venta[0].venta_detalles },
+        {
+          onSuccess: page => {},
+          onError: error => {
+            console.log(error);
+          }
         }
-      }
-      reset();
-      SumaTotal();
+      );
     }
-  }, [producto]);
-  setDescuento
-
-  const setDescuento = (index, descuento) => {
-    carrito[index].descuento = descuento;
-    carrito[index].real_sell_price = carrito[index].sell_price - (carrito[index].sell_price * descuento);
-    carrito[index].total_producto = carrito[index].cantidad * carrito[index].real_sell_price;
-    setCarrito([...carrito]);
-    SumaTotal();
-  };
-
-  const setCantidad = (index, cantidad) => {
-    carrito[index].cantidad = parseFloat(cantidad);
-    carrito[index].total_producto =
-      carrito[index].cantidad * carrito[index].real_sell_price;
-    setCarrito([...carrito]);
-    SumaTotal();
-  };
- 
-
-  const SumaTotal = () => {
-    let contar = 0;
-    carrito.map(item => {
-      contar = contar + item.total_producto;
-    });
-    setData('total', contar);
-  };
-
-  const eliminar = codigo => {
-    const newP = carrito.filter(item => item.product_code !== codigo);
-    setCarrito([...newP]);
-    let contar = 0;
-    newP.map(item => {
-      contar = contar + item.total_producto;
-    });
-    setData('total', contar);
-  };
+  }
 
   const myref = useRef();
   const reset = () => {
@@ -209,7 +164,17 @@ const Edit = () => {
             </div>
             {/* fin tabla */}
           </div>
-          <div className="flex items-center justify-end px-8 py-4 bg-gray-100 border-t border-gray-200">
+          <div className="flex items-center justify-end px-8 py-4 space-x-1 bg-gray-100 border-t border-gray-200">
+          {
+            data.tipoPago=='credito'&&
+            <LoadingButton
+              onClick={e=> becomeSold()}
+              className="btn-indigo"
+            >
+              Pagado
+            </LoadingButton>
+          }
+          
             <LoadingButton
               loading={processing}
               onClick={e=> Inertia.get(route('ventas'))}

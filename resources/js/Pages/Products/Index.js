@@ -6,12 +6,12 @@ import SearchFilter from '@/Shared/SearchFilter';
 import Pagination from '@/Shared/Pagination';
 
 const Index = () => {
-  const { products } = usePage().props;
+  const { products, existencia } = usePage().props;
   const {
     data,
     meta: { links }
   } = products;
-  console.log(products)
+  console.log(existencia)
   return (
     <div>
       <h1 className="mb-8 text-3xl font-bold">Inventario</h1>
@@ -30,7 +30,7 @@ const Index = () => {
           <thead>
             <tr className="font-bold text-left">
               <th className="px-6 pt-5 pb-4">Nombre</th>
-              <th className="px-6 pt-5 pb-4">Codigo</th>
+              <th className="px-6 pt-5 pb-4">Color</th>
               <th className="px-6 pt-5 pb-4">Existencia</th>
               <th className="px-6 pt-5 pb-4" colSpan="2">
                 Precio
@@ -38,7 +38,7 @@ const Index = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map(({ id, name, product_code, existencia, sell_price, deleted_at }) => {
+            {data.map(({ id, name, color, sell_price, deleted_at }) => {
               return (
                 <tr
                   key={id}
@@ -64,7 +64,7 @@ const Index = () => {
                       href={route('products.edit', id)}
                       className="flex items-center px-6 py-2 focus:text-indigo focus:outline-none"
                     >
-                      {product_code}
+                      {color}
                     </InertiaLink>
                   </td>
                   <td className="border-t">
@@ -73,7 +73,11 @@ const Index = () => {
                       href={route('products.edit', id)}
                       className="flex items-center px-6 py-2 focus:text-indigo focus:outline-none"
                     >
-                      {existencia}
+                      {existencia.map(({product_id, existencia })=>{
+                        if(id ==   product_id){
+                            return(existencia)
+                        }
+                      }) }
                     </InertiaLink>
                   </td>
                   <td className="border-t">
@@ -103,7 +107,7 @@ const Index = () => {
             {data.length === 0 && (
               <tr>
                 <td className="px-6 py-4 border-t" colSpan="4">
-                  No organizations found.
+                  No hay productos registrados 
                 </td>
               </tr>
             )}

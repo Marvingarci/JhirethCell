@@ -15,7 +15,6 @@ class CreateVentasTable extends Migration
     {
         Schema::create('ventas', function (Blueprint $table) {
             $table->id();
-            $table->integer('account_id')->index();
             $table->string('cliente');
             $table->foreignId('vendedor_id')->constrained('users')
                 ->onUpdate('cascade')

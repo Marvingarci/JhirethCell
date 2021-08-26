@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import Layout from '@/Shared/Layout';
-import { usePage } from '@inertiajs/inertia-react';
-import { Inertia } from '@inertiajs/inertia';
+import Index from '@/Pages/Reports/Index';
 
-const Index = ({children}) => {
+import { usePage } from '@inertiajs/inertia-react';
+
+const CreditReport = () => {
   const { ventas } = usePage().props;
   const [total_ventas_diarias, setTotalVentas] = useState(0);
   var total=0;
@@ -12,16 +13,7 @@ const Index = ({children}) => {
   return (
     <div>
 
-      <div className=" w-full flex flex-row justify-between px-10 -mt-5 mb-5">
-          <a onClick={()=> Inertia.get(route('reports.diarios'))} className= "font-bold transition ease-in-out hover:text-white hover:bg-newGreen-100 rounded-xl py-3 text-newGreen-100 bg-white px-16">Reporte Diario</a>
-          <a onClick={()=> Inertia.get(route('reports.creditos'))} className="font-bold transition ease-in-out  hover:text-white hover:bg-newGreen-100 rounded-xl py-3 text-newGreen-100 bg-white px-16">Reporte Credito</a>
-          <a onClick={()=> Inertia.get(route('reports.divididos'))} className="font-bold transition ease-in-out  hover:text-white hover:bg-newGreen-100 rounded-xl py-3 text-newGreen-100 bg-white px-16">Reporte Separado</a> 
-      </div>
-
-      <div>
-        {children}
-      </div>
-      {/* <h1 className="mb-8 text-3xl font-bold">Reporte Ventas diarias</h1>
+      <h1 className="mb-8 text-3xl font-bold">Reporte Ventas al Crédito</h1>
       <div className="bg-white rounded shadow">
       <table className=" whitespace-nowrap w-full">
       <thead>
@@ -68,11 +60,13 @@ const Index = ({children}) => {
                   </tr>
                 </tbody>
               </table>
-      </div> */}
+      </div>
     </div>
   );
 };
 
-Index.layout = page => <Layout title="Reports" children={page} />;
+CreditReport.layout = page => <Layout >
+    <Index children={page}></Index>
+</Layout>;
 
-export default Index;
+export default CreditReport;

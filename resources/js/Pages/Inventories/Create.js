@@ -39,42 +39,24 @@ const Create = () => {
 
   useEffect(() => {
     if (producto != null) {
-      console.log(producto)
-
-      //If product has been sold, just scape
-      if(producto.status == 'vendido'){
-        reset()
-        return false
-      }
-
-      //Agg scaned product to the shopcart and set new values
-      const newProduct = producto.product;
-      newProduct.cantidad = 1;
-      newProduct.codebar = producto.codebar;
+      const newProduct = producto;
+      newProduct.cantidad = 0;
       newProduct.real_sell_price = newProduct.sell_price;
       newProduct.descuento = 0;
       newProduct.total_producto = newProduct.cantidad * newProduct.sell_price;
-
-      //check is the car is empty 
       if (carrito.length == 0) {
         setCarrito([...carrito, newProduct]);
       } else {
-        //if the article exists, it doesnt make anything
-        if (carrito.find(item => item.codebar === newProduct.codebar)) {
+        if (carrito.find(item => item.id === newProduct.id)) {
         } else {
           setCarrito([...carrito, newProduct]);
         }
-
       }
-
-
+      reset();
+      SumaTotal();
     }
-
-    reset();
-    SumaTotal();
-
   }, [producto]);
-  
+  setDescuento
 
   const setDescuento = (index, descuento) => {
     carrito[index].descuento = descuento;
@@ -87,7 +69,7 @@ const Create = () => {
   const setCantidad = (index, cantidad) => {
     carrito[index].cantidad = parseFloat(cantidad);
     carrito[index].total_producto =
-    carrito[index].cantidad * carrito[index].real_sell_price;
+      carrito[index].cantidad * carrito[index].real_sell_price;
     setCarrito([...carrito]);
     SumaTotal();
   };
@@ -99,14 +81,13 @@ const Create = () => {
       contar = contar + item.total_producto;
     });
     setData('total', contar);
-    return true
   };
 
-  const eliminar  =  codebar => {
-    const newP = carrito.filter(item => item.codebar !== codebar);
+  const eliminar = codigo => {
+    const newP = carrito.filter(item => item.product_code !== codigo);
     setCarrito([...newP]);
     let contar = 0;
-      newP.map(item => {
+    newP.map(item => {
       contar = contar + item.total_producto;
     });
     setData('total', contar);
@@ -116,7 +97,6 @@ const Create = () => {
   const reset = () => {
     myref.current.reset();
   };
-
   return (
     <div>
       <h1 className="mb-8 text-3xl font-bold">
@@ -124,9 +104,9 @@ const Create = () => {
           href={route('ventas')}
           className="text-indigo-600 hover:text-indigo-700"
         >
-          Ventas
+          Inventarios
         </InertiaLink>
-        <span className="font-medium text-indigo-600"> /</span> Nueva Venta
+        <span className="font-medium text-indigo-600"> /</span> Administrar Inventarios
       </h1>
       <div className=" overflow-hidden bg-white rounded shadow">
         <div className="flex items-center justify-center py-5">
@@ -168,6 +148,7 @@ const Create = () => {
             <SelectInput
               className="w-full pb-8 pr-6 lg:w-1/3"
               label="Pago"
+              name="organization_id"
               errors={errors.tipoPago}
               value={data.tipoPago}
               onChange={e => setData('tipoPago', e.target.value)}
@@ -182,8 +163,8 @@ const Create = () => {
                 <thead>
                   <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4">Nombre</th>
-                    <th className="px-6 pt-5 pb-4">Código</th>
-                    {/* <th className="px-3 pt-5 pb-4">Cantidad</th> */}
+                    <th className="px-6 pt-5 pb-4">Existencia</th>
+                    <th className="px-3 pt-5 pb-4">Cantidad</th>
                     <th className="px-6 pt-5 pb-4">Precio</th>
                     <th className="px-6 pt-5 pb-4">Descuento</th>
                     <th className="px-6 pt-5 pb-4 " colSpan="2">
@@ -199,7 +180,6 @@ const Create = () => {
                         name,
                         existencia,
                         cantidad,
-                        codebar,
                         sell_price,
                         total_producto,
                         real_sell_price
@@ -210,10 +190,10 @@ const Create = () => {
                         <td className="border-t justify-center text-center items-center">
                             {name}
                         </td>
-                        <td className={`border-t justify-center text-center items-center ${codebar == 0 && 'text-red-500'}`}>
-                            {codebar}
+                        <td className={`border-t justify-center text-center items-center ${existencia == 0 && 'text-red-500'}`}>
+                            {existencia}
                         </td>
-                        {/* <td className="border-t justify-center text-center items-center">
+                        <td className="border-t justify-center text-center items-center">
                           <TextInput
                             className="w-20"
                             type="number"
@@ -223,7 +203,7 @@ const Create = () => {
                             }}
                             onChange={e => setCantidad(index, e.target.value)}
                           />
-                        </td> */}
+                        </td>
                         <td className="border-t justify-center text-center items-center">
                           {real_sell_price}
                           </td>
@@ -252,7 +232,7 @@ const Create = () => {
 
                         <td className="border-t">
                           <button
-                            onClick={e => eliminar(codebar)}
+                            onClick={e => eliminar(product_code)}
                             className="bg-newblue-200 ring-2 text-white py-2 px-1 rounded-xl m-1"
                           >
                             Eliminar

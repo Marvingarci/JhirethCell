@@ -17,12 +17,10 @@ class CreateProductsTable extends Migration
             $table->id();
             $table->integer('account_id')->index();
             $table->string('name', 50);
-            $table->string('product_code', 13)->unique();
             $table->foreignId('category_id')->constrained('categories')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->string('color')->default('Indefinido');
-            $table->integer('existencia')->default('0');
             $table->float('cost_price', 8, 2);
             $table->float('sell_price', 8, 2);
             $table->timestamps();

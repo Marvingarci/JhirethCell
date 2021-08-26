@@ -14,15 +14,19 @@ class DatabaseSeeder extends Seeder
 {
     public function run()
     {
+        $this->call([
+            PermissionSeeder::class
+        ]);
+        
         $account = Account::create(['name' => 'Jhiret Cell 1']);
 
         User::factory()->create([
             'account_id' => $account->id,
-            'first_name' => 'John',
-            'last_name' => 'Doe',
-            'email' => 'johndoe@example.com',
+            'first_name' => 'Admin',
+            'last_name' => 'Admin',
+            'email' => 'admin@admin.com',
             'owner' => true,
-        ]);
+        ])->givePermissionTo('Universales');
 
         Category::factory()->create([
             'name' => 'Pantallas',

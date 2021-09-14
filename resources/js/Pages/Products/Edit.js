@@ -23,7 +23,7 @@ const colores = [
   'gris'
 ];
 const Edit = () => {
-  const { product, categorias } = usePage().props;
+  const { product, categorias, auth } = usePage().props;
   const { data, setData, errors, post, processing } = useForm({
     id: product.id || '',
     name: product.name || '',
@@ -110,24 +110,19 @@ const Edit = () => {
                 return <option value={color}>{color}</option>;
               })}
             </SelectInput>
-            {/* <TextInput
-              className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Existecia"
-              name="address"
-              type="number"
-              errors={errors.existencia}
-              value={data.existencia}
-              onChange={e => setData('existencia', e.target.value)}
-            /> */}
-            <TextInput
-              className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Precio de costo"
-              name="city"
-              type="number"
-              errors={errors.cost_price}
-              value={data.cost_price}
-              onChange={e => setData('cost_price', e.target.value)}
-            />
+
+            {auth.user.owner == true && (
+              <TextInput
+                className="w-full pb-8 pr-6 lg:w-1/2"
+                label="Precio de costo"
+                name="city"
+                type="number"
+                errors={errors.cost_price}
+                value={data.cost_price}
+                onChange={e => setData('cost_price', e.target.value)}
+              />
+            )}
+
             <TextInput
               className="w-full pb-8 pr-6 lg:w-1/2"
               label="Precio de venta"

@@ -11,7 +11,7 @@ const Dashboard = () => {
 
   console.log(best_clientes);
   return (
-    <div></div>
+    // <div></div>
     // <div>
     //   <h1 className="mb-8 text-3xl font-bold">Principal</h1>
     //   <div className="grid grid-cols-2 gap-3">
@@ -82,18 +82,18 @@ const Dashboard = () => {
 
     //     {/* Tercer div */}
 
-    //     <div className="flex flex-row justify-center py-12 text-center gap-2 items-center h-full bg-white shadow-xl rounded-xl">
-    //     <p className="text-lg font-bold">Buscador de Garantias</p>
-    //       <div className="">
-    //       <LoadingButton
-    //           onClick={e=> Inertia.get("ver-garantias")}
-    //           className="btn-indigo"
-    //         >
-    //           Verificar garantía
-    //         </LoadingButton>
-    //         </div>
+        <div className="flex flex-row justify-center py-12 text-center gap-2 items-center h-full bg-white shadow-xl rounded-xl">
+        <p className="text-lg font-bold">Buscador de Garantias</p>
+          <div className="">
+          <LoadingButton
+              onClick={e=> Inertia.get("ver-garantias")}
+              className="btn-indigo"
+            >
+              Verificar garantía
+            </LoadingButton>
+            </div>
 
-    //     </div>
+        </div>
     //   </div>
     // </div>
   );

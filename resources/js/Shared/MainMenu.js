@@ -1,7 +1,10 @@
 import React from 'react';
 import MainMenuItem from '@/Shared/MainMenuItem';
+import { InertiaLink, usePage } from '@inertiajs/inertia-react';
 
 export default ({ className }) => {
+  const { auth } = usePage().props;
+  console.log(auth.user);
   return (
     <div className={className}>
       <MainMenuItem text="Principal" link="dashboard" icon="dashboard" />
@@ -11,7 +14,10 @@ export default ({ className }) => {
       <MainMenuItem text="Productos" link="products" icon="book" />
       <MainMenuItem text="Compañias" link="organizations" icon="office" />
       <MainMenuItem text="Usuarios" link="contacts" icon="users" />
-      <MainMenuItem text="Reporte" link="reports" icon="printer" />
+      {
+        auth.user.owner == true && 
+        <MainMenuItem text="Reporte" link="reports" icon="printer" />
+      }
       <MainMenuItem text="Cierre Diario" link="reports" icon="location" />
 
     </div>

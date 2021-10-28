@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use Inertia\Inertia;
 use App\Models\Ventas;
 use App\Models\VentaDetalle;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Http\Request;
 
 class ReportsController extends Controller
 {
@@ -62,6 +64,7 @@ class ReportsController extends Controller
             $query->where('category_id', 3);
         }])->where([['created_at', 'like', $today->format('Y-m-d') . '%']])->get();
 
+        $productos = Product::all();
       //  dd($Ventas_pantallas);
         // $Ventas_celulares = Ventas::where([['created_at', 'like', $today->format('Y-m-d') . '%'],['tipoPago', 'efectivo'],['category_id', 2]])->with('venta_detalles')->get();
         // $Ventas_accesorios = Ventas::where([['created_at', 'like', $today->format('Y-m-d') . '%'],['tipoPago', 'efectivo'],['category_id', 3]])->with('venta_detalles')->get();
@@ -71,7 +74,37 @@ class ReportsController extends Controller
             'ventas_pantallas'=> $Ventas_pantallas,
             'ventas_celulares'=> $Ventas_celulares,
             'ventas_accesorios'=> $Ventas_accesorios,
-        ]);    }
+            'productos' => $productos
+        ]);    
+    }
+
+    public function separateReportByDay(Request $request)
+    {
+        $today = new Carbon($request->day);        
+        $Ventas_pantallas = Ventas::with(['venta_detalles' => function ($query) {
+            $query->where('category_id', 1);
+        }])->where([['created_at', 'like', $today->format('Y-m-d') . '%']])->get();
+
+        $Ventas_celulares = Ventas::with(['venta_detalles' => function ($query) {
+            $query->where('category_id', 2);
+        }])->where([['created_at', 'like', $today->format('Y-m-d') . '%']])->get();
+
+        $Ventas_accesorios = Ventas::with(['venta_detalles' => function ($query) {
+            $query->where('category_id', 3);
+        }])->where([['created_at', 'like', $today->format('Y-m-d') . '%']])->get();
+
+        $productos = Product::all();
+
+       
+
+        return Inertia::render('Reports/SeparateReport',[
+            'ventas_pantallas'=> $Ventas_pantallas,
+            'ventas_celulares'=> $Ventas_celulares,
+            'ventas_accesorios'=> $Ventas_accesorios,
+            'day'=> $today,
+            'productos' => $productos
+        ]);     
+    }
 
     public function creditReport()
     {

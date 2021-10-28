@@ -42,6 +42,16 @@ class InventarioController extends Controller
         ]);
     }
 
+
+    public function buscarProducto()
+    {
+        return Inertia::render('Inventories/Index', [
+            'filters' => Request::all('search', 'trashed'),
+            'categorias' => Category::all(),
+            'usuarios'=> User::all(['id','first_name','last_name']),
+            'producto'=> Inventario::where('codebar',Request::only('search', 'trashed'))->with('product')->first(),
+        ]);
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -86,7 +96,7 @@ class InventarioController extends Controller
         $product = Product::find($id);
         return Inertia::render('Inventories/Edit', [
             'filters' => Request::all('search', 'trashed'),
-            'inventario' => Inventario::where('product_id', $id)->get(),
+            'inventario' => Inventario::where([['product_id', $id],['codebar', Request::all('search', 'trashed')]])->get(),
             'product' => new ProductResource($product),
             'categorias'=> Category::All()
         ]);

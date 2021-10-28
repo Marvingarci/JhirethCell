@@ -37,6 +37,7 @@ const Edit = () => {
 
   function becomeSold() {
     if (confirm('Esta venta se pondrá como efectiva, ¿Está seguro?')) {
+      console.log(venta[0].id, venta[0].venta_detalles)
       Inertia.put(
         route('ventas.actualizar', {
           id: venta[0].id,

@@ -8,6 +8,9 @@ use App\Http\Resources\ContactCollection;
 use App\Http\Resources\ContactResource;
 use App\Http\Resources\UserOrganizationCollection;
 use App\Models\Contact;
+use App\Models\Ventas;
+use App\Models\User;
+use App\Models\VentaDetalle;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
@@ -53,6 +56,9 @@ class ContactsController extends Controller
 
     public function edit(Contact $contact)
     {
+        $comprasEfectivo = Ventas::with('venta_detalles')->where([['contact_id',$contact->id],['tipoPago', 'efectivo']])->get();
+        $comprasCredito = Ventas::with('venta_detalles')->where([['contact_id',$contact->id],['tipoPago', 'credito']])->get();
+        $comprasPendientes = Ventas::with('venta_detalles')->where([['contact_id',$contact->id],['tipoPago', 'pendiente']])->get();
         return Inertia::render('Contacts/Edit', [
             'contact' => new ContactResource($contact),
             'organizations' => new UserOrganizationCollection(
@@ -60,6 +66,11 @@ class ContactsController extends Controller
                     ->orderBy('name')
                     ->get()
             ),
+            'comprasE' => $comprasEfectivo,
+            'comprasC' => $comprasCredito,
+            'comprasP' => $comprasPendientes,
+            'usuarios'=> User::all(['id','first_name','last_name']),
+
         ]);
     }
 

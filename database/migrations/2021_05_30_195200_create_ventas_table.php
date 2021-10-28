@@ -19,6 +19,9 @@ class CreateVentasTable extends Migration
             $table->foreignId('vendedor_id')->constrained('users')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
+            $table->foreignId('contact_id')->nullable()->constrained('contacts')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
             $table->float('total', 8,2);
             $table->enum('tipoPago', ['efectivo', 'credito', 'pendiente']);
             $table->timestamps();

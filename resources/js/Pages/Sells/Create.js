@@ -8,9 +8,10 @@ import SelectInput from '@/Shared/SelectInput';
 import SearchFilter from '@/Shared/SearchFilterForCode';
 
 const Create = () => {
-  const { categorias, usuarios, producto } = usePage().props;
+  const { categorias, usuarios, producto, contactos } = usePage().props;
   const { data, setData, errors, post, processing } = useForm({
     vendedor_id: '',
+    contact_id: null,
     cliente: '',
     total: 0,
     tipoPago: '',
@@ -19,6 +20,7 @@ const Create = () => {
 
   const [carrito, setCarrito] = useState([]);
   const [cuenta, setCuenta] = useState(0);
+  const [tipoCliente, setTipoCliente] = useState(true);
 
   const date = new Date();
   const ahora =
@@ -42,7 +44,7 @@ const Create = () => {
       console.log(producto)
 
       //If product has been sold, just scape
-      if(producto.status == 'vendido'){
+      if(producto.status != 'stock'){
         reset()
         return false
       }
@@ -91,6 +93,20 @@ const Create = () => {
     setCarrito([...carrito]);
     SumaTotal();
   };
+
+  const cambiarCliente = ()=>{
+    setTipoCliente(!tipoCliente)
+    data.cliente = ''
+    data.contact_id =null
+  }
+
+  const setMayorista=(contact)=>{
+    contactos.filter(con => con.id == contact).map(c=>{
+      data.cliente =  c.first_name + ' ' + c.last_name
+    })
+    data.contact_id= contact
+    console.log(data)
+  }
  
 
   const SumaTotal = () => {
@@ -135,15 +151,40 @@ const Create = () => {
           </p>
         </div>
         <form onSubmit={handleSubmit}>
-          <div className="flex flex-wrap p-8 -mb-8 -mr-6">
-            <TextInput
+          <div className="pl-8">
+            <input type="checkbox" onChange={e => cambiarCliente()} />
+            <label>Mayorista</label>
+          </div>
+            <div className="flex flex-wrap p-8 -mb-8 -mr-6">
+            {
+              tipoCliente ?
+              ( <TextInput
+                className="w-full pb-8 pr-6 lg:w-1/3"
+                label="Cliente"
+                name="first_name"
+                errors={errors.cliente}
+                value={data.cliente}
+                onChange={e => setData('cliente', e.target.value)}
+              />
+              )
+              :
+              (
+                <SelectInput
               className="w-full pb-8 pr-6 lg:w-1/3"
-              label="Cliente"
-              name="first_name"
+              label="Mayorista"
+              name="cliente"
               errors={errors.cliente}
-              value={data.cliente}
-              onChange={e => setData('cliente', e.target.value)}
-            />
+              value={data.clientes}
+              onChange={e => setMayorista(e.target.value)}
+            >
+              <option value=""></option>
+              {contactos.map(({id, first_name, last_name}) => (
+                <option value={id}>{first_name + ' ' + last_name}</option>
+              ))}
+            </SelectInput>
+              )
+              
+            }
             <SelectInput
               className="w-full pb-8 pr-6 lg:w-1/3"
               label="Vendedor"

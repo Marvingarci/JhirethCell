@@ -61,12 +61,11 @@ Route::get('reports')->name('reports')->uses('ReportsController')->middleware('a
 Route::get('reports/diarios')->name('reports.diarios')->uses('ReportsController@dailyReport')->middleware('auth');
 Route::get('reports/creditos')->name('reports.creditos')->uses('ReportsController@creditReport')->middleware('auth');
 Route::get('reports/separados')->name('reports.divididos')->uses('ReportsController@separateReport')->middleware('auth');
+Route::post('reports/separadosPorDia')->name('reports.divididosPorDia')->uses('ReportsController@separateReportByDay')->middleware('auth');
 
 
 // 500 error
-Route::get('500', function () {
-    echo $fail;
-});
+
 
 //Products
 Route::get('products')->name('products')->uses('ProductController@index')->middleware('remember', 'auth');
@@ -84,6 +83,7 @@ Route::get('ventas/create')->name('ventas.create')->uses('VentasController@creat
 Route::post('ventas')->name('ventas.store')->uses('VentasController@store')->middleware('permission:Caja');
 Route::get('ventas/{venta}/edit')->name('ventas.edit')->uses('VentasController@edit')->middleware('permission:Caja');
 Route::put('ventas/{venta}')->name('ventas.actualizar')->uses('VentasController@update')->middleware('permission:Caja');
+Route::put('ventasfast/{venta}')->name('ventas.actualizarfast')->uses('VentasController@updateFast')->middleware('permission:Caja');
 Route::put('ventaToDestroy/{venta}')->name('ventas.destroy')->uses('VentasController@destroy')->middleware('permission:Caja');
 Route::put('ventas/{venta}/restore')->name('ventas.restore')->uses('VentasController@restore')->middleware('permission:Caja');
 
@@ -111,6 +111,7 @@ Route::put('servicios/{contact}/restore')->name('servicios.restore')->uses('Serv
 
 //Inventarios
 Route::get('inventario')->name('inventario')->uses('InventarioController@index')->middleware('remember', 'auth');
+Route::get('buscar-inventario')->name('buscar-inventario')->uses('InventarioController@buscarProducto')->middleware('remember', 'auth');
 Route::get('inventario/create')->name('inventario.create')->uses('InventarioController@create')->middleware('auth');
 Route::post('inventario')->name('inventario.store')->uses('InventarioController@store')->middleware('auth');
 Route::get('inventario/{contact}/edit')->name('inventario.edit')->uses('InventarioController@edit')->middleware('auth');

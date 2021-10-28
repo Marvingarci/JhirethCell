@@ -38,15 +38,15 @@ class DatabaseSeeder extends Seeder
             'name' => 'Accesorios',
         ]);
 
-        User::factory()->count(5)->create([
+        User::factory()->count(1)->create([
             'account_id' => $account->id
         ]);
 
-        $organizations = Organization::factory()->count(100)->create([
+        $organizations = Organization::factory()->count(2)->create([
             'account_id' => $account->id
         ]);
 
-        Contact::factory()->count(100)->create([
+        Contact::factory()->count(2)->create([
             'account_id' => $account->id
         ])
             ->each(function (Contact  $contact) use ($organizations) {

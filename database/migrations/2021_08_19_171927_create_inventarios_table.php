@@ -21,7 +21,7 @@ class CreateInventariosTable extends Migration
             ->onDelete('cascade');
             $table->string('codebar')->unique();
             $table->string('imei')->unique();
-            $table->enum('status', ['stock', 'vendido', 'pendiente']);
+            $table->enum('status', ['stock', 'vendido', 'pendiente', 'observacion', 'mala']);
             $table->timestamps();
         });
     }

@@ -13,7 +13,7 @@ const Index = () => {
   } = contacts;
   return (
     <div>
-      <h1 className="mb-8 text-3xl font-bold">Contacts</h1>
+      <h1 className="mb-8 text-3xl font-bold">Clientes</h1>
       <div className="flex items-center justify-between mb-6">
         <SearchFilter />
         <InertiaLink
@@ -21,18 +21,17 @@ const Index = () => {
           href={route('contacts.create')}
         >
           <span>Create</span>
-          <span className="hidden md:inline"> Contact</span>
+          <span className="hidden md:inline"> Clientes</span>
         </InertiaLink>
       </div>
       <div className="overflow-x-auto bg-white rounded shadow">
         <table className="w-full whitespace-nowrap">
           <thead>
             <tr className="font-bold text-left">
-              <th className="px-6 pt-5 pb-4">Name</th>
-              <th className="px-6 pt-5 pb-4">Organization</th>
-              <th className="px-6 pt-5 pb-4">City</th>
+              <th className="px-6 pt-5 pb-4">Nombre</th>
+              <th className="px-6 pt-5 pb-4">Celular</th>
               <th className="px-6 pt-5 pb-4" colSpan="2">
-                Phone
+                Tienda
               </th>
             </tr>
           </thead>
@@ -62,25 +61,16 @@ const Index = () => {
                     className="flex items-center px-6 py-4 focus:text-indigo focus:outline-none"
                     href={route('contacts.edit', id)}
                   >
-                    {organization ? organization.name : ''}
-                  </InertiaLink>
-                </td>
-                <td className="border-t">
-                  <InertiaLink
-                    tabIndex="-1"
-                    href={route('contacts.edit', id)}
-                    className="flex items-center px-6 py-4 focus:text-indigo focus:outline-none"
-                  >
-                    {city}
-                  </InertiaLink>
-                </td>
-                <td className="border-t">
-                  <InertiaLink
-                    tabIndex="-1"
-                    href={route('contacts.edit', id)}
-                    className="flex items-center px-6 py-4 focus:text-indigo focus:outline-none"
-                  >
                     {phone}
+                  </InertiaLink>
+                </td>
+                <td className="border-t">
+                  <InertiaLink
+                    tabIndex="-1"
+                    href={route('contacts.edit', id)}
+                    className="flex items-center px-6 py-4 focus:text-indigo focus:outline-none"
+                  >
+                    {organization ? organization.name : ''}
                   </InertiaLink>
                 </td>
                 <td className="w-px border-t">

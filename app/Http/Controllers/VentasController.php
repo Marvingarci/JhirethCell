@@ -12,6 +12,7 @@ use App\Http\Resources\ProductResource;
 use Inertia\Inertia;
 use App\Models\Organization;
 use App\Models\Category;
+use App\Models\Contact;
 use App\Models\Inventario;
 use App\Models\User;
 use App\Models\Product;
@@ -52,6 +53,7 @@ class VentasController extends Controller
             'filters' => Request::all('search', 'trashed'),
             'categorias' => Category::all(),
             'usuarios'=> User::all(['id','first_name','last_name']),
+            'contactos'=> Contact::all(['id','first_name','last_name']),
             'producto'=> Inventario::where('codebar',Request::only('search', 'trashed'))->with('product')->first(),
         ]);
     }
@@ -142,8 +144,6 @@ class VentasController extends Controller
      */
     public function edit($id)
     {
-
-        
         return Inertia::render('Sells/Edit', [
             'venta' => Ventas::with('venta_detalles')->where('id',$id)->get(),
             'usuarios'=> User::all(['id','first_name','last_name']),
@@ -162,15 +162,36 @@ class VentasController extends Controller
     {
         $venta = Ventas::find($request['id']);
         $venta->tipoPago = 'efectivo';
-        $venta->update($request->validated());
+        $venta->update();
 
-        Inventario::where('codebar', $request->venta_detalles['product_code'])->update(['status' => 'vendido']);
+        $ventas = $request['venta_detalles'];
 
-        $venta_detalle = VentaDetalle::find($request->venta_detalles['id']);
-        $venta_detalle->estado = 'efectivo';
-        $venta_detalle->save();
+        //Inventario::where('codebar', $request->venta_detalles['product_code'])->update(['status' => 'vendido']);
+        foreach ($ventas as $v) {
+            $venta_detalle = VentaDetalle::find($v["id"]);
+            $venta_detalle->estado = 'efectivo';
+            $venta_detalle->update();
+        }
+
         
-        return Redirect::back()->with('success', 'Venta convertida a efectivo.');
+        return Redirect::route('ventas')->with('success', 'Venta convertida a efectivo.');
+    }
+    public function updateFast(VentaUpdateRequest $request)
+    {
+        $venta = Ventas::find($request['id']);
+        $venta->tipoPago = 'efectivo';
+        $venta->update();
+
+        $ventas = $request['venta_detalles'];
+
+        //Inventario::where('codebar', $request->venta_detalles['product_code'])->update(['status' => 'vendido']);
+            $venta_detalle = VentaDetalle::find($ventas["id"]);
+            $venta_detalle->estado = 'efectivo';
+            $venta_detalle->update();
+        
+
+        
+        return Redirect::back()->with('success', 'Venta efectiva');
     }
 
     /**
@@ -183,18 +204,26 @@ class VentasController extends Controller
     {   
         $venta = Ventas::find($request['id']);
         //$venta_detalle = VentaDetalle::find($request->venta_detalles['id']);
-        
-        Inventario::where('codebar', $request->venta_detalles['product_code'])->update(['status' => 'stock']);
-        // foreach ($productos as $producto) {
-        //     if($producto->id == $venta_detalle['product_id']){
-        //         $producto->existencia = $producto->existencia + $venta_detalle['cantidad'];
-        //         $producto->update();
-        //     }
-        // }
+        switch ($request['razonDev']) {
+            case 'buena':
+                Inventario::where('codebar', $request->venta_detalles['product_code'])->update(['status' => 'stock']);
+                break;
+            case 'mala':
+                Inventario::where('codebar', $request->venta_detalles['product_code'])->update(['status' => 'mala']);
+                break;
+            case 'observacion':
+                Inventario::where('codebar', $request->venta_detalles['product_code'])->update(['status' => 'observacion']);
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+     
 
         $venta->delete();
       
 
-        return Redirect::back()->with('success', ' borrado.');
+        return Redirect::back()->with('success', 'Exito');
     }
 }

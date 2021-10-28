@@ -101,6 +101,7 @@ const Edit = () => {
             </LoadingButton>
             </div>
             {/* Comienzo tabla */}
+            <SearchFilter/>
             <div className="overflow-x-auto bg-white rounded shadow w-full">
               <table className=" whitespace-nowrap w-full">
                 <thead>

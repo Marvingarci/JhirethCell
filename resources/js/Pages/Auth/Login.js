@@ -19,7 +19,7 @@ export default () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-6 bg-scroll bg-opacity-50" style={{ background : "url(https://i.ibb.co/kqtWn1R/72427551-475479973059127-1491202135386226688-n.jpg)"  }}>
+    <div className="flex items-center justify-center min-h-screen p-6 bg-scroll bg-gradient-to-r from-newGreen-100 to-newblue-100">
       <Helmet title="Login" />
       <div className="w-full max-w-md">
       
@@ -31,7 +31,7 @@ export default () => {
           <Logo
           className="block w-22 h-22 max-w-xs mx-auto text-white fill-current rounded-full"
           height={50}
-        />
+          />
         </div>
           <div className="px-10 pt-5">
             <h1 className="text-3xl font-bold text-center">Jhiret Cell Administración</h1>

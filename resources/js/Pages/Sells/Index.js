@@ -5,6 +5,7 @@ import Icon from '@/Shared/Icon';
 import Pagination from '@/Shared/Pagination';
 import SearchFilter from '@/Shared/SearchFilter';
 import { first } from 'lodash';
+import moment from 'moment';
 
 const Index = () => {
   const { ventas_dia , usuarios} = usePage().props;
@@ -29,7 +30,7 @@ const Index = () => {
         <table className="w-full whitespace-nowrap">
           <thead>
             <tr className="font-bold text-left">
-              <th className="px-6 pt-5 pb-4">Venta</th>
+              <th className="px-6 pt-5 pb-4">Fecha</th>
               <th className="px-6 pt-5 pb-4">Cliente</th>
               <th className="px-6 pt-5 pb-4">Vendedor</th>
               <th className="px-6 pt-5 pb-4" colSpan="2">
@@ -38,7 +39,7 @@ const Index = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map(({ id, cliente, vendedor_id, tipoPago, deleted_at }) => (
+            {data.map(({ id, cliente, vendedor_id, tipoPago, created_at }) => (
               <tr
                 key={id}
                 className="hover:bg-gray-100 focus-within:bg-gray-100"
@@ -48,13 +49,8 @@ const Index = () => {
                     href={route('ventas.edit', id)}
                     className="flex items-center px-6 py-4 focus:text-indigo-700 focus:outline-none"
                   >
-                    {id}
-                    {deleted_at && (
-                      <Icon
-                        name="trash"
-                        className="flex-shrink-0 w-3 h-3 ml-2 text-gray-400 fill-current"
-                      />
-                    )}
+                    {moment(created_at).locale("es").calendar()}
+                    
                   </InertiaLink>
                 </td>
                 <td className="border-t">

@@ -11,6 +11,7 @@ class Ventas extends Model
 
     protected $fillable = [
         'cliente',
+        'contact_id',
         'vendedor_id',
         'tipoPago',
         'total' 
@@ -25,9 +26,7 @@ class Ventas extends Model
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where('vendedor', 'like', '%'.$search.'%')
-            ->orWhere('numeroVenta', 'like', '%'.$search.'%')
-            ->orWhere('cliente', 'like', '%'.$search.'%')
+            $query->where('cliente', 'like', '%'.$search.'%')
             ->orWhere('tipoPago', 'like', '%'.$search.'%');
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             // if ($trashed === 'with') {

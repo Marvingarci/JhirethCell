@@ -6,12 +6,17 @@ import LoadingButton from '@/Shared/LoadingButton';
 import TextInput from '@/Shared/TextInput';
 import SelectInput from '@/Shared/SelectInput';
 import SearchFilter from '@/Shared/SearchFilterForCode';
+import Modal from 'react-modal';
+
 
 const IndexFast = () => {
-  const { categorias, usuarios, producto, ventasRapidas } = usePage().props;
+  const { categorias, usuarios, producto, ventasRapidas, contactos } =
+    usePage().props;
   const { data, setData, errors, post, processing } = useForm({
     vendedor_id: '',
+    contact_id: '100',
     cliente: '',
+    concepto: '',
     total: 0,
     tipoPago: 'pendiente',
     ventas: []
@@ -21,6 +26,7 @@ const IndexFast = () => {
 
   const [carrito, setCarrito] = useState([]);
   const [cuenta, setCuenta] = useState(0);
+  const [seleccion, setSeleccion] = useState(false);
 
   const date = new Date();
   const ahora =
@@ -35,6 +41,7 @@ const IndexFast = () => {
   function handleSubmit(e) {
     e.preventDefault();
     data.ventas = carrito;
+    data.total = carrito[0].real_sell_price
     console.log(data);
     post(route('ventas.store'), {
       onSuccess: page => {
@@ -46,7 +53,7 @@ const IndexFast = () => {
   useEffect(() => {
     if (producto != null) {
       //If product has been sold, just scape
-      if (producto.status == 'vendido') {
+      if (producto.status != 'stock') {
         reset();
         return false;
       }
@@ -107,12 +114,10 @@ const IndexFast = () => {
     setData('total', contar);
   };
 
-  
-
   const handleConfirm = venta => {
     if (confirm('¿Está seguro de desea dar por hecho esta venta?')) {
       Inertia.put(
-        route('ventas.actualizar', {
+        route('ventas.actualizarfast', {
           id: venta.id,
           venta_detalles: venta.venta_detalles[0]
         }),
@@ -127,17 +132,24 @@ const IndexFast = () => {
     }
   };
 
-  const handleCancel = venta => {
-    if (confirm('¿Está seguro de desea eliminar esta venta?')) {
-      console.log(venta);
+  const Seleccione =(venta)=>{
+    setSeleccion(true)
+  }
+
+  const handleCancel = (venta, razon) => {
+    console.log(venta);
+    if (confirm('¿Está seguro de desea proceder con la accion esta venta?')) {
       Inertia.put(
         route('ventas.destroy', {
           id: venta.id,
-          venta_detalles: venta.venta_detalles
+          venta_detalles: venta.venta_detalles,
+          razonDev: razon
         }),
-        { id: venta.id, venta_detalles: venta.venta_detalles[0] },
+        { id: venta.id, venta_detalles: venta.venta_detalles[0], razonDev: razon },
         {
-          onSuccess: page => {},
+          onSuccess: page => {
+            setSeleccion(false)
+          },
           onError: error => {
             console.log(error);
           }
@@ -145,6 +157,14 @@ const IndexFast = () => {
       );
     }
   };
+
+  const setMayorista=(contact)=>{
+    contactos.filter(con => con.id == contact).map(c=>{
+      data.cliente =  c.first_name + ' ' + c.last_name
+    })
+    data.contact_id= contact
+    console.log(data)
+  }
 
   const myref = useRef();
   const reset = () => {
@@ -167,7 +187,7 @@ const IndexFast = () => {
               <thead>
                 <tr className="font-bold text-left">
                   <th className="px-6 pt-5 pb-4">Nombre</th>
-                  <th className="px-6 pt-5 pb-4">Cliente</th>
+                  <th className="px-6 pt-5 pb-4">Mayorista</th>
                   <th className="px-6 pt-5 pb-4">Vendedor</th>
                   {/* <th className="px-3 pt-5 pb-4">Cantidad</th> */}
                   <th className="px-6 pt-5 pb-4">Precio</th>
@@ -198,13 +218,27 @@ const IndexFast = () => {
                       <td
                         className={`border-t justify-center text-center items-center`}
                       >
-                        <TextInput
+                        {/* <TextInput
                           className="w-full"
                           name="first_name"
                           errors={errors.cliente}
                           value={data.cliente}
                           onChange={e => setData('cliente', e.target.value)}
-                        />
+                        /> */}
+                        <SelectInput
+                          className="w-full"
+                          name="cliente"
+                          errors={errors.cliente}
+                          value={data.clientes}
+                          onChange={e => setMayorista(e.target.value)}
+                        >
+                          <option value=""></option>
+                          {contactos.map(({ id, first_name, last_name }) => (
+                            <option value={id}>
+                              {first_name + ' ' + last_name}
+                            </option>
+                          ))}
+                        </SelectInput>
                       </td>
                       <td className="border-t justify-center text-center items-center">
                         <SelectInput
@@ -348,18 +382,46 @@ const IndexFast = () => {
                       </td>
 
                       <td className="border-t">
+                        { seleccion ?(
+                            <>
+                              <button
+                          onClick={e => handleCancel(venta, 'buena')}
+                          className="bg-yellow-500 ring-2 text-white py-2 px-1 rounded-xl m-1"
+                        >
+                          No se uso
+                        </button>
                         <button
+                          onClick={e => handleCancel(venta, 'mala')}
+                          className="bg-yellow-500 ring-2 text-white py-2 px-1 rounded-xl m-1"
+                        >
+                          Mala
+                        </button>
+                        <button
+                          onClick={e => handleCancel(venta, 'observacion')}
+                          className="bg-yellow-500 ring-2 text-white py-2 px-1 rounded-xl m-1"
+                        >
+                          Observacion
+                        </button>
+                            </>
+                        ):(
+                          <>
+                          <button
                           onClick={e => handleConfirm(venta)}
                           className="bg-green-500 ring-2 text-white py-2 px-1 rounded-xl m-1"
                         >
                           Vendido
                         </button>
                         <button
-                          onClick={e => handleCancel(venta)}
+                          onClick={e => Seleccione()}
                           className="bg-red-500 ring-2 text-white py-2 px-1 rounded-xl m-1"
                         >
                           Devuelto
                         </button>
+                        </>
+                        )
+                          
+                        }
+                        
                       </td>
                     </tr>
                   )

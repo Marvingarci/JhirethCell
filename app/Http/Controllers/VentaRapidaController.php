@@ -15,6 +15,7 @@ use App\Models\Organization;
 use App\Models\Category;
 use App\Models\Inventario;
 use App\Models\User;
+use App\Models\Contact;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
@@ -34,6 +35,7 @@ class VentaRapidaController extends Controller
             'filters' => Request::all('search', 'trashed'),
             'categorias' => Category::all(),
             'usuarios'=> User::all(['id','first_name','last_name']),
+            'contactos'=> Contact::all(['id','first_name','last_name']),
             'producto'=> Inventario::where('codebar',Request::only('search', 'trashed'))->with('product')->first(),
             'ventasRapidas' => Ventas::with('venta_detalles')->where('tipoPago', 'pendiente')->get()
         ]);

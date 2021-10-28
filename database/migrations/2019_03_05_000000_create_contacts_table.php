@@ -9,7 +9,7 @@ class CreateContactsTable extends Migration
     public function up()
     {
         Schema::create('contacts', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->integer('account_id')->index();
             $table->integer('organization_id')->nullable()->index();
             $table->string('first_name', 25);

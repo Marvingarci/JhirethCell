@@ -35,14 +35,14 @@ const Create = () => {
         >
           Contacts
         </InertiaLink>
-        <span className="font-medium text-indigo-600"> /</span> Create
+        <span className="font-medium text-indigo-600"> /</span> Crear
       </h1>
       <div className="max-w-3xl overflow-hidden bg-white rounded shadow">
         <form onSubmit={handleSubmit}>
           <div className="flex flex-wrap p-8 -mb-8 -mr-6">
             <TextInput
               className="w-full pb-8 pr-6 lg:w-1/2"
-              label="First Name"
+              label="Nombres"
               name="first_name"
               errors={errors.first_name}
               value={data.first_name}
@@ -50,7 +50,7 @@ const Create = () => {
             />
             <TextInput
               className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Last Name"
+              label="Apellidos"
               name="last_name"
               errors={errors.last_name}
               value={data.last_name}
@@ -58,7 +58,7 @@ const Create = () => {
             />
             <SelectInput
               className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Organization"
+              label="Tienda o organizacion"
               name="organization_id"
               errors={errors.organization_id}
               value={data.organization_id}
@@ -71,6 +71,14 @@ const Create = () => {
                 </option>
               ))}
             </SelectInput>
+             {/* <TextInput
+              className="w-full pb-8 pr-6 lg:w-1/2"
+              label="Nombre Tienda"
+              name="organization_id"
+              errors={errors.organization_id}
+              value={data.organization_id}
+              onChange={e => setData('organization_id', e.target.value)}
+            /> */}
             <TextInput
               className="w-full pb-8 pr-6 lg:w-1/2"
               label="Email"
@@ -82,7 +90,7 @@ const Create = () => {
             />
             <TextInput
               className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Phone"
+              label="Celular"
               name="phone"
               type="text"
               errors={errors.phone}
@@ -91,7 +99,7 @@ const Create = () => {
             />
             <TextInput
               className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Address"
+              label="Dirección"
               name="address"
               type="text"
               errors={errors.address}
@@ -100,14 +108,14 @@ const Create = () => {
             />
             <TextInput
               className="w-full pb-8 pr-6 lg:w-1/2"
-              label="City"
+              label="Ciudad"
               name="city"
               type="text"
               errors={errors.city}
               value={data.city}
               onChange={e => setData('city', e.target.value)}
             />
-            <TextInput
+            {/* <TextInput
               className="w-full pb-8 pr-6 lg:w-1/2"
               label="Province/State"
               name="region"
@@ -115,8 +123,8 @@ const Create = () => {
               errors={errors.region}
               value={data.region}
               onChange={e => setData('region', e.target.value)}
-            />
-            <SelectInput
+            /> */}
+            {/* <SelectInput
               className="w-full pb-8 pr-6 lg:w-1/2"
               label="Country"
               name="country"
@@ -127,8 +135,8 @@ const Create = () => {
               <option value=""></option>
               <option value="CA">Canada</option>
               <option value="US">United States</option>
-            </SelectInput>
-            <TextInput
+            </SelectInput> */}
+            {/* <TextInput
               className="w-full pb-8 pr-6 lg:w-1/2"
               label="Postal Code"
               name="postal_code"
@@ -136,7 +144,7 @@ const Create = () => {
               errors={errors.postal_code}
               value={data.postal_code}
               onChange={e => setData('postal_code', e.target.value)}
-            />
+            /> */}
           </div>
           <div className="flex items-center justify-end px-8 py-4 bg-gray-100 border-t border-gray-200">
             <LoadingButton
@@ -144,7 +152,7 @@ const Create = () => {
               type="submit"
               className="btn-indigo"
             >
-              Create Contact
+              Crear Cliente
             </LoadingButton>
           </div>
         </form>

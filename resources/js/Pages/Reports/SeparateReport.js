@@ -110,7 +110,7 @@ const SeparateReport = () => {
           paperSize="letter"
           margin="0.5cm"
           ref={pdfExportComponentP}
-          fileName={`Venta de Pantallas-${ahora}`}
+          fileName={`Venta de Pantallas-${day ? moment(day).locale("es").format("Do MMM YYYY") : ahora}`}
         >
        <div className="flex justify-between border-t">
         <div className="font-bold text-2xl text-newGreen-100 m-2">Reporte de Venta de Pantallas</div>
@@ -127,6 +127,7 @@ const SeparateReport = () => {
                   <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
+                    {/* <th className="px-6 pt-5 pb-4 text-center">Vendedor</th> */}
                     <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
                     <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
                     <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
@@ -150,6 +151,7 @@ const SeparateReport = () => {
                             {venta.cliente}
                         </td>
 
+                      
                         <td className="border-t justify-center text-center items-center">
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
@@ -371,7 +373,7 @@ const SeparateReport = () => {
           paperSize="letter"
           margin="0.5cm"
           ref={pdfExportComponentC}
-          fileName={`Venta de Celulares-${ahora}`}
+          fileName={`Venta de Celulares-${day ? moment(day).locale("es").format("Do MMM YYYY") : ahora}`}
         >
       <div className="flex justify-between border-t">
         <div className="font-bold text-newGreen-100 text-2xl m-2">Reporte de Venta de Celulares</div>
@@ -408,6 +410,10 @@ const SeparateReport = () => {
                         </td>
 
                         <td className="border-t justify-center text-center items-center">
+                            {venta.cliente}
+                        </td>
+
+                        <td className="border-t justify-center text-center items-center">
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
                               return ps.cost_price
@@ -417,10 +423,6 @@ const SeparateReport = () => {
 
                         <td className="border-t justify-center text-center items-center">
                             {detalle.total_producto}
-                        </td>
-
-                        <td className="border-t justify-center text-center items-center">
-                            {venta.cliente}
                         </td>
 
                         <td className="border-t justify-center text-center items-center">
@@ -485,6 +487,11 @@ const SeparateReport = () => {
                             {detalle.producto}
                         </td>
 
+                        
+                        <td className="border-t justify-center text-center items-center">
+                            {venta.cliente}
+                        </td>
+
                         <td className="border-t justify-center text-center items-center">
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
@@ -495,10 +502,6 @@ const SeparateReport = () => {
 
                         <td className="border-t justify-center text-center items-center">
                             {detalle.total_producto}
-                        </td>
-
-                        <td className="border-t justify-center text-center items-center">
-                            {venta.cliente}
                         </td>
 
                         <td className="border-t justify-center text-center items-center">
@@ -562,6 +565,11 @@ const SeparateReport = () => {
                             {detalle.producto}
                         </td>
 
+
+                        <td className="border-t justify-center text-center items-center">
+                            {venta.cliente}
+                        </td>
+
                         <td className="border-t justify-center text-center items-center">
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
@@ -574,9 +582,6 @@ const SeparateReport = () => {
                             {detalle.total_producto}
                         </td>
 
-                        <td className="border-t justify-center text-center items-center">
-                            {venta.cliente}
-                        </td>
 
                         <td className="border-t justify-center text-center items-center">
                             { 
@@ -632,7 +637,7 @@ const SeparateReport = () => {
           paperSize="letter"
           margin="0.5cm"
           ref={pdfExportComponentA}
-          fileName={`Venta de Accesorios-${ahora}`}
+          fileName={`Venta de Accesorios-${day ? moment(day).locale("es").format("Do MMM YYYY") : ahora}`}
         >
       
 
@@ -666,6 +671,11 @@ const SeparateReport = () => {
                             {detalle.producto}
                         </td>
 
+                        
+                        <td className="border-t justify-center text-center items-center">
+                            {venta.cliente}
+                        </td>
+
                         <td className="border-t justify-center text-center items-center">
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
@@ -676,10 +686,6 @@ const SeparateReport = () => {
 
                         <td className="border-t justify-center text-center items-center">
                             {detalle.total_producto}
-                        </td>
-
-                        <td className="border-t justify-center text-center items-center">
-                            {venta.cliente}
                         </td>
 
                         <td className="border-t justify-center text-center items-center">

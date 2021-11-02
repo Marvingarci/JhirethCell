@@ -68,6 +68,7 @@ class VentasController extends Controller
     {
         $hoy = Carbon::now();
         $productos = Product::all();
+        $request['restante'] = $request['total'];
         $registro = Ventas::create($request->validated());
       
          
@@ -145,8 +146,8 @@ class VentasController extends Controller
     public function edit($id)
     {
         return Inertia::render('Sells/Edit', [
-            'venta' => Ventas::with('venta_detalles')->where('id',$id)->get(),
-            'usuarios'=> User::all(['id','first_name','last_name']),
+            'venta' => Ventas::with(['venta_detalles','pagos'])->where('id',$id)->get(),
+            'vendedores'=> User::all(['id','first_name','last_name']),
             'categorias'=> Category::All()
         ]);
     }
@@ -184,7 +185,8 @@ class VentasController extends Controller
 
         $ventas = $request['venta_detalles'];
 
-        //Inventario::where('codebar', $request->venta_detalles['product_code'])->update(['status' => 'vendido']);
+        Inventario::where('codebar', $request->venta_detalles['product_code'])->update(['status' => 'vendido']);
+        
             $venta_detalle = VentaDetalle::find($ventas["id"]);
             $venta_detalle->estado = 'efectivo';
             $venta_detalle->update();
@@ -203,6 +205,8 @@ class VentasController extends Controller
     public function destroy(HttpRequest $request)
     {   
         $venta = Ventas::find($request['id']);
+        $ventaAEliminar = Ventas::where('id',$request['id'])->with('venta_detalles')->first();
+
         //$venta_detalle = VentaDetalle::find($request->venta_detalles['id']);
         switch ($request['razonDev']) {
             case 'buena':
@@ -214,6 +218,11 @@ class VentasController extends Controller
             case 'observacion':
                 Inventario::where('codebar', $request->venta_detalles['product_code'])->update(['status' => 'observacion']);
                 break;
+            case 'eliminacion':
+                foreach ($ventaAEliminar->venta_detalles as $v) {
+                    Inventario::where('codebar', $v['product_code'])->update(['status' => 'stock']);
+                }   
+                break;
             
             default:
                 # code...
@@ -223,7 +232,10 @@ class VentasController extends Controller
 
         $venta->delete();
       
-
-        return Redirect::back()->with('success', 'Exito');
+        if($request['razonDev'] == 'eliminacion'){
+            return Redirect::route('ventas')->with('success', 'Exito');
+        }else{
+            return Redirect::back()->with('success', 'Exito');
+        }
     }
 }

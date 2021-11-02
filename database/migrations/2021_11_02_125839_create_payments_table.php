@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateVentasTable extends Migration
+class CreatePaymentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,18 +13,15 @@ class CreateVentasTable extends Migration
      */
     public function up()
     {
-        Schema::create('ventas', function (Blueprint $table) {
+        Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->string('cliente');
+            $table->foreignId('ventas_id')->constrained('ventas')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
             $table->foreignId('vendedor_id')->constrained('users')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            $table->foreignId('contact_id')->nullable()->constrained('contacts')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
-            $table->float('total', 8,2);
-            $table->float('restante', 8,2);
-            $table->enum('tipoPago', ['efectivo', 'credito', 'pendiente']);
+            $table->float('cantidad', 8,2);
             $table->timestamps();
         });
     }
@@ -36,6 +33,6 @@ class CreateVentasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ventas');
+        Schema::dropIfExists('payments');
     }
 }

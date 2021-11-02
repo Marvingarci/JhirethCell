@@ -14,13 +14,19 @@ class Ventas extends Model
         'contact_id',
         'vendedor_id',
         'tipoPago',
-        'total' 
+        'total', 
+        'restante', 
     ];
 
 
     public function venta_detalles()
     {
         return $this->hasMany(VentaDetalle::class);
+    }
+
+    public function pagos()
+    {
+        return $this->hasMany(Payment::class);
     }
 
     public function scopeFilter($query, array $filters)

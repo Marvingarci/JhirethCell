@@ -10,7 +10,8 @@ const colores = [
   'Indefinido','verde','azul','naranja','negro','blanco','morado','amarillo','rojo','gris'
 ]
 const Create = () => {
-  const { categorias } = usePage().props;
+  const { categorias, auth } = usePage().props;
+
   const { data, setData, errors, post, processing } = useForm({
     name: '',
     //product_code: '',
@@ -19,6 +20,7 @@ const Create = () => {
     //existencia: '',
     cost_price: 0,
     sell_price: 0,
+    whole_sell_price:0
   });
 
   function handleSubmit(e) {
@@ -81,6 +83,8 @@ const Create = () => {
               value={data.existencia}
               onChange={e => setData('existencia', e.target.value)}
             /> */}
+              {
+        auth.user.owner == true && 
             <TextInput
               className="w-full pb-8 pr-6 lg:w-1/2"
               label="Precio de compra"
@@ -89,7 +93,8 @@ const Create = () => {
               errors={errors.cost_price}
               value={data.cost_price}
               onChange={e => setData('cost_price', e.target.value)}
-            />
+            />      }
+            
             <TextInput
               className="w-full pb-8 pr-6 lg:w-1/2"
               label="Precio de Venta"
@@ -98,6 +103,15 @@ const Create = () => {
               errors={errors.sell_price}
               value={data.sell_price}
               onChange={e => setData('sell_price', e.target.value)}
+            />
+             <TextInput
+              className="w-full pb-8 pr-6 lg:w-1/2"
+              label="Precio de Mayorista"
+              name="region"
+              type="number"
+              errors={errors.whole_sell_price}
+              value={data.whole_sell_price}
+              onChange={e => setData('whole_sell_price', e.target.value)}
             />
             <SelectInput
               className="w-full pb-8 pr-6 lg:w-1/2"

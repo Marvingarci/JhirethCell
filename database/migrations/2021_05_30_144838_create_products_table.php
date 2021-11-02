@@ -23,6 +23,7 @@ class CreateProductsTable extends Migration
             $table->string('color')->default('Indefinido');
             $table->float('cost_price', 8, 2);
             $table->float('sell_price', 8, 2);
+            $table->float('whole_sell_price', 8, 2);
             $table->timestamps();
         });
     }

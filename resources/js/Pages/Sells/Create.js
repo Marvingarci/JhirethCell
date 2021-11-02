@@ -14,6 +14,7 @@ const Create = () => {
     contact_id: null,
     cliente: '',
     total: 0,
+    restante: 0,
     tipoPago: '',
     ventas: []
   });
@@ -35,6 +36,9 @@ const Create = () => {
   function handleSubmit(e) {
     e.preventDefault();
     data.ventas = carrito;
+    if(data.tipoPago == "credito"){
+      data.restante = data.total
+    }
     console.log(data);
     post(route('ventas.store'));
   }
@@ -53,9 +57,16 @@ const Create = () => {
       const newProduct = producto.product;
       newProduct.cantidad = 1;
       newProduct.codebar = producto.codebar;
-      newProduct.real_sell_price = newProduct.sell_price;
-      newProduct.descuento = 0;
-      newProduct.total_producto = newProduct.cantidad * newProduct.sell_price;
+      if(tipoCliente){
+        newProduct.real_sell_price = newProduct.sell_price;
+        newProduct.descuento = 0;
+        newProduct.total_producto = newProduct.cantidad * newProduct.sell_price;
+      }else{
+        newProduct.real_sell_price = newProduct.whole_sell_price;
+        newProduct.descuento = 0;
+        newProduct.total_producto = newProduct.cantidad * newProduct.whole_sell_price;
+      }
+     
 
       //check is the car is empty 
       if (carrito.length == 0) {
@@ -80,19 +91,25 @@ const Create = () => {
 
   const setDescuento = (index, descuento) => {
     carrito[index].descuento = descuento;
-    carrito[index].real_sell_price = carrito[index].sell_price - (carrito[index].sell_price * descuento);
-    carrito[index].total_producto = carrito[index].cantidad * carrito[index].real_sell_price;
+    if(tipoCliente){
+      carrito[index].real_sell_price = carrito[index].sell_price - (carrito[index].sell_price * descuento);
+      carrito[index].total_producto = carrito[index].cantidad * carrito[index].real_sell_price;
+    }else{
+      carrito[index].real_sell_price = carrito[index].whole_sell_price - (carrito[index].whole_sell_price * descuento);
+      carrito[index].total_producto = carrito[index].cantidad * carrito[index].real_sell_price;
+    }
+  
     setCarrito([...carrito]);
     SumaTotal();
   };
 
-  const setCantidad = (index, cantidad) => {
-    carrito[index].cantidad = parseFloat(cantidad);
-    carrito[index].total_producto =
-    carrito[index].cantidad * carrito[index].real_sell_price;
-    setCarrito([...carrito]);
-    SumaTotal();
-  };
+  // const setCantidad = (index, cantidad) => {
+  //   carrito[index].cantidad = parseFloat(cantidad);
+  //   carrito[index].total_producto =
+  //   carrito[index].cantidad * carrito[index].real_sell_price;
+  //   setCarrito([...carrito]);
+  //   SumaTotal();
+  // };
 
   const cambiarCliente = ()=>{
     setTipoCliente(!tipoCliente)

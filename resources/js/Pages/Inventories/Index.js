@@ -5,36 +5,15 @@ import SearchFilter from '@/Shared/SearchFilter';
 import Pagination from '@/Shared/Pagination';
 import SelectInput from '@/Shared/SelectInput';
 import { InertiaLink, usePage, useForm } from '@inertiajs/inertia-react';
+import LoadingButton from '@/Shared/LoadingButton';
 
-const status = [
-  {
-    id: 'stock',
-    value: 'stock'
-  },
-  {
-    id: 'vendido',
-    value: 'vendido'
-  },
-  {
-    id: 'pendiente',
-    value: 'pendiente'
-  },
-  {
-    id: 'mala',
-    value: 'mala'
-  },
-  {
-    id: 'observacion',
-    value: 'observacion'
-  },
-]
 
 const Index = () => {
   const { categorias, usuarios, producto } = usePage().props;
 
-  const { data, setData, errors, post, processing } = useForm({
-    codebar: '',
-    status: producto?.status || '',
+  const { data, setData, errors, put, processing } = useForm({
+    id: producto?.id ||'',
+    codebar: producto?.codebar || '',
   });
 
 
@@ -43,13 +22,44 @@ const Index = () => {
 
   useEffect(() => {
     if (producto != null) {
-        data.codebar = producto.codebar;
-        data.status = producto.status;
-        console.log(data)
+       cargardata()
+    }else{
+        data.codebar = '';
+        data.id ='';
     }
+    if(data.status = ''){
+      cargarStatus()
+    }
+
 
  
   }, [producto]);
+
+  const cargardata =()=>{
+    data.codebar = producto?.codebar;
+    data.id = producto?.id;
+    console.log(data)
+  }
+
+  const cargarStatus=()=>{
+  }
+
+  const updateStatus=()=>{
+    if (confirm('Se realizara el siguiente pago, ¿Está seguro?')) {
+     
+        put(
+          route('inventario.update', data.id),
+          {
+            onSuccess: page => {
+              console.log(page)
+            },
+            onError: error => {
+              console.log(error);
+            }
+          }
+        );
+      }
+  }
   
   return (
     <div>
@@ -58,7 +68,7 @@ const Index = () => {
         <SearchFilter />
       </div>
       {
-          producto != null &&
+          (producto != null || data.status != '') &&
           <div className="bg-white rounded shadow text-center">
           <div className="grid grid-cols-2 gap-4 p-10 text-center justify-between">
               <p className="font-bold text-lg" >Nombre del producto</p>
@@ -71,10 +81,11 @@ const Index = () => {
               <div className="text-lg"> { producto.created_at.substring(0,10) }</div>
               <p className="font-bold text-lg " >Imei</p>
               <div className="text-lg"> { producto.imei}</div>
+              <p className="font-bold text-lg " >Actual estado</p>
+              <div className="text-lg"> { producto.status}</div>
               <p className="font-bold text-lg " >Cambiar Estado</p>
               <SelectInput
               className="w-full pb-8 pr-6 lg:w-1/2"
-              name="organization_id"
               value={data.status}
               onChange={e => setData('status', e.target.value)}
             >
@@ -85,6 +96,9 @@ const Index = () => {
               <option value="observacion">Observacion</option>
               <option value="mala">Mala</option>
             </SelectInput>
+            <LoadingButton onClick={e => updateStatus()} className="btn-indigo">
+                Actualizar estado
+              </LoadingButton>
           </div>
         </div>
       }

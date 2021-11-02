@@ -80,18 +80,18 @@ class ReportsController extends Controller
 
     public function separateReportByDay(Request $request)
     {
-        $today = new Carbon($request->day);        
+        $today = $request->day; 
         $Ventas_pantallas = Ventas::with(['venta_detalles' => function ($query) {
             $query->where('category_id', 1);
-        }])->where([['created_at', 'like', $today->format('Y-m-d') . '%']])->get();
+        }])->where([['created_at', 'like', $today . '%']])->get();
 
         $Ventas_celulares = Ventas::with(['venta_detalles' => function ($query) {
             $query->where('category_id', 2);
-        }])->where([['created_at', 'like', $today->format('Y-m-d') . '%']])->get();
+        }])->where([['created_at', 'like', $today . '%']])->get();
 
         $Ventas_accesorios = Ventas::with(['venta_detalles' => function ($query) {
             $query->where('category_id', 3);
-        }])->where([['created_at', 'like', $today->format('Y-m-d') . '%']])->get();
+        }])->where([['created_at', 'like', $today . '%']])->get();
 
         $productos = Product::all();
 

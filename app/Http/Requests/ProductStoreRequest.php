@@ -38,6 +38,7 @@ class ProductStoreRequest extends FormRequest
             'cost_price' => ['required','numeric'],
             //'existencia' => ['required','numeric'],
             'sell_price' => ['required', 'numeric'],
+            'whole_sell_price' => ['required', 'numeric'],
             
         ];
     }

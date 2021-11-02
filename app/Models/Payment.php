@@ -5,29 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Product extends Model
+class Payment extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'id',
-        'name',
-        'sell_price',
-        'cost_price',
-        'whole_sell_price',
-        'color',
-        'category_id'
+        'ventas_id',
+        'vendedor_id',
+        'cantidad'
     ];
 
-
-    public function category()
+    public function venta()
     {
-        return $this->belongsTo(Category::class);
-    }
-
-    public function inventarios()
-    {
-        return $this->hasMany(Inventario::class);
+        return $this->belongsTo(Ventas::class);
     }
     
     public function scopeFilter($query, array $filters)

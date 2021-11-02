@@ -17,6 +17,7 @@ const IndexFast = () => {
     contact_id: '100',
     cliente: '',
     concepto: '',
+    restante:'',
     total: 0,
     tipoPago: 'pendiente',
     ventas: []
@@ -42,10 +43,14 @@ const IndexFast = () => {
     e.preventDefault();
     data.ventas = carrito;
     data.total = carrito[0].real_sell_price
+    data.restante = '0'
     console.log(data);
     post(route('ventas.store'), {
       onSuccess: page => {
         setCarrito([]);
+      },
+      onError:error=>{
+        console.log(error)
       }
     });
   }
@@ -60,10 +65,10 @@ const IndexFast = () => {
       const newProduct = producto.product;
       newProduct.cantidad = 1;
       newProduct.codebar = producto.codebar;
-      newProduct.real_sell_price = newProduct.sell_price;
+      newProduct.real_sell_price = newProduct.whole_sell_price;
       newProduct.descuento = 0;
       newProduct.estado = 'pendiente';
-      newProduct.total_producto = newProduct.cantidad * newProduct.sell_price;
+      newProduct.total_producto = newProduct.cantidad * newProduct.whole_sell_price;
       if (carrito.length == 0) {
         setCarrito([...carrito, newProduct]);
       } else {
@@ -81,20 +86,20 @@ const IndexFast = () => {
   const setDescuento = (index, descuento) => {
     carrito[index].descuento = descuento;
     carrito[index].real_sell_price =
-      carrito[index].sell_price - carrito[index].sell_price * descuento;
+      carrito[index].whole_sell_price - carrito[index].whole_sell_price * descuento;
     carrito[index].total_producto =
       carrito[index].cantidad * carrito[index].real_sell_price;
     setCarrito([...carrito]);
     SumaTotal();
   };
 
-  const setCantidad = (index, cantidad) => {
-    carrito[index].cantidad = parseFloat(cantidad);
-    carrito[index].total_producto =
-      carrito[index].cantidad * carrito[index].real_sell_price;
-    setCarrito([...carrito]);
-    SumaTotal();
-  };
+  // const setCantidad = (index, cantidad) => {
+  //   carrito[index].cantidad = parseFloat(cantidad);
+  //   carrito[index].total_producto =
+  //     carrito[index].cantidad * carrito[index].real_sell_price;
+  //   setCarrito([...carrito]);
+  //   SumaTotal();
+  // };
 
   const SumaTotal = () => {
     let contar = 0;
@@ -332,7 +337,6 @@ const IndexFast = () => {
                 <th className="px-6 pt-5 pb-4">Nombre</th>
                 <th className="px-6 pt-5 pb-4">Cliente</th>
                 <th className="px-6 pt-5 pb-4">Vendedor</th>
-                <th className="px-3 pt-5 pb-4">Cantidad</th>
                 <th className="px-6 pt-5 pb-4">Precio</th>
                 <th className="px-6 pt-5 pb-4">Descuento</th>
                 <th className="px-6 pt-5 pb-4 " colSpan="2">
@@ -366,9 +370,6 @@ const IndexFast = () => {
                             ({ id, first_name, last_name }) =>
                               first_name + ' ' + last_name
                           )}
-                      </td>
-                      <td className="border-t justify-center text-center items-center">
-                        {cantidad}
                       </td>
 
                       <td className="border-t justify-center text-center items-center">

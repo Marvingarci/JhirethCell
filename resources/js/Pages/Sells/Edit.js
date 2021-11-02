@@ -8,13 +8,17 @@ import SelectInput from '@/Shared/SelectInput';
 import SearchFilter from '@/Shared/SearchFilterForCode';
 import { PDFExport } from '@progress/kendo-react-pdf';
 import WarrantyToPrint from './WarrantyToPrint';
+import moment from 'moment';
 
 const Edit = () => {
-  const { categorias, usuarios, producto, venta } = usePage().props;
-  const { data, setData, errors, post, processing } = useForm({
-    vendedor: '',
+  const { categorias, usuarios, producto, venta, vendedores } = usePage().props;
+  const { data, setData, errors, post, processing, reset } = useForm({
+    vendedor_id: '',
+    ventas_id: venta[0].id,
+    cantidad: '',
     cliente: venta[0].cliente,
     total: venta[0].total,
+    restante: venta[0].restante,
     tipoPago: venta[0].tipoPago
   });
 
@@ -34,6 +38,8 @@ const Edit = () => {
       : '0' + (date.getMonth() + 1)) +
     '-' +
     date.getFullYear();
+  
+  
 
   function becomeSold() {
     if (confirm('Esta venta se pondrá como efectiva, ¿Está seguro?')) {
@@ -54,10 +60,10 @@ const Edit = () => {
     }
   }
 
-  const myref = useRef();
-  const reset = () => {
-    myref.current.reset();
-  };
+  // const myref = useRef();
+  // const reset = () => {
+  //   myref.current.reset();
+  // };
 
 
   const printWarranty=(product)=>{
@@ -69,6 +75,58 @@ const Edit = () => {
       }
     },3000) 
   }
+
+  const addPayment =()=>{
+    if(data.cantidad > venta[0].restante){
+      alert('Esta cantidad es mayor a la restante, cambiarla')
+      return false;
+    }
+    if (confirm('Se realizara el siguiente pago, ¿Está seguro?')) {
+
+    const values = {
+      cantidad: data.cantidad,
+      vendedor_id : data.vendedor_id,
+      ventas_id : data.ventas_id
+    }
+
+      console.log(values)
+      Inertia.post(
+        route('pagos', values),
+         values ,
+        {
+          onSuccess: page => {
+            console.log(page)
+            reset('cantidad','vendedor_id','restante')
+          },
+          onError: error => {
+            console.log(error);
+          }
+        }
+      );
+    }
+  }
+
+  const deleteSell = () => {
+    if (confirm('¿Está seguro de desea proceder con la accion esta venta?')) {
+      Inertia.put(
+        route('ventas.destroy', {
+          id: data.ventas_id,
+          venta_detalles: venta[0].venta_detalles,
+          razonDev: 'eliminacion'
+        }),
+        {  id: data.ventas_id,
+          venta_detalles: venta[0].venta_detalles,
+          razonDev: 'eliminacion' },
+        {
+          onSuccess: page => {
+          },
+          onError: error => {
+
+          }
+        }
+      );
+    }
+  };
 
 
   return (
@@ -101,7 +159,7 @@ const Edit = () => {
             label="Vendedor"
             name="first_name"
             disabled
-            value={usuarios
+            value={vendedores
               .filter(u => venta[0].vendedor_id == u.id)
               .map(filter => filter.first_name + ' ' + filter.last_name)}
           />
@@ -182,6 +240,14 @@ const Edit = () => {
 
           <LoadingButton
             loading={processing}
+            onClick={e => deleteSell()}
+            className="btn-indigo"
+          >
+            Eliminar Venta
+          </LoadingButton>
+
+          <LoadingButton
+            loading={processing}
             onClick={e => Inertia.get(route('ventas'))}
             className="btn-indigo"
           >
@@ -189,6 +255,78 @@ const Edit = () => {
           </LoadingButton>
         </div>
       </div>
+      {
+        data.tipoPago == 'credito' &&
+        <div className="overflow-x-auto   bg-white rounded shadow">
+        <h1 className="text-xl font-bold py-2">Pagos  restante: {data.restante}</h1>
+  
+          <div className="flex flex-row gap-4 items-center justify-between">
+          <TextInput
+                  className="w-full p-4 pr-6 lg:w-1/3"
+                  label="Efectuar pago parcial"
+                  name="first_name"
+                  errors={errors.cantidad}
+                  value={data.cantidad}
+                  onChange={e => setData('cantidad', e.target.value)}
+                />
+         <SelectInput
+                className="w-full p-4 pr-6 lg:w-1/3"
+                label="Vendedor"
+                name="organization_id"
+                errors={errors.vendedor_id}
+                value={data.vendedor_id}
+                onChange={e => setData('vendedor_id', e.target.value)}
+              >
+                <option value=""></option>
+                {vendedores.map(({ id, first_name, last_name }) => (
+                  <option value={id}>{first_name + ' ' + last_name}</option>
+                ))}
+              </SelectInput>
+              <LoadingButton onClick={e => addPayment()} className="btn-indigo">
+                Agregar pago
+              </LoadingButton>
+          </div>
+  
+  
+              <table className=" whitespace-nowrap">
+                <thead>
+                  <tr className="font-bold text-left">
+                    <th className="px-3 pt-5 pb-4">Cantidad</th>
+                    <th className="px-6 pt-5 pb-4">fecha</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {venta[0].pagos.map(
+                    (
+                      p,
+                      index
+                    ) => (
+                      <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                        <td className="border-t px-6 pt-5 pb-4">{moment(p.created_at).locale("es").format("Do MMM YYYY")}</td>
+                        <td className="border-t px-6 pt-5 pb-4">{p.cantidad}</td>
+                      </tr>
+                    )
+                  )}
+                  <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                    <td className="px-6 py-4 border-t" colSpan="3"></td>
+                    <td className="px-6 py-4 border-t font-bold">Total</td>
+                    <td className="px-6 py-4 border-t font-bold">{data.total}</td>
+                  </tr>
+                  {carrito.length === 0 && (
+                    <tr>
+                      <td className="px-6 py-4 border-t" colSpan="4">
+                        No hay productos aun
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+      }
+
+      {/* Pagos */}
+
+     
 
       {/* Garantia Impresion */}
       {

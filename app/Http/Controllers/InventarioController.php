@@ -109,9 +109,10 @@ class InventarioController extends Controller
      * @param  \App\Models\Inventario  $inventario
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Inventario $inventario)
+    public function update(HttpRequest $request)
     {
-        //
+        $eliminar = Inventario::find($request->id)->update(['status'=>$request->status]);
+        return Redirect::back()->with('success', 'Editado con éxito');
     }
 
     /**

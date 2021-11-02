@@ -29,8 +29,9 @@ const Edit = () => {
     name: product.name || '',
     // product_code: product.product_code || '',
     // existencia: product.existencia || '',
-    cost_price: product.cost_price || '',
+    cost_price: product.cost_price || 0,
     sell_price: product.sell_price || '',
+    whole_sell_price: product.whole_sell_price || '',
     color: product.color || '',
     category_id: product.category.id || '',
     created_at: product.created_at || '',
@@ -132,6 +133,17 @@ const Edit = () => {
               value={data.sell_price}
               onChange={e => setData('sell_price', e.target.value)}
             />
+
+<TextInput
+              className="w-full pb-8 pr-6 lg:w-1/2"
+              label="Precio de Mayorista"
+              name="region"
+              type="number"
+              errors={errors.whole_sell_price}
+              value={data.whole_sell_price}
+              onChange={e => setData('whole_sell_price', e.target.value)}
+            />
+
             <SelectInput
               className="w-full pb-8 pr-6 lg:w-1/2"
               label="Categoría"

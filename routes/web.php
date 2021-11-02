@@ -120,6 +120,16 @@ Route::delete('inventario/{id}')->name('inventario.destroy')->uses('InventarioCo
 Route::put('inventario/{contact}/restore')->name('inventario.restore')->uses('InventarioController@restore')->middleware('auth');
 
 
+//Inventarios
+Route::get('pagos')->name('pagos')->uses('PaymentController@index')->middleware('remember', 'auth');
+//Route::get('buscar-inventario')->name('buscar-inventario')->uses('InventarioController@buscarProducto')->middleware('remember', 'auth');
+//Route::get('inventario/create')->name('inventario.create')->uses('InventarioController@create')->middleware('auth');
+Route::post('pagos')->name('pagos.store')->uses('PaymentController@store')->middleware('auth');
+// Route::get('inventario/{contact}/edit')->name('inventario.edit')->uses('InventarioController@edit')->middleware('auth');
+// Route::put('inventario/{contact}')->name('inventario.update')->uses('InventarioController@update')->middleware('auth');
+// Route::delete('inventario/{id}')->name('inventario.destroy')->uses('InventarioController@destroy')->middleware('auth');
+// Route::put('inventario/{contact}/restore')->name('inventario.restore')->uses('InventarioController@restore')->middleware('auth');
+
 
 
 

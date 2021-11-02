@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import Layout from '@/Shared/Layout';
 import Index from '@/Pages/Reports/Index';
-
+import { PDFExport } from '@progress/kendo-react-pdf';
+import LoadingButton from '@/Shared/LoadingButton';
 import { usePage } from '@inertiajs/inertia-react';
 
 const CreditReport = () => {
@@ -9,10 +10,28 @@ const CreditReport = () => {
   const [total_ventas_diarias, setTotalVentas] = useState(0);
   var total=0;
 
+  const [readyToPrit, setReadyToPrint] = useState(true);
+  const pdfExportComponentA = React.useRef(null);
+  const printReport=()=>{
+    setReadyToPrint(true)
+      if (pdfExportComponentA.current) {
+        pdfExportComponentA.current.save();
+      }
+  }
+
   console.log(ventas);
   return (
     <div>
 
+<LoadingButton onClick={e => printReport()} className="btn-indigo">Imprimir Reporte</LoadingButton>
+      <PDFExport
+          keepTogether="p"
+          scale={0.45}
+          paperSize="letter"
+          margin="2.5cm"
+          ref={pdfExportComponentA}
+          fileName={`Ventas Diarias a credito`}
+        >
       <h1 className="mb-8 text-3xl font-bold">Reporte Ventas al Crédito</h1>
       <div className="bg-white rounded shadow">
       <table className=" whitespace-nowrap w-full">
@@ -61,6 +80,7 @@ const CreditReport = () => {
                 </tbody>
               </table>
       </div>
+      </PDFExport>
     </div>
   );
 };

@@ -6,7 +6,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
-class VentaStoreRequest extends FormRequest
+class PaymentStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,13 +26,9 @@ class VentaStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'cliente' => ['required'],
-            'contact_id' => [''],
+            'ventas_id' => ['required'],
             'vendedor_id' => ['required'],
-            'tipoPago' => ['required'],
-            'total' => ['required', 'numeric'],
-            'ventas'=>['required'],
-            'restante'=>['required']
+            'cantidad' => ['required','numeric'],            
         ];
     }
 }

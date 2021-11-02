@@ -30,8 +30,9 @@ class ProductUpdateRequest extends FormRequest
             'name' => ['required', 'max:50'],
             'category_id' => ['required', 'max:50'],
             'color' => ['nullable', 'max:50'],
-            'cost_price' => ['required','numeric'],
+            'cost_price' => ['nullable','numeric'],
             'sell_price' => ['required' , 'numeric'],
+            'whole_sell_price' => ['required' , 'numeric'],
         ];
     }
 }

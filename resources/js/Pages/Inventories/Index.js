@@ -18,7 +18,6 @@ const Index = () => {
 
 
   
-  console.log(producto)
 
   useEffect(() => {
     if (producto != null) {
@@ -68,7 +67,7 @@ const Index = () => {
         <SearchFilter />
       </div>
       {
-          (producto != null || data.status != '') &&
+          producto != null  &&
           <div className="bg-white rounded shadow text-center">
           <div className="grid grid-cols-2 gap-4 p-10 text-center justify-between">
               <p className="font-bold text-lg" >Nombre del producto</p>

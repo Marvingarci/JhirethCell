@@ -18,8 +18,8 @@ export default ({ className }) => {
       {
         auth.user.owner == true && 
         <MainMenuItem text="Reporte" link="reports" icon="printer" />
+        
       }
-      <MainMenuItem text="Cierre Diario" link="reports" icon="location" />
 
     </div>
   );

@@ -9,7 +9,6 @@ import TextInput from '@/Shared/TextInput';
 import SelectInput from '@/Shared/SelectInput';
 import TrashedMessage from '@/Shared/TrashedMessage';
 import Icon from '@/Shared/Icon';
-import SearchFilter from '@/Shared/SearchFilterForCode';
 
 const colores = [
   'verde','azul','naranja','negro','blanco','morado','amarillo','rojo','gris'
@@ -101,7 +100,6 @@ const Edit = () => {
             </LoadingButton>
             </div>
             {/* Comienzo tabla */}
-            <SearchFilter/>
             <div className="overflow-x-auto bg-white rounded shadow w-full">
               <table className=" whitespace-nowrap w-full">
                 <thead>

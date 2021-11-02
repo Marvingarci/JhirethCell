@@ -96,7 +96,7 @@ class InventarioController extends Controller
         $product = Product::find($id);
         return Inertia::render('Inventories/Edit', [
             'filters' => Request::all('search', 'trashed'),
-            'inventario' => Inventario::where([['product_id', $id],['codebar', Request::all('search', 'trashed')]])->get(),
+            'inventario' => Inventario::where('product_id', $id)->get(),
             'product' => new ProductResource($product),
             'categorias'=> Category::All()
         ]);

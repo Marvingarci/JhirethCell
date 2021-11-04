@@ -110,12 +110,12 @@ const SeparateReport = () => {
           paperSize="letter"
           margin="0.5cm"
           ref={pdfExportComponentP}
-          fileName={`Venta de Pantallas-${day ? moment(day).locale("es").format("Do MMM YYYY") : ahora}`}
+          fileName={`Venta de Pantallas-${day ? moment(day).locale("es").format("Do MM YYYY") : ahora}`}
         >
        <div className="flex justify-between border-t">
         <div className="font-bold text-2xl text-newGreen-100 m-2">Reporte de Venta de Pantallas</div>
         <div className="font-bold m-2">Jhireth Cell</div>
-        <div className="font-bold m-2">Dia: {day ? moment(day).locale("es").format("Do MMM YYYY") : ahora }</div>
+        <div className="font-bold m-2">Dia: {day ? moment(day).locale("es").format("Do MM YYYY") : ahora }</div>
        </div>
 
        <div className="flex justify-between border-t">
@@ -373,12 +373,12 @@ const SeparateReport = () => {
           paperSize="letter"
           margin="0.5cm"
           ref={pdfExportComponentC}
-          fileName={`Venta de Celulares-${day ? moment(day).locale("es").format("Do MMM YYYY") : ahora}`}
+          fileName={`Venta de Celulares-${day ? moment(day).locale("es").format("Do MM YYYY") : ahora}`}
         >
       <div className="flex justify-between border-t">
         <div className="font-bold text-newGreen-100 text-2xl m-2">Reporte de Venta de Celulares</div>
         <div className="font-bold m-2">Jhireth Cell</div>
-        <div className="font-bold m-2">Dia: {day ? moment(day).locale("es").format("Do MMM YYYY") : ahora }</div>
+        <div className="font-bold m-2">Dia: {day ? moment(day).locale("es").format("Do MM YYYY") : ahora }</div>
        </div>
         {/* Venta Celulares efectiva */}
        <div className="flex justify-between border-t">
@@ -637,14 +637,14 @@ const SeparateReport = () => {
           paperSize="letter"
           margin="0.5cm"
           ref={pdfExportComponentA}
-          fileName={`Venta de Accesorios-${day ? moment(day).locale("es").format("Do MMM YYYY") : ahora}`}
+          fileName={`Venta de Accesorios-${day ? moment(day).locale("es").format("Do MM YYYY") : ahora}`}
         >
       
 
         <div className="flex justify-between border-t">
         <div className="font-bold text-newGreen-100 text-2xl m-2">Reporte de Venta de Accesorios</div>
         <div className="font-bold m-2">Jhireth Cell</div>
-        <div className="font-bold m-2">Dia: {day ? moment(day).locale("es").format("Do MMM YYYY") : ahora }</div>
+        <div className="font-bold m-2">Dia: {day ? moment(day).locale("es").format("Do MM YYYY") : ahora }</div>
        </div>
       <div className="bg-white rounded shadow">
       <table className=" whitespace-nowrap w-full">

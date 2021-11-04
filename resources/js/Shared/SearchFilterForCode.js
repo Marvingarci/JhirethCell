@@ -131,14 +131,10 @@ export default forwardRef((props, ref) => {
           autoComplete="off"
           type="text"
           name="search"
-          maxLength="13"
           name="search"
           value={values.search}
           onChange={handleChange}
           placeholder="Escanear producto"
-          inputProps={{
-            maxLength: 13
-          }}
         />
         <div>
           <BarcodeReader

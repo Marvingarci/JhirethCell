@@ -167,12 +167,14 @@ const Create = () => {
             Registro de Venta
           </p>
         </div>
-        <form onSubmit={handleSubmit}>
           <div className="pl-8">
             <input type="checkbox" onChange={e => cambiarCliente()} />
             <label>Mayorista</label>
           </div>
+            <div>
+            <form onSubmit={handleSubmit}>
             <div className="flex flex-wrap p-8 -mb-8 -mr-6">
+
             {
               tipoCliente ?
               ( <TextInput
@@ -234,6 +236,9 @@ const Create = () => {
               <option value="efectivo">Efectivo</option>
               <option value="credito">Credito</option>
             </SelectInput>
+            </div>
+            </form>
+
             {/* Comienzo tabla */}
             <div className="overflow-x-auto bg-white rounded shadow w-full">
               <table className=" whitespace-nowrap w-full">
@@ -341,13 +346,13 @@ const Create = () => {
           <div className="flex items-center justify-end px-8 py-4 bg-gray-100 border-t border-gray-200">
             <LoadingButton
               loading={processing}
-              type="submit"
+              type="button"
+              onClick={handleSubmit}
               className="btn-indigo"
             >
               Cerrar venta
             </LoadingButton>
           </div>
-        </form>
       </div>
     </div>
   );

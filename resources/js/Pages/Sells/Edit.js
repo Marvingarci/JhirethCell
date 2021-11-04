@@ -307,11 +307,7 @@ const Edit = () => {
                       </tr>
                     )
                   )}
-                  <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
-                    <td className="px-6 py-4 border-t" colSpan="3"></td>
-                    <td className="px-6 py-4 border-t font-bold">Total</td>
-                    <td className="px-6 py-4 border-t font-bold">{data.total}</td>
-                  </tr>
+                 
                   {carrito.length === 0 && (
                     <tr>
                       <td className="px-6 py-4 border-t" colSpan="4">

@@ -32,7 +32,7 @@ class VentasController extends Controller
             'usuarios'=> User::all(['id','first_name','last_name']),
             'ventas_dia' => new VentaCollection(
                 Ventas::
-                    orderBy('created_at')
+                    orderBy('created_at', 'desc')
                     ->filter(Request::only('search', 'trashed'))
                     ->paginate()
                     ->appends(Request::all())

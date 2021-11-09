@@ -62,7 +62,7 @@ Run artisan server:
 php artisan serve
 ```
 
-- **Username:** johndoe@example.com
+- **Username:** admin@admin.com
 - **Password:** secret
 
 ## Running tests

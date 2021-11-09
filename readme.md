@@ -4,7 +4,7 @@
 Clone the repo locally:
 
 ```sh
-git clone https://github.com/landish/pingcrm-react.git
+git clone https://github.com/Marvingarci/JhirethCell
 cd pingcrm-react
 ```
 
@@ -62,21 +62,14 @@ Run artisan server:
 php artisan serve
 ```
 
-You're ready to go! [Visit Ping CRM](http://127.0.0.1:8000/) in your browser, and login with:
-
 - **Username:** johndoe@example.com
 - **Password:** secret
 
 ## Running tests
 
-To run the Ping CRM tests, run:
+To run the Jhireth CRM tests, run:
 
 ```
 phpunit
 ```
-
-## Credits
-
-- Original work by Jonathan Reinink (@reinink) and contributors
-- Port to Ruby on Rails by Georg Ledermann (@ledermann)
-- Port to React by Lado Lomidze (@landish)
+Marvin Garcia

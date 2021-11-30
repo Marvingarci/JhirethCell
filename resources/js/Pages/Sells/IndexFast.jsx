@@ -27,7 +27,7 @@ const IndexFast = () => {
 
   const [carrito, setCarrito] = useState([]);
   const [cuenta, setCuenta] = useState(0);
-  const [seleccion, setSeleccion] = useState(false);
+  const [seleccion, setSeleccion] = useState('');
 
   const date = new Date();
   const ahora =
@@ -138,7 +138,7 @@ const IndexFast = () => {
   };
 
   const Seleccione =(venta)=>{
-    setSeleccion(true)
+    setSeleccion(venta)
   }
 
   const handleCancel = (venta, razon) => {
@@ -383,7 +383,7 @@ const IndexFast = () => {
                       </td>
 
                       <td className="border-t">
-                        { seleccion ?(
+                        { seleccion == venta.id ?(
                             <>
                               <button
                           onClick={e => handleCancel(venta, 'buena')}
@@ -413,7 +413,7 @@ const IndexFast = () => {
                           Vendido
                         </button>
                         <button
-                          onClick={e => Seleccione()}
+                          onClick={e => Seleccione(venta.id)}
                           className="bg-red-500 ring-2 text-white py-2 px-1 rounded-xl m-1"
                         >
                           Devuelto

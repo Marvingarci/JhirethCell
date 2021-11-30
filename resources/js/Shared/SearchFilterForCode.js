@@ -29,9 +29,7 @@ export default forwardRef((props, ref) => {
 
   const reset = () => {
     setValues({
-      role: '',
       search: '',
-      trashed: ''
     });
   }
 
@@ -40,7 +38,7 @@ export default forwardRef((props, ref) => {
     if (prevValues) {
       const query = Object.keys(pickBy(values)).length
         ? pickBy(values)
-        : { remember: 'forget' };
+        : { search: '' };
       Inertia.get(route(route().current()), query, {
         replace: true,
         preserveState: true
@@ -135,6 +133,7 @@ export default forwardRef((props, ref) => {
           value={values.search}
           onChange={handleChange}
           placeholder="Escanear producto"
+          
         />
         <div>
           <BarcodeReader

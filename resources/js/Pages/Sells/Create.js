@@ -44,15 +44,15 @@ const Create = () => {
   }
 
   useEffect(() => {
+    console.log(producto)
     if (producto != null) {
       console.log(producto)
 
-      //If product has been sold, just scape
+      // If product has been sold, just scape
       if(producto.status != 'stock'){
         reset()
         return false
       }
-
       //Agg scaned product to the shopcart and set new values
       const newProduct = producto.product;
       newProduct.cantidad = 1;
@@ -67,24 +67,30 @@ const Create = () => {
         newProduct.total_producto = newProduct.cantidad * newProduct.whole_sell_price;
       }
      
-
       //check is the car is empty 
       if (carrito.length == 0) {
         setCarrito([...carrito, newProduct]);
+        SumaTotal();
+
       } else {
         //if the article exists, it doesnt make anything
         if (carrito.find(item => item.codebar === newProduct.codebar)) {
         } else {
           setCarrito([...carrito, newProduct]);
+          SumaTotal();
+
         }
 
       }
 
+    
 
     }
-
+    //setCarrito([...carrito]);
+    SumaTotal();
     reset();
     SumaTotal();
+
 
   }, [producto]);
   
@@ -131,8 +137,8 @@ const Create = () => {
     carrito.map(item => {
       contar = contar + item.total_producto;
     });
-    setData('total', contar);
-    return true
+    data.total= contar;
+    
   };
 
   const eliminar  =  codebar => {
@@ -172,7 +178,7 @@ const Create = () => {
             <label>Mayorista</label>
           </div>
             <div>
-            <form onSubmit={handleSubmit}>
+            <form  onSubmit={handleSubmit}>
             <div className="flex flex-wrap p-8 -mb-8 -mr-6">
 
             {
@@ -316,9 +322,10 @@ const Create = () => {
                         <td className="border-t">
                           <button
                             onClick={e => eliminar(codebar)}
-                            className="bg-newblue-200 ring-2 text-white py-2 px-1 rounded-xl m-1"
                           >
-                            Eliminar
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
                           </button>
                         </td>
                       </tr>

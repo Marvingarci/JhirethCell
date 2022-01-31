@@ -15,11 +15,9 @@ export default ({ className }) => {
       <MainMenuItem text="Productos" link="products" icon="book" />
       <MainMenuItem text="Compañias" link="organizations" icon="office" />
       <MainMenuItem text="Clientes" link="contacts" icon="users" />
-      {
-        auth.user.owner == true && 
-        <MainMenuItem text="Reporte" link="reports" icon="printer" />
+      <MainMenuItem text="Reporte" link="reports" icon="printer" />
         
-      }
+      
 
     </div>
   );

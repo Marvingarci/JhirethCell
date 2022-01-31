@@ -8,7 +8,7 @@ import { Inertia } from '@inertiajs/inertia';
 import moment from 'moment';
 
 const SeparateReport = () => {
-  const { ventas_pantallas, ventas_celulares, ventas_accesorios, day, productos } = usePage().props;
+  const { ventas_pantallas, ventas_celulares, ventas_accesorios, day, productos, auth } = usePage().props;
   const [total_ventas_diarias, setTotalVentas] = useState(0);
   const [fecha, setFecha] = useState(0);
   const [readyToPrit, setReadyToPrint] = useState(true);
@@ -128,7 +128,10 @@ const SeparateReport = () => {
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
                     {/* <th className="px-6 pt-5 pb-4 text-center">Vendedor</th> */}
-                    <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    {
+                      auth.user.owner == true && 
+                        <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    }
                     <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
                     <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
                     {/* <th className="px-auto pt-5 pb-4 text-center">Cantidad</th> */}
@@ -151,14 +154,17 @@ const SeparateReport = () => {
                             {venta.cliente}
                         </td>
 
-                      
-                        <td className="border-t justify-center text-center items-center">
-                            { 
-                            productos.filter(p => p.id == detalle.product_id).map(ps =>{
-                              return ps.cost_price
-                            })  
-                            }
-                        </td>
+                        {
+                          auth.user.owner == true && 
+                            <td className="border-t justify-center text-center items-center">
+                              { 
+                              productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                                return ps.cost_price
+                              })  
+                              }
+                            </td>                    
+                        }
+                        
 
                         <td className="border-t justify-center text-center items-center">
                             {detalle.total_producto}
@@ -206,7 +212,10 @@ const SeparateReport = () => {
                   <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
                     <th className="px-6 pt-5 pb-4 text-center" >Cliente</th>
-                    <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    {
+                      auth.user.owner == true && 
+                        <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    }
                     <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
                     <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
                     {/* <th className="px-auto pt-5 pb-4 text-center">Cantidad</th> */}
@@ -229,13 +238,16 @@ const SeparateReport = () => {
                             {venta.cliente}
                         </td>
 
-                        <td className="border-t justify-center text-center items-center">
-                            { 
-                            productos.filter(p => p.id == detalle.product_id).map(ps =>{
-                              return ps.cost_price
-                            })  
-                            }
-                        </td>
+                        {
+                          auth.user.owner == true && 
+                            <td className="border-t justify-center text-center items-center">
+                              { 
+                              productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                                return ps.cost_price
+                              })  
+                              }
+                            </td>                    
+                        }
 
                         <td className="border-t justify-center text-center items-center">
                             {detalle.total_producto}
@@ -284,8 +296,10 @@ const SeparateReport = () => {
                   <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
-                    <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
-                    <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
+                    {
+                      auth.user.owner == true && 
+                        <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    }                    <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
                     <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
                     {/* <th className="px-auto pt-5 pb-4 text-center">Cantidad</th> */}
                     <th className="px-6 pt-5 pb-4 text-center">Total Producto</th>
@@ -307,13 +321,16 @@ const SeparateReport = () => {
                             {venta.cliente}
                         </td>
 
-                        <td className="border-t justify-center text-center items-center">
-                            { 
-                            productos.filter(p => p.id == detalle.product_id).map(ps =>{
-                              return ps.cost_price
-                            })  
-                            }
-                        </td>
+                        {
+                          auth.user.owner == true && 
+                            <td className="border-t justify-center text-center items-center">
+                              { 
+                              productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                                return ps.cost_price
+                              })  
+                              }
+                            </td>                    
+                        }
 
                         <td className="border-t justify-center text-center items-center">
                             {detalle.total_producto}
@@ -390,7 +407,10 @@ const SeparateReport = () => {
       <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
-                    <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    {
+                      auth.user.owner == true && 
+                        <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    }                    
                     <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
                     <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
                     {/* <th className="px-auto pt-5 pb-4 text-center">Cantidad</th> */}
@@ -413,13 +433,16 @@ const SeparateReport = () => {
                             {venta.cliente}
                         </td>
 
-                        <td className="border-t justify-center text-center items-center">
-                            { 
-                            productos.filter(p => p.id == detalle.product_id).map(ps =>{
-                              return ps.cost_price
-                            })  
-                            }
-                        </td>
+                        {
+                          auth.user.owner == true && 
+                            <td className="border-t justify-center text-center items-center">
+                              { 
+                              productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                                return ps.cost_price
+                              })  
+                              }
+                            </td>                    
+                        }
 
                         <td className="border-t justify-center text-center items-center">
                             {detalle.total_producto}
@@ -468,7 +491,10 @@ const SeparateReport = () => {
       <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
-                    <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    {
+                      auth.user.owner == true && 
+                        <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    }
                     <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
                     <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
                     {/* <th className="px-auto pt-5 pb-4 text-center">Cantidad</th> */}
@@ -492,13 +518,16 @@ const SeparateReport = () => {
                             {venta.cliente}
                         </td>
 
-                        <td className="border-t justify-center text-center items-center">
-                            { 
-                            productos.filter(p => p.id == detalle.product_id).map(ps =>{
-                              return ps.cost_price
-                            })  
-                            }
-                        </td>
+                        {
+                          auth.user.owner == true && 
+                            <td className="border-t justify-center text-center items-center">
+                              { 
+                              productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                                return ps.cost_price
+                              })  
+                              }
+                            </td>                    
+                        }
 
                         <td className="border-t justify-center text-center items-center">
                             {detalle.total_producto}
@@ -546,7 +575,10 @@ const SeparateReport = () => {
       <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
-                    <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    {
+                      auth.user.owner == true && 
+                        <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    }                    
                     <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
                     <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
                     {/* <th className="px-auto pt-5 pb-4 text-center">Cantidad</th> */}
@@ -570,13 +602,16 @@ const SeparateReport = () => {
                             {venta.cliente}
                         </td>
 
-                        <td className="border-t justify-center text-center items-center">
-                            { 
-                            productos.filter(p => p.id == detalle.product_id).map(ps =>{
-                              return ps.cost_price
-                            })  
-                            }
-                        </td>
+                        {
+                          auth.user.owner == true && 
+                            <td className="border-t justify-center text-center items-center">
+                              { 
+                              productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                                return ps.cost_price
+                              })  
+                              }
+                            </td>                    
+                        }
 
                         <td className="border-t justify-center text-center items-center">
                             {detalle.total_producto}
@@ -652,7 +687,10 @@ const SeparateReport = () => {
       <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
-                    <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    {
+                      auth.user.owner == true && 
+                        <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    }                    
                     <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
                     <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
                     {/* <th className="px-auto pt-5 pb-4 text-center">Cantidad</th> */}
@@ -676,13 +714,16 @@ const SeparateReport = () => {
                             {venta.cliente}
                         </td>
 
-                        <td className="border-t justify-center text-center items-center">
-                            { 
-                            productos.filter(p => p.id == detalle.product_id).map(ps =>{
-                              return ps.cost_price
-                            })  
-                            }
-                        </td>
+                        {
+                          auth.user.owner == true && 
+                            <td className="border-t justify-center text-center items-center">
+                              { 
+                              productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                                return ps.cost_price
+                              })  
+                              }
+                            </td>                    
+                        }
 
                         <td className="border-t justify-center text-center items-center">
                             {detalle.total_producto}

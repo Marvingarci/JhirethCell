@@ -84,10 +84,9 @@ const Create = () => {
       }
 
     
+      SumaTotal();
 
     }
-    //setCarrito([...carrito]);
-    SumaTotal();
     reset();
     SumaTotal();
 
@@ -137,6 +136,7 @@ const Create = () => {
     carrito.map(item => {
       contar = contar + item.total_producto;
     });
+    console.log(contar)
     data.total= contar;
     
   };

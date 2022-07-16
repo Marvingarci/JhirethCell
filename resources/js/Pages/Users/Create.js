@@ -40,7 +40,7 @@ const Create = () => {
           <div className="flex flex-wrap p-8 -mb-8 -mr-6">
             <TextInput
               className="w-full pb-8 pr-6 lg:w-1/2"
-              label="First Name"
+              label="Nombre"
               name="first_name"
               errors={errors.first_name}
               value={data.first_name}
@@ -48,7 +48,7 @@ const Create = () => {
             />
             <TextInput
               className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Last Name"
+              label="Apellido"
               name="last_name"
               errors={errors.last_name}
               value={data.last_name}
@@ -56,7 +56,7 @@ const Create = () => {
             />
             <TextInput
               className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Email"
+              label="Correo Electronico"
               name="email"
               type="email"
               errors={errors.email}
@@ -65,7 +65,7 @@ const Create = () => {
             />
             <TextInput
               className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Password"
+              label="Contrasena"
               name="password"
               type="password"
               errors={errors.password}
@@ -74,16 +74,16 @@ const Create = () => {
             />
             <SelectInput
               className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Owner"
+              label="Es Administrador?"
               name="owner"
               errors={errors.owner}
               value={data.owner}
               onChange={e => setData('owner', e.target.value)}
             >
-              <option value="1">Yes</option>
+              <option value="1">Si</option>
               <option value="0">No</option>
             </SelectInput>
-            <FileInput
+            {/* <FileInput
               className="w-full pb-8 pr-6 lg:w-1/2"
               label="Photo"
               name="photo"
@@ -91,7 +91,7 @@ const Create = () => {
               errors={errors.photo}
               value={data.photo}
               onChange={photo => setData('photo', photo)}
-            />
+            /> */}
           </div>
           <div className="flex items-center justify-end px-8 py-4 bg-gray-100 border-t border-gray-200">
             <LoadingButton

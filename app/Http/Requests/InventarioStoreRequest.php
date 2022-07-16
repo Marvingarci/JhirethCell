@@ -28,7 +28,8 @@ class InventarioStoreRequest extends FormRequest
         return [
             'product_id' => ['required', 'max:50'],
             'codebar' => ['required', 'max:50', 'unique:inventarios,codebar'],
-            'imei' => ['required', 'max:50', 'unique:inventarios,imei'],    
+             'imei' => ['required', 'max:50', 'unique:inventarios,imei'],    
+            //'imei' => [''],    
             'status' => ['required']    
 
         ];

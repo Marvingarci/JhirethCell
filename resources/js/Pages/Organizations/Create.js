@@ -101,6 +101,7 @@ const Create = () => {
               <option value=""></option>
               <option value="CA">Canada</option>
               <option value="US">United States</option>
+              <option value="HN">Honduras</option>
             </SelectInput>
             <TextInput
               className="w-full pb-8 pr-6 lg:w-1/2"

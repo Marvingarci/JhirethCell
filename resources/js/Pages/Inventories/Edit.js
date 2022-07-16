@@ -29,6 +29,8 @@ const Edit = () => {
   function handleSubmit(e) {
     e.preventDefault();
         // NOTE: We are using POST method here, not PUT/PACH. See comment above.
+    data.imei = data.codebar
+    console.log(data)
     post(route('inventario.store'),{
       onSuccess: page => {
         reseteo()
@@ -76,20 +78,20 @@ const Edit = () => {
           <div className="flex flex-wrap p-8 -mb-8 -mr-6">
             <TextInput
               className="w-full pb-8 pr-6 lg:w-1/3"
-              label="Escanee Código"
+              label="Escanee Código o IMEI"
               name="first_name"
               errors={errors.codebar}
               value={data.codebar}
               onChange={e => setData('codebar', e.target.value)}
             />
-            <TextInput
+            {/* <TextInput
               className="w-full pb-8 pr-6 lg:w-1/3"
               label="IMEI"
               name="first_name"
               errors={errors.imei}
               value={data.imei}
               onChange={e => setData('imei', e.target.value)}
-            />
+            /> */}
             <div className="flex items-center">
             <LoadingButton
               loading={processing}

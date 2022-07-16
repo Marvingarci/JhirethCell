@@ -108,6 +108,24 @@ const Create = () => {
     SumaTotal();
   };
 
+  const setDescuentoCantidad = (index, descuento) =>{
+    console.log(index, descuento)
+    
+    if(tipoCliente){
+      carrito[index].descuento = descuento / carrito[index].real_sell_price;
+      carrito[index].real_sell_price = carrito[index].sell_price -  descuento;
+      carrito[index].total_producto = carrito[index].cantidad * carrito[index].real_sell_price;
+    }else{
+      carrito[index].descuento = descuento / carrito[index].real_sell_price;
+      carrito[index].real_sell_price = carrito[index].whole_sell_price - descuento;
+      carrito[index].total_producto = carrito[index].cantidad * carrito[index].real_sell_price;
+    }
+
+     
+    setCarrito([...carrito]);
+    SumaTotal();
+  } 
+
   // const setCantidad = (index, cantidad) => {
   //   carrito[index].cantidad = parseFloat(cantidad);
   //   carrito[index].total_producto =
@@ -296,7 +314,7 @@ const Create = () => {
                         <td className="border-t justify-center text-center items-center">
                           {real_sell_price}
                           </td>
-                        <td className="border-t justify-center text-center items-center">
+                        <td className="border-t justify-center flex flex-row text-center items-center">
                           <SelectInput
                             className="w-20"
                             name="organization_id"
@@ -313,6 +331,13 @@ const Create = () => {
                             <option value="0.10">10%</option>
                             <option value="0.15">15%</option>
                           </SelectInput>
+
+                          <TextInput
+                            className="w-20 pb-8 pr-6"
+                            name="first_name"
+                            type="number"
+                            onChange={e => setDescuentoCantidad(index, e.target.value)}
+                            />
                         </td>
                         <td className="border-t justify-center text-center items-center">
                          

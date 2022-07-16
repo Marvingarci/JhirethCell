@@ -165,7 +165,7 @@ const Edit = () => {
 
             <InertiaLink
               href={route('inventario.edit', data.id)}
-              className="flex items-center px-6 py-2 focus:text-blue-700 focus:outline-none"
+              className="flex items-center pl-5 px-6 py-2 border-2 bg-green-500 text-white rounded-xl focus:text-blue-700 focus:outline-none"
             >
               Administrar Inventarios
             </InertiaLink>

@@ -7,6 +7,7 @@ import TextInput from '@/Shared/TextInput';
 import SelectInput from '@/Shared/SelectInput';
 import SearchFilter from '@/Shared/SearchFilterForCode';
 import Modal from 'react-modal';
+import moment from 'moment';
 
 
 const IndexFast = () => {
@@ -191,10 +192,10 @@ const IndexFast = () => {
             <table className=" whitespace-nowrap w-full">
               <thead>
                 <tr className="font-bold text-left">
+                  {/* <th className="px-3 pt-5 pb-4">Fecha</th> */}
                   <th className="px-6 pt-5 pb-4">Nombre</th>
                   <th className="px-6 pt-5 pb-4">Mayorista</th>
                   <th className="px-6 pt-5 pb-4">Vendedor</th>
-                  {/* <th className="px-3 pt-5 pb-4">Cantidad</th> */}
                   <th className="px-6 pt-5 pb-4">Precio</th>
                   <th className="px-6 pt-5 pb-4">Descuento</th>
                   <th className="px-6 pt-5 pb-4 " colSpan="2">
@@ -212,7 +213,8 @@ const IndexFast = () => {
                       cantidad,
                       sell_price,
                       total_producto,
-                      real_sell_price
+                      real_sell_price,
+                      updated_at
                     },
                     index
                   ) => (
@@ -334,6 +336,7 @@ const IndexFast = () => {
           <table className=" whitespace-nowrap w-full">
             <thead>
               <tr className="font-bold text-left">
+                <th className="px-3 pt-5 pb-4">Fecha</th>
                 <th className="px-6 pt-5 pb-4">Nombre</th>
                 <th className="px-6 pt-5 pb-4">Cliente</th>
                 <th className="px-6 pt-5 pb-4">Vendedor</th>
@@ -352,9 +355,13 @@ const IndexFast = () => {
                     cantidad,
                     precio,
                     descuento,
-                    total_producto
+                    total_producto,
+                    created_at
                   }) => (
                     <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                      <td className="border-t justify-center text-center items-center">
+                        {moment(created_at).locale("es").calendar()}
+                      </td>
                       <td className="border-t justify-center text-center items-center">
                         {producto}
                       </td>

@@ -7,7 +7,7 @@ import TextInput from '@/Shared/TextInput';
 import SelectInput from '@/Shared/SelectInput';
 
 const colores = [
-  'Indefinido','verde','azul','naranja','negro','blanco','morado','amarillo','rojo','gris'
+  'verde','azul','naranja','negro','blanco','morado','amarillo','rojo','gris'
 ]
 const Create = () => {
   const { categorias, auth } = usePage().props;
@@ -16,7 +16,7 @@ const Create = () => {
     name: '',
     //product_code: '',
     category_id: '',
-    color: '',
+    color: 'indefinido',
     //existencia: '',
     cost_price: 0,
     sell_price: 0,
@@ -67,7 +67,7 @@ const Create = () => {
               value={data.color}
               onChange={e => setData('color', e.target.value)}
             >
-              <option value=""></option>
+              <option value="Indefinido">Indefinido</option>
               {
                 colores.map(color=>{
                   return(<option value={color}>{color}</option>)

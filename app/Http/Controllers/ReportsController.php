@@ -54,15 +54,15 @@ class ReportsController extends Controller
         $today = Carbon::today();
         $Ventas_pantallas = Ventas::with(['venta_detalles' => function ($query) {
             $query->where('category_id', 1);
-        }])->where([['created_at', 'like', $today->format('Y-m-d') . '%']])->get();
+        }])->where([['updated_at', 'like', $today->format('Y-m-d') . '%']])->get();
 
         $Ventas_celulares = Ventas::with(['venta_detalles' => function ($query) {
             $query->where('category_id', 2);
-        }])->where([['created_at', 'like', $today->format('Y-m-d') . '%']])->get();
+        }])->where([['updated_at', 'like', $today->format('Y-m-d') . '%']])->get();
 
         $Ventas_accesorios = Ventas::with(['venta_detalles' => function ($query) {
             $query->where('category_id', 3);
-        }])->where([['created_at', 'like', $today->format('Y-m-d') . '%']])->get();
+        }])->where([['updated_at', 'like', $today->format('Y-m-d') . '%']])->get();
 
         $productos = Product::all();
       //  dd($Ventas_pantallas);
@@ -83,15 +83,15 @@ class ReportsController extends Controller
         $today = $request->day; 
         $Ventas_pantallas = Ventas::with(['venta_detalles' => function ($query) {
             $query->where('category_id', 1);
-        }])->where([['created_at', 'like', $today . '%']])->get();
+        }])->where([['updated_at', 'like', $today . '%']])->get();
 
         $Ventas_celulares = Ventas::with(['venta_detalles' => function ($query) {
             $query->where('category_id', 2);
-        }])->where([['created_at', 'like', $today . '%']])->get();
+        }])->where([['updated_at', 'like', $today . '%']])->get();
 
         $Ventas_accesorios = Ventas::with(['venta_detalles' => function ($query) {
             $query->where('category_id', 3);
-        }])->where([['created_at', 'like', $today . '%']])->get();
+        }])->where([['updated_at', 'like', $today . '%']])->get();
 
         $productos = Product::all();
 

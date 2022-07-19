@@ -125,6 +125,7 @@ const SeparateReport = () => {
       <table className=" whitespace-nowrap w-full">
       <thead>
                   <tr className="font-bold text-left">
+                    <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
                     {/* <th className="px-6 pt-5 pb-4 text-center">Vendedor</th> */}
@@ -145,6 +146,10 @@ const SeparateReport = () => {
                         total_pantallas_e += parseInt(detalle.total_producto) 
                         return(
                         <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+
+                        <td className="border-t justify-center text-center items-center">
+                            {moment(detalle.created_at).locale("es").format("Do MM YYYY")}
+                        </td>
 
                         <td className="border-t justify-center text-center items-center">
                             {detalle.producto}
@@ -210,6 +215,7 @@ const SeparateReport = () => {
       <table className=" whitespace-nowrap w-full">
       <thead>
                   <tr className="font-bold text-left">
+                    <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
                     <th className="px-6 pt-5 pb-4 text-center" >Cliente</th>
                     {
@@ -229,7 +235,9 @@ const SeparateReport = () => {
                         total_pantallas_c += parseInt(detalle.total_producto) 
                         return(
                         <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
-
+                        <td className="border-t justify-center text-center items-center">
+                        {moment(detalle.created_at).locale("es").format("Do MM YYYY")}
+                        </td>
                         <td className="border-t justify-center text-center items-center">
                             {detalle.producto}
                         </td>
@@ -294,6 +302,7 @@ const SeparateReport = () => {
       <table className=" whitespace-nowrap w-full">
       <thead>
                   <tr className="font-bold text-left">
+                    <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
                     {
@@ -312,6 +321,10 @@ const SeparateReport = () => {
                         total_pantallas_p += parseInt(detalle.total_producto) 
                         return(
                         <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+
+                        <td className="border-t justify-center text-center items-center">
+                          {moment(detalle.created_at).locale("es").format("Do MM YYYY")}
+                        </td>
 
                         <td className="border-t justify-center text-center items-center">
                             {detalle.producto}
@@ -405,6 +418,7 @@ const SeparateReport = () => {
       <table className=" whitespace-nowrap w-full">
       <thead>
       <tr className="font-bold text-left">
+                    <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
                     {
@@ -422,48 +436,51 @@ const SeparateReport = () => {
                       
                       venta.venta_detalles.map((detalle)=>{
                         total_celulares_e += parseInt(detalle.total_producto) 
-                        return(
-                        <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
-
-                        <td className="border-t justify-center text-center items-center">
-                            {detalle.producto}
-                        </td>
-
-                        <td className="border-t justify-center text-center items-center">
-                            {venta.cliente}
-                        </td>
-
-                        {
-                          auth.user.owner == true && 
+                        return (
+                          <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                             <td className="border-t justify-center text-center items-center">
-                              { 
-                              productos.filter(p => p.id == detalle.product_id).map(ps =>{
-                                return ps.cost_price
-                              })  
-                              }
-                            </td>                    
-                        }
+                              {moment(detalle.created_at).locale("es").format("Do MM YYYY")}
+                            </td>
+                            <td className="border-t justify-center text-center items-center">
+                              {detalle.producto}
+                            </td>
 
-                        <td className="border-t justify-center text-center items-center">
-                            {detalle.total_producto}
-                        </td>
+                            <td className="border-t justify-center text-center items-center">
+                              {venta.cliente}
+                            </td>
 
-                        <td className="border-t justify-center text-center items-center">
-                            { 
-                            productos.filter(p => p.id == detalle.product_id).map(ps =>{
-                              total_celulares_e_u += (detalle.total_producto - ps.cost_price)
-                              return detalle.total_producto - ps.cost_price
-                            })  
-                            }
-                        </td>
+                            {auth.user.owner == true && (
+                              <td className="border-t justify-center text-center items-center">
+                                {productos
+                                  .filter(p => p.id == detalle.product_id)
+                                  .map(ps => {
+                                    return ps.cost_price;
+                                  })}
+                              </td>
+                            )}
 
-                        {/* <td className="border-t justify-center text-center items-center">
+                            <td className="border-t justify-center text-center items-center">
+                              {detalle.total_producto}
+                            </td>
+
+                            <td className="border-t justify-center text-center items-center">
+                              {productos
+                                .filter(p => p.id == detalle.product_id)
+                                .map(ps => {
+                                  total_celulares_e_u +=
+                                    detalle.total_producto - ps.cost_price;
+                                  return detalle.total_producto - ps.cost_price;
+                                })}
+                            </td>
+
+                            {/* <td className="border-t justify-center text-center items-center">
                             {detalle.cantidad}
                         </td> */}
-                        <td className="border-t justify-center text-center items-center">
-                            {detalle.total_producto}
-                        </td>
-                        </tr>)
+                            <td className="border-t justify-center text-center items-center">
+                              {detalle.total_producto}
+                            </td>
+                          </tr>
+                        );
 
                       })
                        
@@ -489,6 +506,7 @@ const SeparateReport = () => {
       <table className=" whitespace-nowrap w-full">
       <thead>
       <tr className="font-bold text-left">
+                    <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
                     {
@@ -508,6 +526,10 @@ const SeparateReport = () => {
                         total_celulares_c += parseInt(detalle.total_producto) 
                         return(
                         <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+
+                        <td className="border-t justify-center text-center items-center">
+                          {moment(detalle.created_at).locale("es").format("Do MM YYYY")}
+                        </td>
 
                         <td className="border-t justify-center text-center items-center">
                             {detalle.producto}
@@ -573,6 +595,7 @@ const SeparateReport = () => {
       <table className=" whitespace-nowrap w-full">
       <thead>
       <tr className="font-bold text-left">
+                    <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
                     {
@@ -592,6 +615,10 @@ const SeparateReport = () => {
                         total_celulares_p += parseInt(detalle.total_producto) 
                         return(
                         <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+
+                        <td className="border-t justify-center text-center items-center">
+                           {moment(detalle.created_at).locale("es").format("Do MM YYYY")}
+                        </td>
 
                         <td className="border-t justify-center text-center items-center">
                             {detalle.producto}
@@ -685,6 +712,7 @@ const SeparateReport = () => {
       <table className=" whitespace-nowrap w-full">
       <thead>
       <tr className="font-bold text-left">
+                    <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
                     {
@@ -704,6 +732,10 @@ const SeparateReport = () => {
                         total_accesorios_c += parseInt(detalle.total_producto) 
                         return(
                         <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+
+                        <td className="border-t justify-center text-center items-center">
+                            {moment(detalle.created_at).locale("es").format("Do MM YYYY")}
+                        </td>
 
                         <td className="border-t justify-center text-center items-center">
                             {detalle.producto}

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Organization;
+use App\Models\Payment;
 use App\Models\Product;
 use Inertia\Inertia;
 use App\Models\Ventas;
@@ -52,17 +54,23 @@ class ReportsController extends Controller
     public function separateReport()
     {
         $today = Carbon::today();
+        $organizations = Organization::all();
+
         $Ventas_pantallas = Ventas::with(['venta_detalles' => function ($query) {
             $query->where('category_id', 1);
-        }])->where([['updated_at', 'like', $today->format('Y-m-d') . '%']])->get();
+        }])->where([['fecha_efectiva', 'like', $today->format('Y-m-d') . '%']])->get();
 
         $Ventas_celulares = Ventas::with(['venta_detalles' => function ($query) {
             $query->where('category_id', 2);
-        }])->where([['updated_at', 'like', $today->format('Y-m-d') . '%']])->get();
+        }])->where([['fecha_efectiva', 'like', $today->format('Y-m-d') . '%']])->get();
 
         $Ventas_accesorios = Ventas::with(['venta_detalles' => function ($query) {
             $query->where('category_id', 3);
-        }])->where([['updated_at', 'like', $today->format('Y-m-d') . '%']])->get();
+        }])->where([['fecha_efectiva', 'like', $today->format('Y-m-d') . '%']])->get();
+
+        $Servicios = Ventas::with(['venta_detalles' => function ($query) {
+            $query->where('category_id', 4);
+        }])->where([['fecha_efectiva', 'like', $today->format('Y-m-d') . '%']])->get();
 
         $productos = Product::all();
       //  dd($Ventas_pantallas);
@@ -74,6 +82,33 @@ class ReportsController extends Controller
             'ventas_pantallas'=> $Ventas_pantallas,
             'ventas_celulares'=> $Ventas_celulares,
             'ventas_accesorios'=> $Ventas_accesorios,
+            'ventas_accesorios'=> $Ventas_accesorios,
+            'organizations'=> $organizations,
+            'servicios'=> $Servicios,
+            'productos' => $productos
+        ]);    
+    }
+
+    public function paymentsReport()
+    {
+        $today = Carbon::today();
+        $organizations = Organization::all();
+        $payments = Payment::with(['venta', 'user' ])->where([['created_at', 'like', $today->format('Y-m-d') . '%']])->get();
+        $total = 0;
+        foreach ($payments as $pay) {
+            $total += $pay->cantidad;
+        }
+
+        $productos = Product::all();
+        // dd($payments);
+        // $Ventas_celulares = Ventas::where([['created_at', 'like', $today->format('Y-m-d') . '%'],['tipoPago', 'efectivo'],['category_id', 2]])->with('venta_detalles')->get();
+        // $Ventas_accesorios = Ventas::where([['created_at', 'like', $today->format('Y-m-d') . '%'],['tipoPago', 'efectivo'],['category_id', 3]])->with('venta_detalles')->get();
+
+
+        return Inertia::render('Reports/PaymentsReport',[
+            'payments'=> $payments,
+            'total'=> $total,
+            // 'ventas_accesorios'=> $Ventas_accesorios,
             'productos' => $productos
         ]);    
     }
@@ -81,17 +116,25 @@ class ReportsController extends Controller
     public function separateReportByDay(Request $request)
     {
         $today = $request->day; 
+        $organization_id = $request->organization; 
+        $organizations = Organization::all();
+
+        
         $Ventas_pantallas = Ventas::with(['venta_detalles' => function ($query) {
             $query->where('category_id', 1);
-        }])->where([['updated_at', 'like', $today . '%']])->get();
+        }])->where([['fecha_efectiva', 'like', $today . '%']])->where([['organization_id', $organization_id ]])->get();
 
         $Ventas_celulares = Ventas::with(['venta_detalles' => function ($query) {
             $query->where('category_id', 2);
-        }])->where([['updated_at', 'like', $today . '%']])->get();
+        }])->where([['fecha_efectiva', 'like', $today . '%']])->where([['organization_id', $organization_id ]])->get();
 
         $Ventas_accesorios = Ventas::with(['venta_detalles' => function ($query) {
             $query->where('category_id', 3);
-        }])->where([['updated_at', 'like', $today . '%']])->get();
+        }])->where([['fecha_efectiva', 'like', $today . '%']])->where([['organization_id', $organization_id ]])->get();
+
+        $Servicios = Ventas::with(['venta_detalles' => function ($query) {
+            $query->where('category_id', 4);
+        }])->where([['fecha_efectiva', 'like', $today . '%']])->where([['organization_id', $organization_id ]])->get();
 
         $productos = Product::all();
 
@@ -101,6 +144,8 @@ class ReportsController extends Controller
             'ventas_pantallas'=> $Ventas_pantallas,
             'ventas_celulares'=> $Ventas_celulares,
             'ventas_accesorios'=> $Ventas_accesorios,
+            'organizations'=> $organizations,
+            'servicios'=> $Servicios,
             'day'=> $today,
             'productos' => $productos
         ]);     
@@ -109,8 +154,27 @@ class ReportsController extends Controller
     public function creditReport()
     {
         $today = Carbon::today();
+        $organizations = Organization::all();
+
         $Ventas_hoy = Ventas::where([['created_at', 'like', $today->format('Y-m-d') . '%'],['tipoPago', 'credito']])->with('venta_detalles')->get();
         return Inertia::render('Reports/CreditReport',[
-            'ventas'=> $Ventas_hoy
-        ]);    }
+            'ventas'=> $Ventas_hoy,
+            'organizations'=> $organizations
+        ]);    
+    }
+
+    public function creditReportByDay(Request $request)
+    {
+        $today = $request->day; 
+        $organization_id = $request->organization; 
+        $organizations = Organization::all();
+
+        $Ventas_hoy = Ventas::where([['created_at', 'like', $today->format('Y-m-d') . '%'],['tipoPago', 'credito']])->with('venta_detalles')
+        ->where([['fecha_efectiva', 'like', $today . '%']])->where([['organization_id', $organization_id ]])->get();
+        
+        return Inertia::render('Reports/CreditReport',[
+            'ventas'=> $Ventas_hoy,
+            'organizations'=> $organizations,
+        ]);    
+    }
 }

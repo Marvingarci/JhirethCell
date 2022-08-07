@@ -74,6 +74,16 @@ class InventarioController extends Controller
         return Redirect::back()->with('success', 'Registro agregado correctamente.');
     }
 
+    public function actualizarInventario(HttpRequest $request)
+    {
+        $inve = Inventario::find($request->productId);
+        $inve->existencia = $request->existencia;
+        $inve->save();
+        return Redirect::back()->with('success', 'Inventario actualizado correctamente.');
+    }
+
+    
+
     /**
      * Display the specified resource.
      *

@@ -11,7 +11,7 @@ import moment from 'moment';
 
 
 const IndexFast = () => {
-  const { categorias, usuarios, producto, ventasRapidas, contactos } =
+  const { categorias, usuarios, producto, ventasRapidas, contactos, auth } =
     usePage().props;
   const { data, setData, errors, post, processing } = useForm({
     vendedor_id: '',
@@ -19,12 +19,15 @@ const IndexFast = () => {
     cliente: '',
     concepto: '',
     restante:'',
+    organization_id: auth.user.organization_id || null,
     total: 0,
     tipoPago: 'pendiente',
     ventas: []
   });
 
   console.log(ventasRapidas);
+
+  
 
   const [carrito, setCarrito] = useState([]);
   const [cuenta, setCuenta] = useState(0);
@@ -109,6 +112,14 @@ const IndexFast = () => {
     });
     setData('total', contar);
   };
+
+  const setOrganization = (user_id) => {
+    setData('vendedor_id', user_id)
+    data.vendedor_id = user_id
+    let user = usuarios.find(us => us.id == user_id)
+    console.log(user)
+    setData('organization_id' ,user.organization_id)
+  }
 
   const eliminar = codigo => {
     const newP = carrito.filter(item => item.product_code !== codigo);
@@ -253,7 +264,7 @@ const IndexFast = () => {
                           name="organization_id"
                           errors={errors.vendedor}
                           value={data.vendedor}
-                          onChange={e => setData('vendedor_id', e.target.value)}
+                          onChange={e => setOrganization(e.target.value)}
                         >
                           <option value=""></option>
                           {usuarios.map(({ id, first_name, last_name }) => (

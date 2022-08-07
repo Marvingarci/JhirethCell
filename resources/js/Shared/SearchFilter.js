@@ -108,7 +108,6 @@ export default () => {
           autoFocus
           type="text"
           name="search"
-          name="search"
           value={values.search}
           onChange={handleChange}
           placeholder="Buscar..."

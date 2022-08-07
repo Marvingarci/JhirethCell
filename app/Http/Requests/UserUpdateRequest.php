@@ -25,6 +25,8 @@ class UserUpdateRequest extends FormRequest
                 Rule::unique('users')->ignore($this->route('user')->id)
             ],
             'password' => ['nullable'],
+            'organization_id' => ['required'],
+            'pin' => ['required'],
             'owner' => ['required', 'boolean'],
             'photo' => ['nullable', 'image'],
         ];

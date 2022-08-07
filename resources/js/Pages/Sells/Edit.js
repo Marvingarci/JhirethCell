@@ -16,9 +16,11 @@ const Edit = () => {
     vendedor_id: '',
     ventas_id: venta[0].id,
     cantidad: '',
+    comentario: '',
     cliente: venta[0].cliente,
     total: venta[0].total,
     restante: venta[0].restante,
+    limite_pago: venta[0].limite_pago,
     tipoPago: venta[0].tipoPago
   });
 
@@ -86,7 +88,8 @@ const Edit = () => {
     const values = {
       cantidad: data.cantidad,
       vendedor_id : data.vendedor_id,
-      ventas_id : data.ventas_id
+      ventas_id : data.ventas_id,
+      comentario : data.comentario
     }
 
       console.log(values)
@@ -96,7 +99,7 @@ const Edit = () => {
         {
           onSuccess: page => {
             console.log(page)
-            reset('cantidad','vendedor_id','restante')
+            reset('cantidad','vendedor_id','restante', 'comentario')
           },
           onError: error => {
             console.log(error);
@@ -148,14 +151,14 @@ const Edit = () => {
         </div>
         <div className="flex flex-wrap p-8 -mb-8 -mr-6">
           <TextInput
-            className="w-full pb-8 pr-6 lg:w-1/4"
+            className="w-full pb-8 pr-6 lg:w-1/5"
             label="Cliente"
             name="first_name"
             disabled
             value={data.cliente}
           />
           <TextInput
-            className="w-full pb-8 pr-6 lg:w-1/4"
+            className="w-full pb-8 pr-6 lg:w-1/5"
             label="Vendedor"
             name="first_name"
             disabled
@@ -164,19 +167,27 @@ const Edit = () => {
               .map(filter => filter.first_name + ' ' + filter.last_name)}
           />
           <TextInput
-            className="w-full pb-8 pr-6 lg:w-1/4"
+            className="w-full pb-8 pr-6 lg:w-1/5"
             label="Fecha"
             name="first_name"
             disabled
             value={ahora}
           />
           <TextInput
-            className="w-full pb-8 pr-6 lg:w-1/4"
+            className="w-full pb-8 pr-6 lg:w-1/5"
             label="Tipo de Pago"
             name="first_name"
             disabled
             value={data.tipoPago}
           />
+          { data.limite_pago != null &&
+           <TextInput
+            className="w-full pb-8 pr-6 lg:w-1/5"
+            label="Limite de Pago"
+            disabled
+            value={ moment(data.limite_pago).locale("es").format("DD MMM YYYY")}
+          />
+          }
 
           {/* Comienzo tabla */}
           <div className="overflow-x-auto   bg-white rounded shadow">
@@ -262,15 +273,22 @@ const Edit = () => {
   
           <div className="flex flex-row gap-4 items-center justify-between">
           <TextInput
-                  className="w-full p-4 pr-6 lg:w-1/3"
-                  label="Efectuar pago parcial"
+                  className="w-full p-4 pr-6 lg:w-1/4"
+                  label="Pago Parcial"
                   name="first_name"
                   errors={errors.cantidad}
                   value={data.cantidad}
                   onChange={e => setData('cantidad', e.target.value)}
                 />
+           <TextInput
+                  className="w-full p-4 pr-6 lg:w-1/4"
+                  label="Comentario"
+                  errors={errors.comentario}
+                  value={data.comentario}
+                  onChange={e => setData('comentario', e.target.value)}
+                />
          <SelectInput
-                className="w-full p-4 pr-6 lg:w-1/3"
+                className="w-full p-4 pr-6 lg:w-1/4"
                 label="Vendedor"
                 name="organization_id"
                 errors={errors.vendedor_id}
@@ -281,7 +299,7 @@ const Edit = () => {
                 {vendedores.map(({ id, first_name, last_name }) => (
                   <option value={id}>{first_name + ' ' + last_name}</option>
                 ))}
-              </SelectInput>
+          </SelectInput>
               <LoadingButton onClick={e => addPayment()} className="btn-indigo">
                 Agregar pago
               </LoadingButton>
@@ -291,8 +309,10 @@ const Edit = () => {
               <table className=" whitespace-nowrap">
                 <thead>
                   <tr className="font-bold text-left">
-                    <th className="px-3 pt-5 pb-4">Cantidad</th>
                     <th className="px-6 pt-5 pb-4">fecha</th>
+                    <th className="px-6 pt-5 pb-4">Usuario</th>
+                    <th className="px-3 pt-5 pb-4">Cantidad</th>
+                    <th className="px-3 pt-5 pb-4">Comentario</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -303,7 +323,9 @@ const Edit = () => {
                     ) => (
                       <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                         <td className="border-t px-6 pt-5 pb-4">{moment(p.created_at).locale("es").format("Do MMM YYYY")}</td>
+                        <td className="border-t px-6 pt-5 pb-4">{p.vendedor_id}</td>
                         <td className="border-t px-6 pt-5 pb-4">{p.cantidad}</td>
+                        <td className="border-t px-6 pt-5 pb-4">{p.comentario}</td>
                       </tr>
                     )
                   )}

@@ -3,6 +3,8 @@
 namespace App\Http\Middleware;
 
 use App\Http\Resources\UserResource;
+use App\Models\Ventas;
+use Carbon\Carbon;
 use Inertia\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -42,6 +44,15 @@ class HandleInertiaRequests extends Middleware
             'auth' => function () {
                 return [
                     'user' => Auth::check() ? new UserResource(Auth::user()->load('account')) : null
+                ];
+            },
+            'notifications' => function () {
+                $tomorrow = Carbon::now()->addDays(1);
+
+                $ventas_credito = Ventas::with(['venta_detalles'])->where([['tipoPago', 'credito'],['limite_pago', 'like', $tomorrow->format('Y-m-d') . '%']])->get();
+
+                return [ 
+                    'credito_manana' => $ventas_credito 
                 ];
             },
             'flash' => function () use ($request) {

@@ -15,6 +15,7 @@ class Product extends Model
         'sell_price',
         'cost_price',
         'whole_sell_price',
+        'dbType',
         'color',
         'category_id'
     ];

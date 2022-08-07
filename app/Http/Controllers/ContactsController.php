@@ -34,6 +34,29 @@ class ContactsController extends Controller
         ]);
     }
 
+    public function indexCredit()
+    {
+
+        //     $contactsWithCredit = Contact::with(['organization', 'ventas' => function ($query) {
+        //     $query->where('tipoPago', 'credito');
+        // }])->orderByName()->filter(Request::only('search', 'trashed'))->paginate()->get();
+        
+        $contacts = new ContactCollection(
+            Auth::user()->account->contacts()
+                ->orderByName()
+                ->filter(Request::only('search', 'trashed'))
+                ->paginate()
+                ->appends(Request::all())
+                ); 
+        
+
+        return Inertia::render('Contacts/IndexCredit', [
+            'filters' => Request::all('search', 'trashed'),
+            'contacts' => Contact::all(),
+        ]);
+    }
+    
+
     public function create()
     {
         return Inertia::render('Contacts/Create', [

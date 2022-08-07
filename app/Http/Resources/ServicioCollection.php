@@ -15,7 +15,7 @@ class ServicioCollection extends ResourceCollection
     public function toArray($request)
     {
         return $this->collection->map->only(
-            'id', 'nombre', 'cliente', 'pago', 'venta_id','created_at'
+            'id', 'nombre', 'costo', 'service_code', 'pago', 'created_at'
         );
     }
 }

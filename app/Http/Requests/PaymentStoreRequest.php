@@ -28,6 +28,7 @@ class PaymentStoreRequest extends FormRequest
         return [
             'ventas_id' => ['required'],
             'vendedor_id' => ['required'],
+            'comentario' => ['required'],
             'cantidad' => ['required','numeric'],            
         ];
     }

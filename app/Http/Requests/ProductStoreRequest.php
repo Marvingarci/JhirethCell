@@ -36,7 +36,7 @@ class ProductStoreRequest extends FormRequest
             'category_id' => ['required', 'max:50'],
             'color' => ['nullable', 'max:50'],
             'cost_price' => ['required','numeric'],
-            //'existencia' => ['required','numeric'],
+            'dbType' => [''],
             'sell_price' => ['required', 'numeric'],
             'whole_sell_price' => ['required', 'numeric'],
             

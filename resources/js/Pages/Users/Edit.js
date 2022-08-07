@@ -11,7 +11,7 @@ import FileInput from '@/Shared/FileInput';
 import TrashedMessage from '@/Shared/TrashedMessage';
 
 const Edit = () => {
-    const {user} = usePage().props;
+    const {user, organizations} = usePage().props;
     const {
         data,
         setData,
@@ -23,6 +23,8 @@ const Edit = () => {
         last_name: user.last_name || '',
         email: user.email || '',
         password: user.password || '',
+        organization_id: user.organization_id || 1,
+        pin: user.pin || '',
         owner: user.owner ? '1' : '0' || '0',
         photo: '',
 
@@ -51,128 +53,115 @@ const Edit = () => {
     }
 
     return (
-        <div>
-            <Helmet title={
-                `${
-                    data.first_name
-                } ${
-                    data.last_name
-                }`
-            }/>
-            <div className="flex justify-start max-w-lg mb-8">
-                <h1 className="text-3xl font-bold">
-                    <InertiaLink href={
-                            route('users')
-                        }
-                        className="text-indigo-600 hover:text-indigo-700">
-                        Users
-                    </InertiaLink>
-                    <span className="mx-2 font-medium text-indigo-600">/</span>
-                    {
-                    data.first_name
-                }
-                    {
-                    data.last_name
-                } </h1>
-                {
-                user.photo && (
-                    <img className="block w-8 h-8 ml-4 rounded-full"
-                        src={
-                            user.photo
-                        }/>
-                )
-            } </div>
-            {
-            user.deleted_at && (
-                <TrashedMessage onRestore={restore}>
-                    This user has been deleted.
-                </TrashedMessage>
-            )
-        }
-            <div className="max-w-3xl overflow-hidden bg-white rounded shadow">
-                <form onSubmit={handleSubmit}>
-                    <div className="flex flex-wrap p-8 -mb-8 -mr-6">
-                        <TextInput className="w-full pb-8 pr-6 lg:w-1/2" label="First Name" name="first_name"
-                            errors={
-                                errors.first_name
-                            }
-                            value={
-                                data.first_name
-                            }
-                            onChange={
-                                e => setData('first_name', e.target.value)
-                            }/>
-                        <TextInput className="w-full pb-8 pr-6 lg:w-1/2" label="Last Name" name="last_name"
-                            errors={
-                                errors.last_name
-                            }
-                            value={
-                                data.last_name
-                            }
-                            onChange={
-                                e => setData('last_name', e.target.value)
-                            }/>
-                        <TextInput className="w-full pb-8 pr-6 lg:w-1/2" label="Email" name="email" type="email"
-                            errors={
-                                errors.email
-                            }
-                            value={
-                                data.email
-                            }
-                            onChange={
-                                e => setData('email', e.target.value)
-                            }/>
-                        <TextInput className="w-full pb-8 pr-6 lg:w-1/2" label="Password" name="password" type="password"
-                            errors={
-                                errors.password
-                            }
-                            value={
-                                data.password
-                            }
-                            onChange={
-                                e => setData('password', e.target.value)
-                            }/>
-                        <SelectInput className="w-full pb-8 pr-6 lg:w-1/2" label="Owner" name="owner"
-                            errors={
-                                errors.owner
-                            }
-                            value={
-                                data.owner
-                            }
-                            onChange={
-                                e => setData('owner', e.target.value)
-                        }>
-                            <option value="1">Yes</option>
-                            <option value="0">No</option>
-                        </SelectInput>
-                        <FileInput className="w-full pb-8 pr-6 lg:w-1/2" label="Photo" name="photo" accept="image/*"
-                            errors={
-                                errors.photo
-                            }
-                            value={
-                                data.photo
-                            }
-                            onChange={
-                                photo => setData('photo', photo)
-                            }/>
-                    </div>
-                    <div className="flex items-center px-8 py-4 bg-gray-100 border-t border-gray-200">
-                        {
-                        !user.deleted_at && (
-                            <DeleteButton onDelete={destroy}>Delete User</DeleteButton>
-                        )
-                    }
-
-                        <LoadingButton loading={processing}
-                            type="submit"
-                            className="ml-auto btn-indigo">
-                            Update User
-                        </LoadingButton>
-
-                    </div>
-                </form>
-            </div>
+      <div>
+        <Helmet title={`${data.first_name} ${data.last_name}`} />
+        <div className="flex justify-start max-w-lg mb-8">
+          <h1 className="text-3xl font-bold">
+            <InertiaLink
+              href={route('users')}
+              className="text-indigo-600 hover:text-indigo-700"
+            >
+              Users
+            </InertiaLink>
+            <span className="mx-2 font-medium text-indigo-600">/</span>
+            {data.first_name}
+            {data.last_name}{' '}
+          </h1>
+          {user.photo && (
+            <img className="block w-8 h-8 ml-4 rounded-full" src={user.photo} />
+          )}{' '}
         </div>
+        {user.deleted_at && (
+          <TrashedMessage onRestore={restore}>
+            This user has been deleted.
+          </TrashedMessage>
+        )}
+        <div className="max-w-3xl overflow-hidden bg-white rounded shadow">
+          <form onSubmit={handleSubmit}>
+            <div className="flex flex-wrap p-8 -mb-8 -mr-6">
+              <TextInput
+                className="w-full pb-8 pr-6 lg:w-1/2"
+                label="First Name"
+                name="first_name"
+                errors={errors.first_name}
+                value={data.first_name}
+                onChange={e => setData('first_name', e.target.value)}
+              />
+              <TextInput
+                className="w-full pb-8 pr-6 lg:w-1/2"
+                label="Last Name"
+                name="last_name"
+                errors={errors.last_name}
+                value={data.last_name}
+                onChange={e => setData('last_name', e.target.value)}
+              />
+              <TextInput
+                className="w-full pb-8 pr-6 lg:w-1/2"
+                label="Email"
+                name="email"
+                type="email"
+                errors={errors.email}
+                value={data.email}
+                onChange={e => setData('email', e.target.value)}
+              />
+              <TextInput
+                className="w-full pb-8 pr-6 lg:w-1/2"
+                label="Password"
+                name="password"
+                type="password"
+                errors={errors.password}
+                value={data.password}
+                onChange={e => setData('password', e.target.value)}
+              />
+              <TextInput
+                className="w-full pb-8 pr-6 lg:w-1/2"
+                label="Pin"
+                name="password"
+                type="text"
+                errors={errors.pin}
+                value={data.pin}
+                onChange={e => setData('pin', e.target.value)}
+              />
+              <SelectInput
+                className="w-full pb-8 pr-6 lg:w-1/2"
+                label="Owner"
+                name="owner"
+                errors={errors.owner}
+                value={data.owner}
+                onChange={e => setData('owner', e.target.value)}
+              >
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </SelectInput>
+              <SelectInput
+                className="w-full pb-8 pr-6 lg:w-1/2"
+                label="Organizacion"
+                errors={errors.organization_id}
+                value={data.organization_id}
+                onChange={e => setData('organization_id', e.target.value)}
+              >
+                {organizations.map(orga => (
+                  <option value={orga.id}>{orga.name}</option>
+                ))}
+                {/* <option value="0">No</option> */}
+              </SelectInput>
+            </div>
+            <div className="flex items-center px-8 py-4 bg-gray-100 border-t border-gray-200">
+              {!user.deleted_at && (
+                <DeleteButton onDelete={destroy}>Delete User</DeleteButton>
+              )}
+
+              <LoadingButton
+                loading={processing}
+                type="submit"
+                className="ml-auto btn-indigo"
+              >
+                Update User
+              </LoadingButton>
+            </div>
+          </form>
+        </div>
+      </div>
     );
 };
 

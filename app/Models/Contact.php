@@ -13,6 +13,11 @@ class Contact extends Model
     {
         return $this->belongsTo(Organization::class);
     }
+    
+    public function ventas()
+    {
+        return $this->hasMany(Ventas::class, 'id', 'contact_id');
+    }
 
     public function getNameAttribute()
     {

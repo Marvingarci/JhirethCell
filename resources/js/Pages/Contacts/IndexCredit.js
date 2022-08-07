@@ -4,106 +4,80 @@ import Layout from '@/Shared/Layout';
 import Icon from '@/Shared/Icon';
 import Pagination from '@/Shared/Pagination';
 import SearchFilter from '@/Shared/SearchFilter';
-import { first } from 'lodash';
 
-const Index = () => {
-  const { servicios , usuarios, auth} = usePage().props;
-  const {
-    data,
-    meta: { links }
-  } = servicios;
-
-
-  console.log(servicios, usuarios)
-
+const IndexCredit = () => {
+  const { contacts } = usePage().props;
+  // const {
+  //   data,
+  //   meta: { links }
+  // } = contacts;
+  console.log(contacts)
   return (
     <div>
-      <h1 className="mb-8 text-3xl font-bold">Servicios</h1>
+      <h1 className="mb-8 text-3xl font-bold">Clientes con credito pendiente</h1>
       <div className="flex items-center justify-between mb-6">
         <SearchFilter />
-        <InertiaLink
+        {/* <InertiaLink
           className="btn-indigo focus:outline-none"
-          href={route('servicios.create')}
+          href={route('contacts.create')}
         >
-          <span>Nuevo</span>
-          <span className="hidden md:inline"> Servicio</span>
-        </InertiaLink>
+          <span>Create</span>
+          <span className="hidden md:inline"> Clientes</span>
+        </InertiaLink> */}
       </div>
       <div className="overflow-x-auto bg-white rounded shadow">
         <table className="w-full whitespace-nowrap">
           <thead>
             <tr className="font-bold text-left">
-              <th className="px-6 pt-5 pb-4">Id</th>
               <th className="px-6 pt-5 pb-4">Nombre</th>
-              <th className="px-6 pt-5 pb-4">Codigo</th>
-               {
-                  auth.user.owner == true && 
-                  <th className="px-6 pt-5 pb-4" >Costo</th>
-              }
+              <th className="px-6 pt-5 pb-4">Celular</th>
               <th className="px-6 pt-5 pb-4" colSpan="2">
-                Pago
+                Tienda
               </th>
             </tr>
           </thead>
           <tbody>
-            {data.map(({ id, costo, nombre, pago, service_code  }) => (
+            {contacts.map(({ id, name, city, phone, organization, deleted_at }) => (
               <tr
                 key={id}
                 className="hover:bg-gray-100 focus-within:bg-gray-100"
               >
                 <td className="border-t">
                   <InertiaLink
-                    href={route('servicios.edit', id)}
+                    href={route('contacts.edit', id)}
                     className="flex items-center px-6 py-4 focus:text-indigo-700 focus:outline-none"
                   >
-                    {id}
-                   
+                    {name}
+                    {deleted_at && (
+                      <Icon
+                        name="trash"
+                        className="flex-shrink-0 w-3 h-3 ml-2 text-gray-400 fill-current"
+                      />
+                    )}
                   </InertiaLink>
                 </td>
                 <td className="border-t">
-                  <InertiaLink
-                    href={route('servicios.edit', id)}
-                    className="flex items-center px-6 py-4 focus:text-indigo-700 focus:outline-none"
-                  >
-                    {nombre}
-                   
-                  </InertiaLink>
-                </td>
-                <td className="border-t">
-                  <InertiaLink
-                    href={route('servicios.edit', id)}
-                    className="flex items-center px-6 py-4 focus:text-indigo-700 focus:outline-none"
-                  >
-                    {service_code}
-                   
-                  </InertiaLink>
-                </td>
-                {
-                  auth.user.owner == true && 
-                  <td className="border-t">
                   <InertiaLink
                     tabIndex="1"
                     className="flex items-center px-6 py-4 focus:text-indigo focus:outline-none"
-                    href={route('servicios.edit', id)}
+                    href={route('contacts.edit', id)}
                   >
-                    {costo}
+                    {phone}
                   </InertiaLink>
                 </td>
-              }
-               
                 <td className="border-t">
                   <InertiaLink
                     tabIndex="-1"
-                    href={route('servicios.edit', id)}
+                    href={route('contacts.edit', id)}
                     className="flex items-center px-6 py-4 focus:text-indigo focus:outline-none"
                   >
-                    {pago}
+                    {organization ? organization.name : ''}
                   </InertiaLink>
                 </td>
                 <td className="w-px border-t">
                   <InertiaLink
                     tabIndex="-1"
-                    href={route('servicios.edit', id)}
+                    href={route('contacts.edit', id)}
                     className="flex items-center px-4 focus:outline-none"
                   >
                     <Icon
@@ -114,21 +88,21 @@ const Index = () => {
                 </td>
               </tr>
             ))}
-            {servicios.length === 0 && (
+            {contacts.length === 0 && (
               <tr>
                 <td className="px-6 py-4 border-t" colSpan="4">
-                  No hay Servicios aún
+                  No contacts found.
                 </td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
-      <Pagination links={links} />
+      {/* <Pagination links={links} /> */}
     </div>
   );
 };
 
-Index.layout = page => <Layout title="Contacts" children={page} />;
+IndexCredit.layout = page => <Layout title="Creditos" children={page} />;
 
-export default Index;
+export default IndexCredit;

@@ -17,7 +17,7 @@ const Create = () => {
     //product_code: '',
     category_id: '',
     color: 'indefinido',
-    //existencia: '',
+    dbType: 'individual',
     cost_price: 0,
     sell_price: 0,
     whole_sell_price:0
@@ -61,18 +61,19 @@ const Create = () => {
             /> */}
            <SelectInput
               className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Color"
+              label="Tipo de producto"
               name="Categoria"
-              errors={errors.color}
-              value={data.color}
-              onChange={e => setData('color', e.target.value)}
+              errors={errors.dbType}
+              value={data.dbType}
+              onChange={e => setData('dbType', e.target.value)}
             >
-              <option value="Indefinido">Indefinido</option>
-              {
+              <option value="individual">Individual</option>
+              <option value="colectivo">Colectivo</option>
+              {/* {
                 colores.map(color=>{
                   return(<option value={color}>{color}</option>)
                 })
-              }              
+              }               */}
             </SelectInput>
             {/* <TextInput
               className="w-full pb-8 pr-6 lg:w-1/2"

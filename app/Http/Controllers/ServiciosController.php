@@ -8,7 +8,7 @@ use App\Models\Ventas;
 use App\Models\VentaDetalle;
 use Illuminate\Http\Request as HttpRequest;
 use App\Http\Requests\VentaStoreRequest;
-use App\Http\Requests\ProductUpdateRequest;
+use App\Http\Requests\ServiceStoreRequest;
 use App\Http\Resources\ServicioCollection;
 use App\Http\Resources\ProductResource;
 use Inertia\Inertia;
@@ -33,10 +33,10 @@ class ServiciosController extends Controller
 
         return Inertia::render('Servicios/Index', [
             'filters' => Request::all('search', 'trashed'),
-            'usuarios'=> User::all(['id','first_name','last_name']),
+            'usuarios'=> User::all(['id','first_name','last_name', 'organization_id']),
             'servicios' => new ServicioCollection(
-                Auth::user()->account->servicios()
-                    ->orderBy('created_at')
+                Servicios::
+                    orderBy('created_at')
                     ->filter(Request::only('search', 'trashed'))
                     ->paginate()
                     ->appends(Request::all())
@@ -53,10 +53,7 @@ class ServiciosController extends Controller
     {
         return Inertia::render('Servicios/Create', [
             'filters' => Request::all('search', 'trashed'),
-            'categorias' => Category::all(),
             'usuarios'=> User::all(['id','first_name','last_name']),
-            'producto'=> DB::table('products')->where('product_code',Request::only('search', 'trashed'))->first(),
-            'ventasRapidas' => Ventas::with('venta_detalles')->where('tipoPago', 'pendiente')->get()
         ]);
     }
 
@@ -66,9 +63,13 @@ class ServiciosController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ServiceStoreRequest $request)
     {
-        //
+        Servicios::create(
+            $request->validated()
+        );
+
+        return Redirect::route('servicios')->with('success', 'Servicio creado.');
     }
 
     /**

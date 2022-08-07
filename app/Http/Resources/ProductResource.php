@@ -23,6 +23,7 @@ class ProductResource extends JsonResource
             'sell_price' => $this->sell_price,
             'whole_sell_price' => $this->whole_sell_price,
             'existencia' => $this->existencia,
+            'dbType' => $this->dbType,
             'created_at' => $this->created_at,
             'category' => $this->category()->first(),
         ];

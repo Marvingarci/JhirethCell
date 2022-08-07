@@ -13,12 +13,18 @@ class Payment extends Model
         'id',
         'ventas_id',
         'vendedor_id',
+        'comentario',
         'cantidad'
     ];
 
     public function venta()
     {
-        return $this->belongsTo(Ventas::class);
+        return $this->belongsTo(Ventas::class, 'ventas_id' , 'id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'vendedor_id', 'id');
     }
     
     public function scopeFilter($query, array $filters)

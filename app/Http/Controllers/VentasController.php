@@ -16,6 +16,7 @@ use App\Models\Contact;
 use App\Models\Inventario;
 use App\Models\User;
 use App\Models\Product;
+use App\Models\Servicios;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -29,7 +30,7 @@ class VentasController extends Controller
     {
         return Inertia::render('Sells/Index', [
             'filters' => Request::all('search', 'trashed'),
-            'usuarios'=> User::all(['id','first_name','last_name']),
+            'usuarios'=> User::all(['id','first_name','last_name', 'organization_id']),
             'ventas_dia' => new VentaCollection(
                 Ventas::
                     orderBy('created_at', 'desc')
@@ -51,9 +52,10 @@ class VentasController extends Controller
     {
         return Inertia::render('Sells/Create', [
             'filters' => Request::all('search', 'trashed'),
-            'categorias' => Category::all(),
-            'usuarios'=> User::all(['id','first_name','last_name']),
-            'contactos'=> Contact::all(['id','first_name','last_name']),
+        'categorias' => Category::all(),
+            'servicios' => Servicios::all(),
+            'usuarios'=> User::with('organization')->get(),
+            'contactos'=> Contact::all(['id','first_name','last_name', 'organization_id']),
             'producto'=> Inventario::where('codebar',Request::only('search', 'trashed'))->with('product')->first(),
         ]);
     }
@@ -70,7 +72,14 @@ class VentasController extends Controller
         $productos = Product::all();
         $request['restante'] = $request['total'];
         $registro = Ventas::create($request->validated());
-      
+        $registro->fecha_efectiva = $hoy;
+        
+        if($registro->tipoPago == 'credito'){
+            $registro->limite_pago = Carbon::now()->addDays($registro->dias_credito); 
+        }
+
+        $registro->save();
+
          
         $ventas = $request->ventas;
         foreach ($ventas as $venta) {
@@ -82,7 +91,7 @@ class VentasController extends Controller
                 $venta['garantia'] = '30 dias';
                 $hoyEn30 = $hoy->add(30, 'day');
                 $venta['fin_garantia'] = $hoyEn30;
-            }else if($venta['category_id'] == 3){
+            }else{
                 $venta['garantia'] = 'No aplica';
                 $venta['fin_garantia'] = $hoy;
             }
@@ -103,11 +112,22 @@ class VentasController extends Controller
 
             ]);
 
-            if($request->tipoPago == 'efectivo' || $request->tipoPago == 'credito'){
-                $inventario = Inventario::where('codebar', $venta['codebar'])->update(['status' => 'vendido']);
-            }else {
-                $inventario = Inventario::where('codebar', $venta['codebar'])->update(['status' => 'pendiente']);
+            if($venta['category_id'] != 4){
+                if($venta['dbType'] == 'colectivo' ){
+                    // Bajar el inventario a productos colectivos
+                    $inve = Inventario::where('codebar', $venta['codebar'])->first();
+                    $inve->existencia = $inve->existencia - $venta['cantidad'] ;
+                    $inve->save();
+                }else{
+                    if($request->tipoPago == 'efectivo' || $request->tipoPago == 'credito'){
+                        $inventario = Inventario::where('codebar', $venta['codebar'])->update(['status' => 'vendido']);
+                    }else {
+                        $inventario = Inventario::where('codebar', $venta['codebar'])->update(['status' => 'pendiente']);
+                    }
+                }
             }
+
+            
 
             // foreach ($productos as $producto) {
             //     if($venta['id'] == $producto->id){
@@ -163,6 +183,7 @@ class VentasController extends Controller
     {
         $venta = Ventas::find($request['id']);
         $venta->tipoPago = 'efectivo';
+        $venta->fecha_efectiva = Carbon::now();
         $venta->update();
 
         $ventas = $request['venta_detalles'];
@@ -181,11 +202,16 @@ class VentasController extends Controller
     {
         $venta = Ventas::find($request['id']);
         $venta->tipoPago = 'efectivo';
+        $venta->fecha_efectiva = Carbon::now();
         $venta->update();
 
         $ventas = $request['venta_detalles'];
 
-        Inventario::where('codebar', $request->venta_detalles['product_code'])->update(['status' => 'vendido']);
+        $producto = Product::find($ventas['product_id']);
+        if($producto['dbType'] == 'individual'){
+            Inventario::where('codebar', $ventas['product_code'])->update(['status' => 'vendido']);
+        }
+
         
             $venta_detalle = VentaDetalle::find($ventas["id"]);
             $venta_detalle->estado = 'efectivo';
@@ -210,17 +236,47 @@ class VentasController extends Controller
         //$venta_detalle = VentaDetalle::find($request->venta_detalles['id']);
         switch ($request['razonDev']) {
             case 'buena':
-                Inventario::where('codebar', $request->venta_detalles['product_code'])->update(['status' => 'stock']);
+                    $producto = Product::find($request->venta_detalles['product_id']);
+                    if($producto['dbType'] == 'colectivo'){
+                        // Bajar el inventario a productos colectivos
+                        $inve = Inventario::where('codebar', $request->venta_detalles['product_code'])->first();
+                        $inve->existencia = $inve->existencia + $request->venta_detalles['cantidad'];
+                        $inve->save();
+                    }else{
+                        Inventario::where('codebar', $request->venta_detalles['product_code'])->update(['status' => 'stock']);
+                    }
                 break;
             case 'mala':
-                Inventario::where('codebar', $request->venta_detalles['product_code'])->update(['status' => 'mala']);
+                $producto = Product::find($request->venta_detalles['product_id']);
+                if($producto['dbType'] == 'colectivo'){
+                    // No se hace nada cuando es colectivo y esta mala
+                }else{
+                    Inventario::where('codebar', $request->venta_detalles['product_code'])->update(['status' => 'mala']);
+                }
                 break;
             case 'observacion':
-                Inventario::where('codebar', $request->venta_detalles['product_code'])->update(['status' => 'observacion']);
+                $producto = Product::find($request->venta_detalles['product_id']);
+                if($producto['dbType'] == 'colectivo'){
+                    // No se hace nada cuando es colectivo y esta en observacion
+           
+                }else{
+                    Inventario::where('codebar', $request->venta_detalles['product_code'])->update(['status' => 'observacion']);
+                }
                 break;
             case 'eliminacion':
+                // esto pasa cuando se elimina una venta completa y se pasan los productos a stock nuevamente
                 foreach ($ventaAEliminar->venta_detalles as $v) {
-                    Inventario::where('codebar', $v['product_code'])->update(['status' => 'stock']);
+                    $producto = Product::find($v->product_id);
+                    if($venta['category_id'] != 4){
+                        if($producto['dbType'] == 'colectivo'){
+                            // Bajar el inventario a productos colectivos
+                            $inve = Inventario::where('codebar', $v['product_code'])->first();
+                            $inve->existencia = $inve->existencia + $v['cantidad'] ;
+                            $inve->save();
+                        }else{
+                            Inventario::where('codebar', $v['product_code'])->update(['status' => 'stock']);
+                        }
+                    }
                 }   
                 break;
             

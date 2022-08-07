@@ -6,22 +6,58 @@ import LoadingButton from '@/Shared/LoadingButton';
 import TextInput from '@/Shared/TextInput';
 import SelectInput from '@/Shared/SelectInput';
 import SearchFilter from '@/Shared/SearchFilterForCode';
+import Modal from 'react-modal';
+import moment from 'moment';
+
+const customStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+  },
+};
+Modal.setAppElement('#app');
 
 const Create = () => {
-  const { categorias, usuarios, producto, contactos } = usePage().props;
+  const { categorias, usuarios, producto, contactos, servicios , auth} = usePage().props;
   const { data, setData, errors, post, processing } = useForm({
-    vendedor_id: '',
+    vendedor_id: auth.user.id || '' ,
     contact_id: null,
     cliente: '',
     total: 0,
     restante: 0,
+    dias_credito: 0,
+    organization_id: auth.user.organization_id || null,
     tipoPago: '',
     ventas: []
   });
 
   const [carrito, setCarrito] = useState([]);
-  const [cuenta, setCuenta] = useState(0);
+  const [servicio, setServicio] = useState(null);
+  const [pin, setPin] = useState('');
+  const [messagePin, setMessagePin] = useState('');
+  const [organization_id, setOrganizationId] = useState(0);
   const [tipoCliente, setTipoCliente] = useState(true);
+  const [modalIsOpen, setIsOpen] = useState(false);
+  const [modalServicioIsOpen, setServicioIsOpen] = useState(false);
+
+  const setOrganization = (user_id) => {
+    setData('vendedor_id', user_id)
+    data.vendedor_id = user_id
+    let user = usuarios.find(us => us.id == user_id)
+    setData('organization_id' ,user.organization_id)
+  }
+
+  const closeModal = () => {
+    setIsOpen(false);
+    setServicioIsOpen(false);
+  }
+  const openModal = () => {
+    setIsOpen(true);
+  }
 
   const date = new Date();
   const ahora =
@@ -35,18 +71,79 @@ const Create = () => {
 
   function handleSubmit(e) {
     e.preventDefault();
+
+    // set all the items to the main sell
     data.ventas = carrito;
+
+    // set restasnte
     if(data.tipoPago == "credito"){
       data.restante = data.total
     }
-    console.log(data);
-    post(route('ventas.store'));
+
+    if(checkVendor()){
+      console.log(data);
+      post(route('ventas.store'));
+    }
+
+  }
+
+  const checkVendor = () =>{
+    if(data.vendedor_id !=  auth.user.id){
+      openModal()
+      return false;
+    }else{
+      return true;
+    }
+  }
+
+  const checkPin = () =>{
+    let user = usuarios.find(us => us.id == data.vendedor_id)
+    console.log(pin, user.pin)
+    if(pin ==  user.pin){
+      closeModal()
+      console.log(data);
+      post(route('ventas.store'));
+    }else{
+      setMessagePin('Pin Incorrecto, Intente nuevamente')
+    }
+  }
+
+  const addService = (servicio) =>{
+    console.log(servicio)
+    const service = {
+      id : servicio.id,
+      codebar : servicio.service_code,
+      category_id : 4,
+      name : servicio.nombre,
+      sell_price : servicio.pago,
+      real_sell_price : servicio.pago,
+      whole_sell_price : servicio.pago,
+      descuento : 0,
+      total_producto : servicio.pago * 1,
+      cantidad : 1,
+    };
+    setServicio(service)
+
+    setCarrito([...carrito, service]);
+    console.log(carrito)
+    //carrito.push(service)
+    // setCarrito([...carrito]);
+    reset();
+
+    setTimeout(() => {
+      SumaTotal();
+    }, 3000);
+
+    closeModal()
+
+    setDescuentoCantidad((carrito.length -1), 0)
+
   }
 
   useEffect(() => {
     console.log(producto)
     if (producto != null) {
-      console.log(producto)
+      console.log(producto.product)
 
       // If product has been sold, just scape
       if(producto.status != 'stock'){
@@ -83,15 +180,64 @@ const Create = () => {
 
       }
 
+      reset();
+
+      SumaTotal();
+
+    }
+    reset();
+   SumaTotal();
+
+    console.log(usuarios)
+  }, [producto]);
+
+  useEffect(() => {
+    console.log(servicio)
+    if (producto != null) {
+      console.log(servicio)
+
+      // If product has been sold, just scape
+      // if(producto.status != 'stock'){
+      //   reset()
+      //   return false
+      // }
+      //Agg scaned product to the shopcart and set new values
+      const newProduct = servicio;
+      newProduct.cantidad = 1;
+      newProduct.codebar = producto.codebar;
+      if(tipoCliente){
+        newProduct.real_sell_price = newProduct.sell_price;
+        newProduct.descuento = 0;
+        newProduct.total_producto = newProduct.cantidad * newProduct.sell_price;
+      }else{
+        newProduct.real_sell_price = newProduct.whole_sell_price;
+        newProduct.descuento = 0;
+        newProduct.total_producto = newProduct.cantidad * newProduct.whole_sell_price;
+      }
+     
+      //check is the car is empty 
+      if (carrito.length == 0) {
+        setCarrito([...carrito, newProduct]);
+        SumaTotal();
+
+      } else {
+        //if the article exists, it doesnt make anything
+        if (carrito.find(item => item.codebar === newProduct.codebar)) {
+        } else {
+          setCarrito([...carrito, newProduct]);
+          SumaTotal();
+
+        }
+
+      }
+
     
       SumaTotal();
 
     }
     reset();
     SumaTotal();
-
-
-  }, [producto]);
+  }, [servicio])
   
 
   const setDescuento = (index, descuento) => {
@@ -109,7 +255,7 @@ const Create = () => {
   };
 
   const setDescuentoCantidad = (index, descuento) =>{
-    console.log(index, descuento)
+    console.log('descuento cantidad',index, descuento, carrito)
     
     if(tipoCliente){
       carrito[index].descuento = descuento / carrito[index].real_sell_price;
@@ -150,11 +296,12 @@ const Create = () => {
  
 
   const SumaTotal = () => {
+    console.log('suma total',carrito)
     let contar = 0;
     carrito.map(item => {
       contar = contar + item.total_producto;
     });
-    console.log(contar)
+    console.log("contar despues de sumaTotal "+contar)
     data.total= contar;
     
   };
@@ -232,9 +379,9 @@ const Create = () => {
               className="w-full pb-8 pr-6 lg:w-1/3"
               label="Vendedor"
               name="organization_id"
-              errors={errors.vendedor}
-              value={data.vendedor}
-              onChange={e => setData('vendedor_id', e.target.value)}
+              errors={errors.vendedor_id}
+              value={data.vendedor_id}
+              onChange={e =>  setOrganization(e.target.value) }
             >
               <option value=""></option>
               {usuarios.map(({ id, first_name, last_name }) => (
@@ -248,9 +395,9 @@ const Create = () => {
               disabled
               value={ahora}
             />
-            <SearchFilter className="w-full" ref={myref} />
+            <SearchFilter className="w-full pb-8 pr-6 lg:w-1/3" ref={myref} />
             <SelectInput
-              className="w-full pb-8 pr-6 lg:w-1/3"
+              className="w-full pr-6 lg:w-1/3"
               label="Pago"
               errors={errors.tipoPago}
               value={data.tipoPago}
@@ -260,6 +407,23 @@ const Create = () => {
               <option value="efectivo">Efectivo</option>
               <option value="credito">Credito</option>
             </SelectInput>
+
+            { data.tipoPago == 'credito' && 
+
+              <div className="w-full pr-6 flex gap-2 items-center">
+                <TextInput
+                  
+                  label="dias habiles de pago"
+                  type="number"
+                  errors={errors.dias_credito}
+                  value={data.dias_credito}
+                  onChange={e => setData('dias_credito', e.target.value)}
+                />
+                <p className='text-gray-500 font-semibold italic'>Fecha estimada { data.dias_credito != 0 && moment().add(data.dias_credito , 'days').locale("es").format("DD MMM YYYY")}</p>
+              </div>
+            }
+
+            
             </div>
             </form>
 
@@ -314,12 +478,10 @@ const Create = () => {
                         <td className="border-t justify-center text-center items-center">
                           {real_sell_price}
                           </td>
-                        <td className="border-t justify-center flex flex-row text-center items-center">
-                          <SelectInput
+                        <td className="border-t justify-center flex flex-row text-center items-center gap-1">
+                          {/* <SelectInput
                             className="w-20"
-                            name="organization_id"
-                            // errors={errors.tipoPago}
-                            // value={data.tipoPago}
+                            name="percentage"
                             onChange={e => setDescuento(index, e.target.value)}
                           >
                             <option value="0">N/A</option>
@@ -330,11 +492,11 @@ const Create = () => {
                             <option value="0.05">5%</option>
                             <option value="0.10">10%</option>
                             <option value="0.15">15%</option>
-                          </SelectInput>
+                          </SelectInput> */}
 
                           <TextInput
-                            className="w-20 pb-8 pr-6"
-                            name="first_name"
+                            className="w-20"
+                            name="descuento"
                             type="number"
                             onChange={e => setDescuentoCantidad(index, e.target.value)}
                             />
@@ -375,7 +537,14 @@ const Create = () => {
             </div>
             {/* fin tabla */}
           </div>
-          <div className="flex items-center justify-end px-8 py-4 bg-gray-100 border-t border-gray-200">
+          <div className="flex items-center justify-between px-8 py-4 bg-gray-100 border-t border-gray-200">
+          <LoadingButton
+              type="button"
+              onClick={e => setServicioIsOpen(true)}
+              className="btn-indigo"
+            >
+              Añadir Servicio
+            </LoadingButton>
             <LoadingButton
               loading={processing}
               type="button"
@@ -386,6 +555,74 @@ const Create = () => {
             </LoadingButton>
           </div>
       </div>
+
+
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Ingrese el pin de vendedor"
+        style={customStyles}
+      >
+        <div className='flex justify-between pb-5'>
+          <h2 >Ingresa el pin de vendedor</h2>
+          <LoadingButton className="btn-indigo" onClick={closeModal}>close</LoadingButton>
+        </div>
+        <div>
+            <TextInput
+                className="w-full pb-8 pr-6 lg:w-1/3"
+                label="Pin"
+                type="password"
+                name="first_name"
+                value={pin}
+                onChange={e => setPin(e.target.value)}
+            />
+            <p className="text-red-500 text-xl font-bold">{messagePin}</p>
+
+            <div className='flex gap-1'>
+          <LoadingButton onClick={checkPin} className="btn-indigo" >Ok</LoadingButton>
+          <LoadingButton onClick={closeModal} className="btn-indigo" >Close</LoadingButton>
+            </div>
+        </div>
+
+      </Modal>
+
+      <Modal
+        isOpen={modalServicioIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Seleccione el Servicio"
+        style={customStyles}
+      >
+        <div className='flex justify-between pb-5'>
+
+          <h2 className='text-gray-500 text-2xl font-bold'>Seleccione el Servicio</h2>
+          <LoadingButton className="btn-indigo" onClick={closeModal}>close</LoadingButton>
+        </div>
+
+        { 
+          servicios.map(servicio => {
+            return(
+            <div className='flex justify-between gap-5 pb-2' >
+            {/* <TextInput
+                className="w-full pb-8 pr-6 lg:w-1/3"
+                label="Pin"
+                type="password"
+                name="first_name"
+                value={pin}
+                onChange={e => setPin(e.target.value)}
+            /> */}
+            <p className="text-blue-500 text-xl font-semibold">{servicio.nombre}</p>
+
+            <div className='flex gap-1'>
+          <LoadingButton onClick={e => addService(servicio)} className="btn-indigo" >Seleccionar</LoadingButton>
+            </div>
+          </div>
+            )
+          })
+        }
+        
+
+      </Modal>
+
     </div>
   );
 };

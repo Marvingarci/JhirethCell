@@ -28,7 +28,7 @@ const Edit = () => {
     id: product.id || '',
     name: product.name || '',
     // product_code: product.product_code || '',
-    // existencia: product.existencia || '',
+    dbType: product.dbType || '',
     cost_price: product.cost_price || 0,
     sell_price: product.sell_price || '',
     whole_sell_price: product.whole_sell_price || '',
@@ -100,16 +100,19 @@ const Edit = () => {
             /> */}
             <SelectInput
               className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Color"
+              label="Tipo de producto"
               name="Categoria"
-              errors={errors.color}
-              value={data.color}
-              onChange={e => setData('color', e.target.value)}
+              errors={errors.dbType}
+              value={data.dbType}
+              onChange={e => setData('dbType', e.target.value)}
             >
-              <option value=""></option>
-              {colores.map(color => {
-                return <option value={color}>{color}</option>;
-              })}
+              <option value="individual">Individual</option>
+              <option value="colectivo">Colectivo</option>
+              {/* {
+                colores.map(color=>{
+                  return(<option value={color}>{color}</option>)
+                })
+              }               */}
             </SelectInput>
 
             {auth.user.owner == true && (

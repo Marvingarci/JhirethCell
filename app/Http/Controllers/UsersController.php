@@ -7,6 +7,7 @@ use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
+use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Http\Request as HttpRequest;
 use Inertia\Inertia;
@@ -35,7 +36,9 @@ class UsersController extends Controller
 
     public function create()
     {
-        return Inertia::render('Users/Create');
+        return Inertia::render('Users/Create', [
+            'organizations' => Organization::all()
+         ]);
     }
 
     public function store(UserStoreRequest $request)
@@ -51,6 +54,7 @@ class UsersController extends Controller
     {
         return Inertia::render('Users/Edit', [
             'user' => new UserResource($user),
+            'organizations' => Organization::all()
         ]);
     }
 

@@ -29,8 +29,10 @@ class VentaStoreRequest extends FormRequest
             'cliente' => ['required'],
             'contact_id' => [''],
             'vendedor_id' => ['required'],
+            'dias_credito' => [''],
             'tipoPago' => ['required'],
             'total' => ['required', 'numeric'],
+            'organization_id' => ['required', 'numeric'],
             'ventas'=>['required'],
             'restante'=>['required']
         ];

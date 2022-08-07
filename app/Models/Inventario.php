@@ -14,6 +14,8 @@ class Inventario extends Model
         'product_id',
         'codebar',
         'imei',
+        'existencia',
+        'color',
         'status'
     ];
 

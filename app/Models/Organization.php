@@ -14,6 +14,16 @@ class Organization extends Model
         return $this->hasMany(Contact::class);
     }
 
+    public function users()
+    {
+        return $this->hasMany(User::class, 'organization_id', 'id');
+    }
+
+    public function ventas()
+    {
+        return $this->hasMany(Ventas::class, 'organization_id', 'id');
+    }
+
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {

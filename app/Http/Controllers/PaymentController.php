@@ -18,6 +18,7 @@ use App\Models\VentaDetalle;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Carbon\Carbon;
 
 
 class PaymentController extends Controller
@@ -59,6 +60,7 @@ class PaymentController extends Controller
         if($venta->restante == 0){
 
             $venta->tipoPago = 'efectivo';
+            $venta->fecha_efectiva = Carbon::now();
             $venta->update();
 
             $ventas = $venta->venta_detalles;

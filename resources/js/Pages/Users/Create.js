@@ -1,6 +1,6 @@
 import React from 'react';
 import { Inertia } from '@inertiajs/inertia';
-import { InertiaLink, useForm } from '@inertiajs/inertia-react';
+import { InertiaLink, usePage, useForm } from '@inertiajs/inertia-react';
 import Layout from '@/Shared/Layout';
 import LoadingButton from '@/Shared/LoadingButton';
 import TextInput from '@/Shared/TextInput';
@@ -8,11 +8,14 @@ import SelectInput from '@/Shared/SelectInput';
 import FileInput from '@/Shared/FileInput';
 
 const Create = () => {
+  const { organizations } = usePage().props;
   const { data, setData, errors, post, processing } = useForm({
     first_name: '',
     last_name: '',
     email: '',
     password: '',
+    organization_id: 0,
+    pin: '',
     owner: '0',
     photo: ''
   });
@@ -72,6 +75,16 @@ const Create = () => {
               value={data.password}
               onChange={e => setData('password', e.target.value)}
             />
+
+            <TextInput
+              className="w-full pb-8 pr-6 lg:w-1/2"
+              label="Pin"
+              name="password"
+              type="text"
+              errors={errors.pin}
+              value={data.pin}
+              onChange={e => setData('pin', e.target.value)}
+            />  
             <SelectInput
               className="w-full pb-8 pr-6 lg:w-1/2"
               label="Es Administrador?"
@@ -82,6 +95,20 @@ const Create = () => {
             >
               <option value="1">Si</option>
               <option value="0">No</option>
+            </SelectInput>
+            <SelectInput
+              className="w-full pb-8 pr-6 lg:w-1/2"
+              label="Organizacion"
+              errors={errors.organization_id}
+              value={data.organization_id}
+              onChange={e => setData('organization_id', e.target.value)}
+            >
+              {
+                organizations.map(orga => (
+                  <option value={orga.id}>{orga.name}</option>
+                ))
+              }
+              {/* <option value="0">No</option> */}
             </SelectInput>
             {/* <FileInput
               className="w-full pb-8 pr-6 lg:w-1/2"

@@ -7,7 +7,23 @@ use Illuminate\Database\Eloquent\Model;
 
 class Servicios extends Model
 {
+
+
     use HasFactory;
+
+
+    protected $fillable = [
+        'nombre',
+        'costo',
+        'service_code',
+        'pago'
+    ];
+
+    public function venta_detalles()
+    {
+        return $this->hasMany(VentaDetalle::class);
+    }
+
 
     public function scopeFilter($query, array $filters)
     {

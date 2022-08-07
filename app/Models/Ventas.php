@@ -14,6 +14,10 @@ class Ventas extends Model
         'contact_id',
         'vendedor_id',
         'tipoPago',
+        'fecha_efectiva',
+        'organization_id',
+        'dias_credito',
+        'limite_pago',
         'total', 
         'restante', 
     ];
@@ -28,6 +32,12 @@ class Ventas extends Model
     {
         return $this->hasMany(Payment::class);
     }
+
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class, 'organization_id' , 'id');
+    }
+
 
     public function scopeFilter($query, array $filters)
     {

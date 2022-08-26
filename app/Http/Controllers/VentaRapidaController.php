@@ -34,10 +34,10 @@ class VentaRapidaController extends Controller
         return Inertia::render('Sells/IndexFast', [
             'filters' => Request::all('search', 'trashed'),
             'categorias' => Category::all(),
-            'usuarios'=> User::all(['id','first_name','last_name', 'organization_id']),
+            'usuarios'=> User::with('organization')->get(),
             'contactos'=> Contact::all(['id','first_name','last_name']),
             'producto'=> Inventario::where('codebar',Request::only('search', 'trashed'))->with('product')->first(),
-            'ventasRapidas' => Ventas::with('venta_detalles')->where('tipoPago', 'pendiente')->get()
+            'ventasRapidas' => Ventas::with('venta_detalles')->where('tipoPago', 'pendiente')->orderBy('created_at', 'desc')->get()
         ]);
     }
 

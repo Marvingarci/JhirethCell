@@ -30,6 +30,7 @@ class InventarioStoreRequest extends FormRequest
             'codebar' => ['required', 'max:50', 'unique:inventarios,codebar'],
             'imei' => ['required', 'max:50', 'unique:inventarios,imei'],    
             'existencia' => [''],    
+            'organization_id' => ['required'],    
             'color' => ['required'],    
             'status' => ['required']    
 

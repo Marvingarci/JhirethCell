@@ -16,6 +16,7 @@ class Inventario extends Model
         'imei',
         'existencia',
         'color',
+        'organization_id',
         'status'
     ];
 

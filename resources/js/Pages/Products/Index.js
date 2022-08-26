@@ -11,7 +11,7 @@ const Index = () => {
     data,
     meta: { links }
   } = products;
-  console.log(existencia)
+  console.log(products)
   return (
     <div>
       <h1 className="mb-8 text-3xl font-bold">Inventario</h1>
@@ -38,7 +38,7 @@ const Index = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map(({ id, name, color, sell_price, deleted_at }) => {
+            {data.map(({ id, name, color, dbType,  sell_price, deleted_at }) => {
               return (
                 <tr
                   key={id}
@@ -68,6 +68,9 @@ const Index = () => {
                     </InertiaLink>
                   </td>
                   <td className="border-t">
+                    {
+                      
+                    }
                     <InertiaLink
                       tabIndex="-1"
                       href={route('products.edit', id)}

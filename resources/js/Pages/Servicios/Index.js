@@ -14,13 +14,12 @@ const Index = () => {
   } = servicios;
 
 
-  console.log(servicios, usuarios)
+console.log(servicios, usuarios)
 
   return (
     <div>
-      <h1 className="mb-8 text-3xl font-bold">Servicios</h1>
       <div className="flex items-center justify-between mb-6">
-        <SearchFilter />
+      <h1 className="mb-8 text-3xl font-bold">Servicios</h1>
         <InertiaLink
           className="btn-indigo focus:outline-none"
           href={route('servicios.create')}

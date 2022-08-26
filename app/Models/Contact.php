@@ -16,7 +16,7 @@ class Contact extends Model
     
     public function ventas()
     {
-        return $this->hasMany(Ventas::class, 'id', 'contact_id');
+        return $this->hasMany(Ventas::class, 'contact_id', 'id');
     }
 
     public function getNameAttribute()

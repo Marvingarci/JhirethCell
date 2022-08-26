@@ -161,7 +161,10 @@ const SeparateReport = () => {
                         <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
                     }
                     <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
+                    {
+                      auth.user.owner == true && 
                     <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
+}
                     {/* <th className="px-auto pt-5 pb-4 text-center">Cantidad</th> */}
                     <th className="px-6 pt-5 pb-4 text-center">Total Producto</th>
                   </tr>
@@ -201,7 +204,8 @@ const SeparateReport = () => {
                         <td className="border-t justify-center text-center items-center">
                             {detalle.total_producto}
                         </td>
-
+                        {
+                      auth.user.owner == true && 
                         <td className="border-t justify-center text-center items-center">
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
@@ -210,6 +214,7 @@ const SeparateReport = () => {
                             })  
                             }
                         </td>
+                      }
 
                         {/* <td className="border-t justify-center text-center items-center">
                             {detalle.cantidad}
@@ -226,9 +231,12 @@ const SeparateReport = () => {
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
+                    {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
                     <td className="border-t justify-center text-center items-center"></td>
                     <td  className="border-t justify-center text-center items-center font-bold">Total</td>
+                    {auth.user.owner == true &&
                     <td  className="border-t justify-center text-center items-center font-bold">{total_pantallas_e_u}</td>
+                    }
                     <td  className="border-t justify-center text-center items-center font-bold">{total_pantallas_e}</td>
                   </tr>
                 </tbody>
@@ -250,7 +258,10 @@ const SeparateReport = () => {
                         <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
                     }
                     <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
+                    {
+                      auth.user.owner == true && 
                     <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
+}
                     {/* <th className="px-auto pt-5 pb-4 text-center">Cantidad</th> */}
                     <th className="px-6 pt-5 pb-4 text-center">Total Producto</th>
                   </tr>
@@ -287,7 +298,8 @@ const SeparateReport = () => {
                         <td className="border-t justify-center text-center items-center">
                             {detalle.total_producto}
                         </td>
-
+                        {
+                      auth.user.owner == true && 
                         <td className="border-t justify-center text-center items-center">
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
@@ -296,6 +308,7 @@ const SeparateReport = () => {
                             })  
                             }
                         </td>
+                      }
 
                         {/* <td className="border-t justify-center text-center items-center">
                             {detalle.cantidad}
@@ -312,9 +325,13 @@ const SeparateReport = () => {
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
+                    {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
+
                     <td className="border-t justify-center text-center items-center"></td>
                     <td  className="border-t justify-center text-center items-center font-bold">Total</td>
+                    {auth.user.owner == true &&
                     <td  className="border-t justify-center text-center items-center font-bold">{total_pantallas_c_u}</td>
+                    }
                     <td  className="border-t justify-center text-center items-center font-bold">{total_pantallas_c}</td>
                   </tr>
                 </tbody>
@@ -336,7 +353,10 @@ const SeparateReport = () => {
                       auth.user.owner == true && 
                         <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
                     }                    <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
+                        {
+                      auth.user.owner == true && 
                     <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
+                        }
                     {/* <th className="px-auto pt-5 pb-4 text-center">Cantidad</th> */}
                     <th className="px-6 pt-5 pb-4 text-center">Total Producto</th>
                   </tr>
@@ -375,7 +395,8 @@ const SeparateReport = () => {
                         <td className="border-t justify-center text-center items-center">
                             {detalle.total_producto}
                         </td>
-
+                        {
+                      auth.user.owner == true && 
                         <td className="border-t justify-center text-center items-center">
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
@@ -384,6 +405,7 @@ const SeparateReport = () => {
                             })  
                             }
                         </td>
+                      }
 
                         {/* <td className="border-t justify-center text-center items-center">
                             {detalle.cantidad}
@@ -400,9 +422,13 @@ const SeparateReport = () => {
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
+                    {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
+
                     <td className="border-t justify-center text-center items-center"></td>
                     <td  className="border-t justify-center text-center items-center font-bold">Total</td>
+                    {auth.user.owner == true &&
                     <td  className="border-t justify-center text-center items-center font-bold">{total_pantallas_p_u}</td>
+                    }
                     <td  className="border-t justify-center text-center items-center font-bold">{total_pantallas_p}</td>
                   </tr>
                 </tbody>
@@ -453,7 +479,10 @@ const SeparateReport = () => {
                         <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
                     }                    
                     <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
-                    <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
+                    {
+                      auth.user.owner == true && 
+                      <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
+                    }   
                     {/* <th className="px-auto pt-5 pb-4 text-center">Cantidad</th> */}
                     <th className="px-6 pt-5 pb-4 text-center">Total Producto</th>
                   </tr>
@@ -490,15 +519,20 @@ const SeparateReport = () => {
                               {detalle.total_producto}
                             </td>
 
-                            <td className="border-t justify-center text-center items-center">
-                              {productos
-                                .filter(p => p.id == detalle.product_id)
-                                .map(ps => {
-                                  total_celulares_e_u +=
-                                    detalle.total_producto - ps.cost_price;
-                                  return detalle.total_producto - ps.cost_price;
-                                })}
-                            </td>
+                            {
+                      auth.user.owner == true && 
+                      <td className="border-t justify-center text-center items-center">
+                      {productos
+                        .filter(p => p.id == detalle.product_id)
+                        .map(ps => {
+                          total_celulares_e_u +=
+                            detalle.total_producto - ps.cost_price;
+                          return detalle.total_producto - ps.cost_price;
+                        })}
+                    </td>
+                    }  
+
+                            
 
                             {/* <td className="border-t justify-center text-center items-center">
                             {detalle.cantidad}
@@ -516,9 +550,13 @@ const SeparateReport = () => {
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
+                    {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
+
                     <td className="border-t justify-center text-center items-center"></td>
                     <td  className="border-t justify-center text-center items-center font-bold">Total</td>
+                    {auth.user.owner == true && 
                     <td  className="border-t justify-center text-center items-center font-bold">{total_celulares_e_u}</td>
+                    }
                     <td  className="border-t justify-center text-center items-center font-bold">{total_celulares_e}</td>
                   </tr>
                 </tbody>
@@ -541,7 +579,10 @@ const SeparateReport = () => {
                         <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
                     }
                     <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
+                    {
+                      auth.user.owner == true && 
                     <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
+}
                     {/* <th className="px-auto pt-5 pb-4 text-center">Cantidad</th> */}
                     <th className="px-6 pt-5 pb-4 text-center">Total Producto</th>
                   </tr>
@@ -568,7 +609,7 @@ const SeparateReport = () => {
                         </td>
 
                         {
-                          auth.user.owner == true && 
+                          (auth.user.owner == true && detalle.category_id != 4  )&& 
                             <td className="border-t justify-center text-center items-center">
                               { 
                               productos.filter(p => p.id == detalle.product_id).map(ps =>{
@@ -581,7 +622,8 @@ const SeparateReport = () => {
                         <td className="border-t justify-center text-center items-center">
                             {detalle.total_producto}
                         </td>
-
+                        {
+                      auth.user.owner == true && 
                         <td className="border-t justify-center text-center items-center">
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
@@ -590,6 +632,7 @@ const SeparateReport = () => {
                             })  
                             }
                         </td>
+                      }
 
                         {/* <td className="border-t justify-center text-center items-center">
                             {detalle.cantidad}
@@ -606,9 +649,13 @@ const SeparateReport = () => {
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
+                    {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
+
                     <td className="border-t justify-center text-center items-center"></td>
                     <td  className="border-t justify-center text-center items-center font-bold">Total</td>
+                    {auth.user.owner == true && 
                     <td  className="border-t justify-center text-center items-center font-bold">{total_celulares_c_u}</td>
+                    }
                     <td  className="border-t justify-center text-center items-center font-bold">{total_celulares_c}</td>
                   </tr>
                 </tbody>
@@ -630,7 +677,10 @@ const SeparateReport = () => {
                         <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
                     }                    
                     <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
+                    {
+                      auth.user.owner == true && 
                     <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
+}
                     {/* <th className="px-auto pt-5 pb-4 text-center">Cantidad</th> */}
                     <th className="px-6 pt-5 pb-4 text-center">Total Producto</th>
                   </tr>
@@ -671,7 +721,8 @@ const SeparateReport = () => {
                             {detalle.total_producto}
                         </td>
 
-
+                        {
+                      auth.user.owner == true && 
                         <td className="border-t justify-center text-center items-center">
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
@@ -680,7 +731,7 @@ const SeparateReport = () => {
                             })  
                             }
                         </td>
-
+                      }
                         {/* <td className="border-t justify-center text-center items-center">
                             {detalle.cantidad}
                         </td> */}
@@ -696,9 +747,12 @@ const SeparateReport = () => {
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
+                    {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
                     <td className="border-t justify-center text-center items-center"></td>
                     <td  className="border-t justify-center text-center items-center font-bold">Total</td>
+                    {auth.user.owner == true &&
                     <td  className="border-t justify-center text-center items-center font-bold">{total_celulares_p_u}</td>
+                    }
                     <td  className="border-t justify-center text-center items-center font-bold">{total_celulares_p}</td>
                   </tr>
                 </tbody>
@@ -747,7 +801,10 @@ const SeparateReport = () => {
                         <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
                     }                    
                     <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
+                    {
+                      auth.user.owner == true && 
                     <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
+}
                     {/* <th className="px-auto pt-5 pb-4 text-center">Cantidad</th> */}
                     <th className="px-6 pt-5 pb-4 text-center">Total Producto</th>
                   </tr>
@@ -787,7 +844,8 @@ const SeparateReport = () => {
                         <td className="border-t justify-center text-center items-center">
                             {detalle.total_producto}
                         </td>
-
+                        {
+                      auth.user.owner == true && 
                         <td className="border-t justify-center text-center items-center">
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
@@ -796,6 +854,7 @@ const SeparateReport = () => {
                             })  
                             }
                         </td>
+                      }
 
                         {/* <td className="border-t justify-center text-center items-center">
                             {detalle.cantidad}
@@ -812,9 +871,12 @@ const SeparateReport = () => {
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
+                    {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
                     <td className="border-t justify-center text-center items-center"></td>
                     <td  className="border-t justify-center text-center items-center font-bold">Total</td>
+                    {auth.user.owner == true && 
                     <td  className="border-t justify-center text-center items-center font-bold">{total_accesorios_c_u}</td>
+                    }
                     <td  className="border-t justify-center text-center items-center font-bold">{total_accesorios_c}</td>
                   </tr>
                 </tbody>
@@ -865,7 +927,10 @@ const SeparateReport = () => {
                         <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
                     }                    
                     <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
+                    {
+                      auth.user.owner == true && 
                     <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
+}
                     <th className="px-6 pt-5 pb-4 text-center">Total Producto</th>
                   </tr>
                 </thead>
@@ -874,6 +939,7 @@ const SeparateReport = () => {
                       
                       venta.venta_detalles.map((detalle)=>{
                         total_servivios_e += parseInt(detalle.total_producto) 
+                        total_servivios_e_u += (detalle.total_producto - detalle.costo_servicio)
                         return(
                         <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
 
@@ -891,13 +957,9 @@ const SeparateReport = () => {
                         </td>
 
                         {
-                          auth.user.owner == true && 
+                          (auth.user.owner == true && detalle.category_id == 4  )&& 
                             <td className="border-t justify-center text-center items-center">
-                              { 
-                              productos.filter(p => p.id == detalle.product_id).map(ps =>{
-                                return ps.cost_price
-                              })  
-                              }
+                             {detalle.costo_servicio}
                             </td>                    
                         }
 
@@ -905,14 +967,23 @@ const SeparateReport = () => {
                             {detalle.total_producto}
                         </td>
 
-                        <td className="border-t justify-center text-center items-center">
+                      {
+                          (auth.user.owner == true && detalle.category_id == 4  )&&
+                          <>
+                            <td className="border-t justify-center text-center items-center">
+
+                             { detalle.total_producto - detalle.costo_servicio}
+                            </td>                    
+                            </>
+                        }
+                        {/* <td className="border-t justify-center text-center items-center">
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
                               total_servivios_e_u += (detalle.total_producto - ps.cost_price)
                               return detalle.total_producto - ps.cost_price
                             })  
                             }
-                        </td>
+                        </td> */}
 
                         {/* <td className="border-t justify-center text-center items-center">
                             {detalle.cantidad}
@@ -929,9 +1000,12 @@ const SeparateReport = () => {
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
+                    {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
                     <td className="border-t justify-center text-center items-center"></td>
                     <td  className="border-t justify-center text-center items-center font-bold">Total</td>
+                    {auth.user.owner == true && 
                     <td  className="border-t justify-center text-center items-center font-bold">{total_servivios_e_u}</td>
+                    }
                     <td  className="border-t justify-center text-center items-center font-bold">{total_servivios_e}</td>
                   </tr>
                 </tbody>
@@ -953,7 +1027,10 @@ const SeparateReport = () => {
                         <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
                     }                    
                     <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
+                    {
+                      auth.user.owner == true && 
                     <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
+}
                     <th className="px-6 pt-5 pb-4 text-center">Total Producto</th>
                   </tr>
                 </thead>
@@ -962,6 +1039,8 @@ const SeparateReport = () => {
                       
                       venta.venta_detalles.map((detalle)=>{
                         total_servivios_c += parseInt(detalle.total_producto) 
+                        total_servivios_c_u += (parseInt(detalle.total_producto) - parseInt(detalle.costo_servicio))
+
                         return(
                         <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
 
@@ -979,13 +1058,9 @@ const SeparateReport = () => {
                         </td>
 
                         {
-                          auth.user.owner == true && 
+                          (auth.user.owner == true && detalle.category_id == 4  )&& 
                             <td className="border-t justify-center text-center items-center">
-                              { 
-                              productos.filter(p => p.id == detalle.product_id).map(ps =>{
-                                return ps.cost_price
-                              })  
-                              }
+                             {detalle.costo_servicio}
                             </td>                    
                         }
 
@@ -993,14 +1068,22 @@ const SeparateReport = () => {
                             {detalle.total_producto}
                         </td>
 
-                        <td className="border-t justify-center text-center items-center">
+                        {
+                          (auth.user.owner == true && detalle.category_id == 4  )&&
+                           
+                            <td className="border-t justify-center text-center items-center">
+
+                             { detalle.total_producto - detalle.costo_servicio}
+                            </td>                    
+                        }
+                        {/* <td className="border-t justify-center text-center items-center">
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
                               total_servivios_c_u += (detalle.total_producto - ps.cost_price)
                               return detalle.total_producto - ps.cost_price
                             })  
                             }
-                        </td>
+                        </td> */}
 
                         {/* <td className="border-t justify-center text-center items-center">
                             {detalle.cantidad}
@@ -1017,9 +1100,12 @@ const SeparateReport = () => {
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
+                    {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
                     <td className="border-t justify-center text-center items-center"></td>
                     <td  className="border-t justify-center text-center items-center font-bold">Total</td>
+                    {auth.user.owner == true && 
                     <td  className="border-t justify-center text-center items-center font-bold">{total_servivios_c_u}</td>
+                    }
                     <td  className="border-t justify-center text-center items-center font-bold">{total_servivios_c}</td>
                   </tr>
                 </tbody>
@@ -1042,7 +1128,10 @@ const SeparateReport = () => {
                         <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
                     }                    
                     <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
+                    {
+                      auth.user.owner == true && 
                     <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
+}
                     <th className="px-6 pt-5 pb-4 text-center">Total Producto</th>
                   </tr>
                 </thead>
@@ -1051,6 +1140,8 @@ const SeparateReport = () => {
                       
                       venta.venta_detalles.map((detalle)=>{
                         total_servivios_p += parseInt(detalle.total_producto) 
+                        total_servivios_p_u += (parseInt(detalle.total_producto) - parseInt(detalle.costo_servicio))
+
                         return(
                         <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
 
@@ -1068,13 +1159,9 @@ const SeparateReport = () => {
                         </td>
 
                         {
-                          auth.user.owner == true && 
+                          (auth.user.owner == true && detalle.category_id == 4  )&& 
                             <td className="border-t justify-center text-center items-center">
-                              { 
-                              productos.filter(p => p.id == detalle.product_id).map(ps =>{
-                                return ps.cost_price
-                              })  
-                              }
+                             {detalle.costo_servicio}
                             </td>                    
                         }
 
@@ -1082,14 +1169,23 @@ const SeparateReport = () => {
                             {detalle.total_producto}
                         </td>
 
-                        <td className="border-t justify-center text-center items-center">
+                        {
+                          (auth.user.owner == true && detalle.category_id == 4  )&&
+                           
+                            <td className="border-t justify-center text-center items-center">
+
+                             { detalle.total_producto - detalle.costo_servicio}
+                            </td>                    
+                        }
+
+                        {/* <td className="border-t justify-center text-center items-center">
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
                               total_servivios_p_u += (detalle.total_producto - ps.cost_price)
                               return detalle.total_producto - ps.cost_price
                             })  
                             }
-                        </td>
+                        </td> */}
 
                         {/* <td className="border-t justify-center text-center items-center">
                             {detalle.cantidad}
@@ -1106,9 +1202,13 @@ const SeparateReport = () => {
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
+                    {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
+
                     <td className="border-t justify-center text-center items-center"></td>
                     <td  className="border-t justify-center text-center items-center font-bold">Total</td>
+                    {auth.user.owner == true &&
                     <td  className="border-t justify-center text-center items-center font-bold">{total_servivios_p_u}</td>
+                    }
                     <td  className="border-t justify-center text-center items-center font-bold">{total_servivios_p}</td>
                   </tr>
                 </tbody>

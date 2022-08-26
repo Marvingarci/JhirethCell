@@ -119,15 +119,15 @@ const Create = () => {
       real_sell_price : servicio.pago,
       whole_sell_price : servicio.pago,
       descuento : 0,
+      costo_servicio : servicio.costo,
       total_producto : servicio.pago * 1,
       cantidad : 1,
     };
-    setServicio(service)
 
-    setCarrito([...carrito, service]);
+    // setCarrito([...carrito, service]);
+    carrito.push(service)
+    setCarrito([...carrito]);
     console.log(carrito)
-    //carrito.push(service)
-    // setCarrito([...carrito]);
     reset();
 
     setTimeout(() => {
@@ -136,7 +136,7 @@ const Create = () => {
 
     closeModal()
 
-    setDescuentoCantidad((carrito.length -1), 0)
+    //setDescuentoCantidad((carrito.length -1), 0)
 
   }
 
@@ -150,10 +150,20 @@ const Create = () => {
         reset()
         return false
       }
+
+       // If product is colective and cantidad is 0 
+       if(producto.product.dbType == 'colectivo' && producto.existencia < 1){
+        reset()
+        return false
+      }
+
+
       //Agg scaned product to the shopcart and set new values
       const newProduct = producto.product;
       newProduct.cantidad = 1;
       newProduct.codebar = producto.codebar;
+      newProduct.costo_servicio = 0;
+
       if(tipoCliente){
         newProduct.real_sell_price = newProduct.sell_price;
         newProduct.descuento = 0;
@@ -167,14 +177,14 @@ const Create = () => {
       //check is the car is empty 
       if (carrito.length == 0) {
         setCarrito([...carrito, newProduct]);
-        SumaTotal();
+        //SumaTotal();
 
       } else {
         //if the article exists, it doesnt make anything
         if (carrito.find(item => item.codebar === newProduct.codebar)) {
         } else {
           setCarrito([...carrito, newProduct]);
-          SumaTotal();
+         // SumaTotal();
 
         }
 
@@ -182,63 +192,22 @@ const Create = () => {
 
       reset();
 
-      SumaTotal();
+     // SumaTotal();
 
     }
     reset();
-   SumaTotal();
+ // SumaTotal();
 
     console.log(usuarios)
   }, [producto]);
 
   useEffect(() => {
-    console.log(servicio)
-    if (producto != null) {
-      console.log(servicio)
-
-      // If product has been sold, just scape
-      // if(producto.status != 'stock'){
-      //   reset()
-      //   return false
-      // }
-      //Agg scaned product to the shopcart and set new values
-      const newProduct = servicio;
-      newProduct.cantidad = 1;
-      newProduct.codebar = producto.codebar;
-      if(tipoCliente){
-        newProduct.real_sell_price = newProduct.sell_price;
-        newProduct.descuento = 0;
-        newProduct.total_producto = newProduct.cantidad * newProduct.sell_price;
-      }else{
-        newProduct.real_sell_price = newProduct.whole_sell_price;
-        newProduct.descuento = 0;
-        newProduct.total_producto = newProduct.cantidad * newProduct.whole_sell_price;
-      }
-     
-      //check is the car is empty 
-      if (carrito.length == 0) {
-        setCarrito([...carrito, newProduct]);
-        SumaTotal();
-
-      } else {
-        //if the article exists, it doesnt make anything
-        if (carrito.find(item => item.codebar === newProduct.codebar)) {
-        } else {
-          setCarrito([...carrito, newProduct]);
-          SumaTotal();
-
-        }
-
-      }
-
-    
-      SumaTotal();
-
-    }
-    reset();
+    console.log('useeffect carrito')
     SumaTotal();
-  }, [servicio])
+  }, [carrito])
   
+ 
+
 
   const setDescuento = (index, descuento) => {
     carrito[index].descuento = descuento;
@@ -268,6 +237,25 @@ const Create = () => {
     }
 
      
+    setCarrito([...carrito]);
+    SumaTotal();
+  } 
+
+  const setPrecio = (index, precio) =>{
+    console.log('precio',index, precio, carrito)
+    
+      carrito[index].real_sell_price = precio;
+      carrito[index].total_producto = carrito[index].cantidad * carrito[index].real_sell_price;
+    
+    setCarrito([...carrito]);
+    SumaTotal();
+  } 
+
+  const setCosto = (index, costo) =>{
+    console.log('costo',index, precio, carrito)
+    
+      carrito[index].costo_servicio = costo;
+    
     setCarrito([...carrito]);
     SumaTotal();
   } 
@@ -302,8 +290,8 @@ const Create = () => {
       contar = contar + item.total_producto;
     });
     console.log("contar despues de sumaTotal "+contar)
-    data.total= contar;
-    
+    //data.total= contar;
+    setData('total', contar)
   };
 
   const eliminar  =  codebar => {
@@ -452,6 +440,8 @@ const Create = () => {
                         cantidad,
                         codebar,
                         sell_price,
+                        costo_servicio,
+                        category_id,
                         total_producto,
                         real_sell_price
                       },
@@ -475,25 +465,49 @@ const Create = () => {
                             onChange={e => setCantidad(index, e.target.value)}
                           />
                         </td> */}
+                        {
+                          category_id == 4 &&
+                          <td className="border-t flex gap-1 justify-center text-center items-center">
+
+                          <TextInput
+                          className="w-20"
+                          label="Costo"
+                          name="precio"
+                          type="number"
+                          value={costo_servicio}
+                          onChange={e => setCosto(index, e.target.value)}
+                          />
+                            <TextInput
+                          className="w-20"
+                          label="Precio"
+                          name="precio"
+                          type="number"
+                          value={real_sell_price}
+                          onChange={e => setPrecio(index, e.target.value)}
+                          />
+                                                    </td>
+
+                        }
+
+                        {
+                          category_id != 4 &&
                         <td className="border-t justify-center text-center items-center">
                           {real_sell_price}
                           </td>
-                        <td className="border-t justify-center flex flex-row text-center items-center gap-1">
-                          {/* <SelectInput
-                            className="w-20"
-                            name="percentage"
-                            onChange={e => setDescuento(index, e.target.value)}
-                          >
-                            <option value="0">N/A</option>
-                            <option value="0.01">1%</option>
-                            <option value="0.02">2%</option>
-                            <option value="0.03">3%</option>
-                            <option value="0.04">4%</option>
-                            <option value="0.05">5%</option>
-                            <option value="0.10">10%</option>
-                            <option value="0.15">15%</option>
-                          </SelectInput> */}
+                        }
 
+                        {
+                          category_id == 4 &&
+                          <td className="border-t justify-center text-center items-center">
+
+                          N/A
+                                                    </td>
+
+                        }
+
+                        {
+                          category_id != 4 &&
+                          <td className="border-t justify-center flex flex-row text-center items-center gap-1">
                           <TextInput
                             className="w-20"
                             name="descuento"
@@ -501,6 +515,8 @@ const Create = () => {
                             onChange={e => setDescuentoCantidad(index, e.target.value)}
                             />
                         </td>
+                        }
+                       
                         <td className="border-t justify-center text-center items-center">
                          
                             {total_producto}

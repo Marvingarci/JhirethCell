@@ -108,7 +108,8 @@ class InventarioController extends Controller
             'filters' => Request::all('search', 'trashed'),
             'inventario' => Inventario::where('product_id', $id)->get(),
             'product' => new ProductResource($product),
-            'categorias'=> Category::All()
+            'categorias'=> Category::All(),
+            'organizations'=> Organization::All(),
         ]);
     }
 

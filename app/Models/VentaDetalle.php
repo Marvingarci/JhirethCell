@@ -10,7 +10,7 @@ class VentaDetalle extends Model
     use HasFactory;
 
     protected $fillable =[        
-        'ventas_id','producto', 'product_id' , 'product_code','cantidad', 'precio', 'descuento', 'total_producto','category_id', 'organization_id', 'estado', 'garantia', 'fin_garantia'];
+        'ventas_id','producto', 'product_id' , 'product_code','cantidad', 'precio', 'descuento', 'costo_servicio', 'total_producto','category_id', 'organization_id', 'estado', 'garantia', 'fin_garantia'];
     
 
     public function venta()

@@ -80,9 +80,21 @@ const Index = () => {
               <div className="text-lg"> { producto.created_at.substring(0,10) }</div>
               <p className="font-bold text-lg " >Imei</p>
               <div className="text-lg"> { producto.imei}</div>
+              { producto.product.dbType == 'colectivo' && ( 
+                <>
+                <p className="font-bold text-lg " >Existencia</p>
+                <div className="text-lg"> { producto.existencia}</div>
+                </>
+                )
+              }
               <p className="font-bold text-lg " >Actual estado</p>
               <div className="text-lg"> { producto.status}</div>
-              <p className="font-bold text-lg " >Cambiar Estado</p>
+              {
+                producto.product.dbType == 'individual' &&
+                 <p className="font-bold text-lg " >Cambiar Estado</p>
+              }
+               {
+                producto.product.dbType == 'individual' &&
               <SelectInput
               className="w-full pb-8 pr-6 lg:w-1/2"
               value={data.status}
@@ -95,9 +107,13 @@ const Index = () => {
               <option value="observacion">Observacion</option>
               <option value="mala">Mala</option>
             </SelectInput>
+              }
+               {
+                producto.product.dbType == 'individual' &&
             <LoadingButton onClick={e => updateStatus()} className="btn-indigo">
                 Actualizar estado
               </LoadingButton>
+              }
           </div>
         </div>
       }

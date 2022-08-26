@@ -41,18 +41,20 @@ class ContactsController extends Controller
         //     $query->where('tipoPago', 'credito');
         // }])->orderByName()->filter(Request::only('search', 'trashed'))->paginate()->get();
         
-        $contacts = new ContactCollection(
-            Auth::user()->account->contacts()
-                ->orderByName()
-                ->filter(Request::only('search', 'trashed'))
-                ->paginate()
-                ->appends(Request::all())
-                ); 
+        $contacts = Contact::with(['organization', 'ventas' => function ($query) {
+            $query->where('tipoPago', 'credito');
+        }])->get(); 
+        $contactsWithCredit = [];
+        foreach ($contacts as $c) {
+            if(count($c->ventas) > 0){
+                array_push($contactsWithCredit, $c);
+            }
+        }
         
 
         return Inertia::render('Contacts/IndexCredit', [
             'filters' => Request::all('search', 'trashed'),
-            'contacts' => Contact::all(),
+            'contacts' => $contactsWithCredit,
         ]);
     }
     

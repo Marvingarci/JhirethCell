@@ -37,7 +37,7 @@ const IndexCredit = () => {
             </tr>
           </thead>
           <tbody>
-            {contacts.map(({ id, name, city, phone, organization, deleted_at }) => (
+            {contacts.map(({ id, first_name, last_name, phone, organization, deleted_at }) => (
               <tr
                 key={id}
                 className="hover:bg-gray-100 focus-within:bg-gray-100"
@@ -47,7 +47,7 @@ const IndexCredit = () => {
                     href={route('contacts.edit', id)}
                     className="flex items-center px-6 py-4 focus:text-indigo-700 focus:outline-none"
                   >
-                    {name}
+                    {first_name +" "+last_name}
                     {deleted_at && (
                       <Icon
                         name="trash"

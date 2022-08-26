@@ -106,6 +106,7 @@ class VentasController extends Controller
                 'precio'=> $venta['sell_price'], 
                 'descuento'=>$venta['descuento'], 
                 'total_producto'=>$venta['total_producto'], 
+                'costo_servicio'=>$venta['costo_servicio'], 
                 'estado' => $request->tipoPago,
                 'garantia' => $venta['garantia'],
                 'fin_garantia' => $venta['fin_garantia']

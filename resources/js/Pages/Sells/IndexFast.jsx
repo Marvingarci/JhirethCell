@@ -10,6 +10,17 @@ import Modal from 'react-modal';
 import moment from 'moment';
 
 
+const customStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+  },
+};
+
 const IndexFast = () => {
   const { categorias, usuarios, producto, ventasRapidas, contactos, auth } =
     usePage().props;
@@ -32,6 +43,9 @@ const IndexFast = () => {
   const [carrito, setCarrito] = useState([]);
   const [cuenta, setCuenta] = useState(0);
   const [seleccion, setSeleccion] = useState('');
+  const [modalIsOpen, setIsOpen] = useState(false);
+  const [pin, setPin] = useState('');
+  const [messagePin, setMessagePin] = useState('');
 
   const date = new Date();
   const ahora =
@@ -49,15 +63,54 @@ const IndexFast = () => {
     data.total = carrito[0].real_sell_price
     data.restante = '0'
     console.log(data);
-    post(route('ventas.store'), {
-      onSuccess: page => {
-        setCarrito([]);
-      },
-      onError:error=>{
-        console.log(error)
-      }
-    });
+    if(checkVendor()){ 
+      post(route('ventas.store'), {
+        onSuccess: page => {
+          setCarrito([]);
+        },
+        onError:error=>{
+          console.log(error)
+        }
+      });
+    }
   }
+
+  const closeModal = () => {
+    setIsOpen(false);
+  }
+  const openModal = () => {
+    setIsOpen(true);
+  }
+
+
+  const checkVendor = () =>{
+    if(data.vendedor_id !=  auth.user.id){
+      openModal()
+      return false;
+    }else{
+      return true;
+    }
+  }
+
+  const checkPin = () =>{
+    let user = usuarios.find(us => us.id == data.vendedor_id)
+    console.log(pin, user.pin)
+    if(pin ==  user.pin){
+      closeModal()
+      console.log(data);
+      post(route('ventas.store'), {
+        onSuccess: page => {
+          setCarrito([]);
+        },
+        onError:error=>{
+          console.log(error)
+        }
+      });
+    }else{
+      setMessagePin('Pin Incorrecto, Intente nuevamente')
+    }
+  }
+
 
   useEffect(() => {
     if (producto != null) {
@@ -66,11 +119,17 @@ const IndexFast = () => {
         reset();
         return false;
       }
+
+      if(producto.product.dbType == 'colectivo'){
+        reset()
+        return false
+      }
       const newProduct = producto.product;
       newProduct.cantidad = 1;
       newProduct.codebar = producto.codebar;
       newProduct.real_sell_price = newProduct.whole_sell_price;
       newProduct.descuento = 0;
+      newProduct.costo_servicio = 0;
       newProduct.estado = 'pendiente';
       newProduct.total_producto = newProduct.cantidad * newProduct.whole_sell_price;
       if (carrito.length == 0) {
@@ -348,6 +407,7 @@ const IndexFast = () => {
             <thead>
               <tr className="font-bold text-left">
                 <th className="px-3 pt-5 pb-4">Fecha</th>
+                <th className="px-3 pt-5 pb-4">Codigo</th>
                 <th className="px-6 pt-5 pb-4">Nombre</th>
                 <th className="px-6 pt-5 pb-4">Cliente</th>
                 <th className="px-6 pt-5 pb-4">Vendedor</th>
@@ -363,7 +423,7 @@ const IndexFast = () => {
                 venta.venta_detalles.map(
                   ({
                     producto,
-                    cantidad,
+                    product_code,
                     precio,
                     descuento,
                     total_producto,
@@ -373,6 +433,9 @@ const IndexFast = () => {
                       <td className="border-t justify-center text-center items-center">
                         {moment(created_at).locale("es").calendar()}
                       </td>
+                      <td className="border-t justify-center text-center items-center">
+                        {product_code}
+                      </td> 
                       <td className="border-t justify-center text-center items-center">
                         {producto}
                       </td>
@@ -451,6 +514,35 @@ const IndexFast = () => {
         </div>
         {/* fin tabla pendiente */}
       </div>
+
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Ingrese el pin de vendedor"
+        style={customStyles}
+      >
+        <div className='flex justify-between pb-5'>
+          <h2 >Ingresa el pin de vendedor</h2>
+          <LoadingButton className="btn-indigo" onClick={closeModal}>close</LoadingButton>
+        </div>
+        <div>
+            <TextInput
+                className="w-full pb-8 pr-6 lg:w-1/3"
+                label="Pin"
+                type="password"
+                name="first_name"
+                value={pin}
+                onChange={e => setPin(e.target.value)}
+            />
+            <p className="text-red-500 text-xl font-bold">{messagePin}</p>
+
+            <div className='flex gap-1'>
+          <LoadingButton onClick={checkPin} className="btn-indigo" >Ok</LoadingButton>
+          <LoadingButton onClick={closeModal} className="btn-indigo" >Close</LoadingButton>
+            </div>
+        </div>
+
+      </Modal>
     </div>
   );
 };

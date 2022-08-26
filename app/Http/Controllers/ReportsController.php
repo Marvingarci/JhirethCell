@@ -92,7 +92,6 @@ class ReportsController extends Controller
     public function paymentsReport()
     {
         $today = Carbon::today();
-        $organizations = Organization::all();
         $payments = Payment::with(['venta', 'user' ])->where([['created_at', 'like', $today->format('Y-m-d') . '%']])->get();
         $total = 0;
         foreach ($payments as $pay) {
@@ -100,11 +99,7 @@ class ReportsController extends Controller
         }
 
         $productos = Product::all();
-        // dd($payments);
-        // $Ventas_celulares = Ventas::where([['created_at', 'like', $today->format('Y-m-d') . '%'],['tipoPago', 'efectivo'],['category_id', 2]])->with('venta_detalles')->get();
-        // $Ventas_accesorios = Ventas::where([['created_at', 'like', $today->format('Y-m-d') . '%'],['tipoPago', 'efectivo'],['category_id', 3]])->with('venta_detalles')->get();
-
-
+       
         return Inertia::render('Reports/PaymentsReport',[
             'payments'=> $payments,
             'total'=> $total,

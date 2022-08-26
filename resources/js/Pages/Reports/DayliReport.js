@@ -3,7 +3,7 @@ import Layout from '@/Shared/Layout';
 import Index from '@/Pages/Reports/Index';
 import { PDFExport } from '@progress/kendo-react-pdf';
 import LoadingButton from '@/Shared/LoadingButton';
-import { usePage } from '@inertiajs/inertia-react';
+import { usePage, InertiaLink } from '@inertiajs/inertia-react';
 
 const DayliReport = () => {
   const { ventas } = usePage().props;
@@ -37,6 +37,8 @@ const DayliReport = () => {
       <table className=" whitespace-nowrap w-full">
       <thead>
                   <tr className="font-bold text-left">
+                   <th className="px-6 pt-5 pb-4 text-center">Factura</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
                     <th className="px-6 pt-5 pb-4 text-center" >Precio</th>
                     <th className="px-auto pt-5 pb-4 text-center">Cantidad</th>
@@ -50,6 +52,17 @@ const DayliReport = () => {
                         total += parseInt(detalle.total_producto) 
                         return(
                         <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                           <td className="border-t justify-center text-center items-center">
+                    <InertiaLink
+                      href={route('ventas.edit', venta.id)}
+                      className="flex items-center px-6 py-4 text-indigo-700 focus:outline-none"
+                    >
+                      Ver factura {venta.id}
+                    </InertiaLink>
+                  </td>
+                        <td className="border-t justify-center text-center items-center">
+                            {venta.cliente}
+                        </td> 
 
                         <td className="border-t justify-center text-center items-center">
                             {detalle.producto}

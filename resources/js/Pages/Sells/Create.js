@@ -88,12 +88,12 @@ const Create = () => {
   }
 
   const checkVendor = () =>{
-    if(data.vendedor_id !=  auth.user.id){
+    // if(data.vendedor_id !=  auth.user.id){
       openModal()
       return false;
-    }else{
-      return true;
-    }
+    // }else{
+    //   return true;
+    // }
   }
 
   const checkPin = () =>{
@@ -228,12 +228,12 @@ const Create = () => {
     
     if(tipoCliente){
       carrito[index].descuento = descuento / carrito[index].real_sell_price;
-      carrito[index].real_sell_price = carrito[index].sell_price -  descuento;
-      carrito[index].total_producto = carrito[index].cantidad * carrito[index].real_sell_price;
+      //carrito[index].real_sell_price = carrito[index].sell_price -  descuento;
+      carrito[index].total_producto = (carrito[index].cantidad * carrito[index].real_sell_price) - descuento;
     }else{
       carrito[index].descuento = descuento / carrito[index].real_sell_price;
-      carrito[index].real_sell_price = carrito[index].whole_sell_price - descuento;
-      carrito[index].total_producto = carrito[index].cantidad * carrito[index].real_sell_price;
+      //carrito[index].real_sell_price = carrito[index].whole_sell_price - descuento;
+      carrito[index].total_producto = (carrito[index].cantidad * carrito[index].real_sell_price) - descuento;
     }
 
      
@@ -260,13 +260,13 @@ const Create = () => {
     SumaTotal();
   } 
 
-  // const setCantidad = (index, cantidad) => {
-  //   carrito[index].cantidad = parseFloat(cantidad);
-  //   carrito[index].total_producto =
-  //   carrito[index].cantidad * carrito[index].real_sell_price;
-  //   setCarrito([...carrito]);
-  //   SumaTotal();
-  // };
+  const setCantidad = (index, cantidad) => {
+    carrito[index].cantidad = parseFloat(cantidad);
+    carrito[index].total_producto =
+    carrito[index].cantidad * carrito[index].real_sell_price;
+    setCarrito([...carrito]);
+    SumaTotal();
+  };
 
   const cambiarCliente = ()=>{
     setTipoCliente(!tipoCliente)
@@ -422,8 +422,8 @@ const Create = () => {
                   <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4">Nombre</th>
                     <th className="px-6 pt-5 pb-4">Código</th>
-                    {/* <th className="px-3 pt-5 pb-4">Cantidad</th> */}
                     <th className="px-6 pt-5 pb-4">Precio</th>
+                    <th className="px-3 pt-5 pb-4">Cantidad</th>
                     <th className="px-6 pt-5 pb-4">Descuento</th>
                     <th className="px-6 pt-5 pb-4 " colSpan="2">
                       Total
@@ -443,7 +443,8 @@ const Create = () => {
                         costo_servicio,
                         category_id,
                         total_producto,
-                        real_sell_price
+                        real_sell_price,
+                        dbType
                       },
                       index
                     ) => (
@@ -454,17 +455,7 @@ const Create = () => {
                         <td className={`border-t justify-center text-center items-center ${codebar == 0 && 'text-red-500'}`}>
                             {codebar}
                         </td>
-                        {/* <td className="border-t justify-center text-center items-center">
-                          <TextInput
-                            className="w-20"
-                            type="number"
-                            value={cantidad}
-                            inputProps={{
-                              min: 1
-                            }}
-                            onChange={e => setCantidad(index, e.target.value)}
-                          />
-                        </td> */}
+                        
                         {
                           category_id == 4 &&
                           <td className="border-t flex gap-1 justify-center text-center items-center">
@@ -504,6 +495,27 @@ const Create = () => {
                                                     </td>
 
                         }
+                        {
+                          dbType == 'colectivo' ?
+                          <td className="border-t justify-center text-center items-center">
+                          <TextInput
+                            className="w-20"
+                            type="number"
+                            value={cantidad}
+                            inputProps={{
+                              min: 1
+                            }}
+                            onChange={e => setCantidad(index, e.target.value)}
+                          />
+                        </td>
+
+                          :
+                          <td className="border-t justify-center text-center items-center">
+                            {cantidad} 
+                          </td>
+
+                        }
+                      
 
                         {
                           category_id != 4 &&
@@ -606,13 +618,15 @@ const Create = () => {
         isOpen={modalServicioIsOpen}
         onRequestClose={closeModal}
         contentLabel="Seleccione el Servicio"
-        style={customStyles}
+        //style={customStyles}
+     
       >
         <div className='flex justify-between pb-5'>
 
           <h2 className='text-gray-500 text-2xl font-bold'>Seleccione el Servicio</h2>
-          <LoadingButton className="btn-indigo" onClick={closeModal}>close</LoadingButton>
+          <LoadingButton className="btn-indigo" onClick={closeModal}>Cerrar</LoadingButton>
         </div>
+        <div className='flex flex-col h-full overflow-y-auto'>
 
         { 
           servicios.map(servicio => {
@@ -635,6 +649,7 @@ const Create = () => {
             )
           })
         }
+        </div>
         
 
       </Modal>

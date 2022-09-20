@@ -13,6 +13,8 @@ const Index = () => {
     data,
     meta: { links }
   } = ventas_dia;
+
+  console.log(usuarios)
   return (
     <div>
       <h1 className="mb-8 text-3xl font-bold">Caja</h1>
@@ -68,13 +70,12 @@ const Index = () => {
                     href={route('ventas.edit', id)}
                     className="flex items-center px-6 py-4 focus:text-indigo focus:outline-none"
                   >
-                    {
-                      usuarios.map((user) => {
-                        if(user.id == id){
-                          return( user.first_name+" "+user.last_name)
-                        }
-                      })
-                    }
+                   {usuarios
+                          .filter(user => user.id == vendedor_id)
+                          .map(
+                            ({ id, first_name, last_name }) =>
+                               first_name + ' ' + last_name
+                          )}
                   </InertiaLink>
                 </td>
                 <td className="border-t">

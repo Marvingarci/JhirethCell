@@ -9,12 +9,14 @@ use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Models\Organization;
 use App\Models\User;
+use App\Models\Ventas;
 use Illuminate\Http\Request as HttpRequest;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
 use Spatie\Permission\Models\Permission;
+use Carbon\Carbon;
 
 class UsersController extends Controller
 {
@@ -52,9 +54,16 @@ class UsersController extends Controller
 
     public function edit(User $user)
     {
+
+        $VentasPorMeses = Ventas::where('vendedor_id', $user->id)->with('venta_detalles')->get()
+        ->groupBy(function($val) {
+            return Carbon::parse($val->created_at)->format('M');
+        });
+
         return Inertia::render('Users/Edit', [
             'user' => new UserResource($user),
-            'organizations' => Organization::all()
+            'organizations' => Organization::all(),
+            'VentasPorMeses' => $VentasPorMeses,
         ]);
     }
 

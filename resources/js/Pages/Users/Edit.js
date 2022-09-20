@@ -9,9 +9,11 @@ import TextInput from '@/Shared/TextInput';
 import SelectInput from '@/Shared/SelectInput';
 import FileInput from '@/Shared/FileInput';
 import TrashedMessage from '@/Shared/TrashedMessage';
+import moment from 'moment';
+import Icon from '@/Shared/Icon';
 
 const Edit = () => {
-    const {user, organizations} = usePage().props;
+    const {user, organizations, VentasPorMeses} = usePage().props;
     const {
         data,
         setData,
@@ -51,6 +53,8 @@ const Edit = () => {
             Inertia.put(route('users.restore', user.id));
         }
     }
+
+    console.log(VentasPorMeses)
 
     return (
       <div>
@@ -161,7 +165,116 @@ const Edit = () => {
             </div>
           </form>
         </div>
+        <div className='m-5 bg-white rounded-md'>
+          <div className='text-center p-5 text-xl '>
+          Reporte de Ventas por vendedor
+          </div> 
+          <div className="overflow-x-auto bg-white rounded shadow">
+        <table className="w-full whitespace-nowrap">
+          <thead>
+            <tr className="font-bold text-left">
+              <th className="px-6 pt-5 pb-4">Fecha</th>
+              <th className="px-6 pt-5 pb-4">Cliente</th>
+              <th className="px-6 pt-5 pb-4">Total</th>
+              <th className="px-6 pt-5 pb-4" colSpan="2">
+                Tipo de Pago
+              </th>
+            </tr>
+          </thead>
+          {
+            Object.entries(VentasPorMeses).map((ventas, index)=>{
+              let totalMes = 0;
+              return (
+                <tbody >
+                  <tr  key={index}>
+                    <td colSpan="5" className='text-center text-lg font-bold' key={index}>{ventas[0]}</td>
+                  </tr>
+                  {
+                                    
+              ventas[1].map(({ id, cliente, vendedor_id, tipoPago, created_at , total}, index) => {
+                totalMes += total
+                return(
+                <tr
+                  key={index}
+                  className="hover:bg-gray-100 focus-within:bg-gray-100"
+                >
+                  <td className="border-t">
+                    <InertiaLink
+                      href={route('ventas.edit', id)}
+                      className="flex items-center px-6 py-4 focus:text-indigo-700 focus:outline-none"
+                    >
+                      {moment(created_at).locale("es").calendar()}
+                      
+                    </InertiaLink>
+                  </td>
+                  <td className="border-t">
+                    <InertiaLink
+                      tabIndex="1"
+                      className="flex items-center px-6 py-4 focus:text-indigo focus:outline-none"
+                      href={route('ventas.edit', id)}
+                    >
+                      {cliente}
+                    </InertiaLink>
+                  </td>
+                  <td className="border-t">
+                    <InertiaLink
+                      tabIndex="-1"
+                      href={route('ventas.edit', id)}
+                      className="flex items-center px-6 py-4 focus:text-indigo focus:outline-none"
+                    >
+                      {tipoPago}
+                    </InertiaLink>
+                  </td>
+                  <td className="border-t">
+                    <InertiaLink
+                      tabIndex="-1"
+                      href={route('ventas.edit', id)}
+                      className="flex items-center px-6 py-4 focus:text-indigo focus:outline-none"
+                    >
+                      {total}
+                    </InertiaLink>
+                  </td>
+                  <td className="w-px border-t">
+                    <InertiaLink
+                      tabIndex="-1"
+                      href={route('ventas.edit', id)}
+                      className="flex items-center px-4 focus:outline-none"
+                    >
+                      <Icon
+                        name="cheveron-right"
+                        className="block w-6 h-6 text-gray-400 fill-current"
+                      />
+                    </InertiaLink>
+                  </td>
+                </tr>
+                )
+            })
+
+                  }
+                   <tr  key={index}>
+                    <td colSpan="3" className="justify-end text-right font-bold" key={index}>Total {ventas[0]}</td>
+                    <td colSpan="2" key={index} className="text-left px-1 font-bold">{totalMes}</td>
+                  </tr>
+                </tbody>
+
+              )
+           
+              // {ventas[1].length === 0 && (
+              //   <tr>
+              //     <td className="px-6 py-4 border-t" colSpan="4">
+              //       No hay ventas aún
+              //     </td>
+              //   </tr>
+              // )}
+            })
+          }
+         
+        </table>
       </div>
+          </div>
+      </div>
+
+    
     );
 };
 

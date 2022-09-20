@@ -11,7 +11,7 @@ const Index = () => {
     data,
     meta: { links }
   } = products;
-  console.log(products)
+  console.log(products, existencia)
   return (
     <div>
       <h1 className="mb-8 text-3xl font-bold">Inventario</h1>
@@ -76,7 +76,8 @@ const Index = () => {
                       href={route('products.edit', id)}
                       className="flex items-center px-6 py-2 focus:text-indigo focus:outline-none"
                     >
-                      {existencia.map(({product_id, existencia })=>{
+                      {       
+                      existencia.map(({product_id, existencia })=>{
                         if(id ==   product_id){
                             return(existencia)
                         }

@@ -21,7 +21,7 @@ const Edit = () => {
     codebar: '',
     existencia: 1,
     imei: '',
-    color: '',
+    color: 'indefinido',
     organization_id: auth.user.organization_id,
     status:'stock',
      // NOTE: When working with Laravel PUT/PATCH requests and FormData
@@ -34,9 +34,9 @@ const Edit = () => {
     e.preventDefault();
         // NOTE: We are using POST method here, not PUT/PACH. See comment above.
     data.imei = data.codebar
-    if(product.dbType == 'colectivo'){
-      data.color = 'indefinido'
-    }
+    // if(product.dbType == 'colectivo'){
+    //   data.color = 'indefinido'
+    // }
     console.log(data)
     post(route('inventario.store'),{
       onSuccess: page => {
@@ -219,15 +219,28 @@ const Edit = () => {
               <div >
                 <form className="flex flex-wrap p-8 -mb-8 -mr-6" onSubmit={handleSubmit}>
                 <TextInput
-                  className="w-full pb-8 pr-6 lg:w-1/3"
+                  className="w-full pb-8 pr-6 lg:w-1/4"
                   label="Codigo general del producto"
                   name="first_name"
                   errors={errors.codebar}
                   value={data.codebar}
                   onChange={e => setData('codebar', e.target.value)}
                 />
+                  <SelectInput
+              className="w-full pr-6 lg:w-1/4"
+              label="Color"
+              name="country"
+              value={data.color}
+              errors={errors.color}
+              onChange={e => setData('color', e.target.value)}
+            >
+              <option value="">Selecciona color</option>
+              {colores.map(color => {
+                return <option value={color}>{color}</option>
+              })}
+            </SelectInput>
                 <TextInput
-                  className="w-full pb-8 pr-6 lg:w-1/3"
+                  className="w-full pb-8 pr-6 lg:w-1/4"
                   label="Ingresar exitencia"
                   name="first_name"
                   errors={errors.existencia}
@@ -252,6 +265,7 @@ const Edit = () => {
                       <tr className="font-bold text-center">
                         <th className="px-6 pt-5 pb-4">Id</th>
                         <th className="px-6 pt-5 pb-4">Codigo</th>
+                        <th className="px-6 pt-5 pb-4">Color</th>
                         <th className="px-6 pt-5 pb-4">Tienda</th>
                         <th className="px-3 pt-5 pb-4">Existencia</th>
                         <th className="px-3 pt-5 pb-4">Estado</th>
@@ -259,7 +273,7 @@ const Edit = () => {
                     </thead>
                     <tbody>
                       {inventories.map(
-                        ({ id, product_id, codebar, existencia, status, organization_id }, index) => (
+                        ({ id, product_id, color, codebar, existencia, status, organization_id }, index) => (
                           <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                             <td className="border-t justify-center text-center items-center">
                               {id}
@@ -267,6 +281,9 @@ const Edit = () => {
                             <td className={`border-t justify-center text-center items-center`}>
                             {codebar}
                             </td>
+                            <td className="border-t justify-center text-center items-center">
+                            {color}
+                          </td>
                             <td className="border-t justify-center text-center items-center">
                           {organizations.map(({id, name })=>{
                             if(id == organization_id){

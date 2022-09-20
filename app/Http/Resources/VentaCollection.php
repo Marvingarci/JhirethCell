@@ -15,7 +15,7 @@ class VentaCollection extends ResourceCollection
     public function toArray($request)
     {
         return $this->collection->map->only(
-            'id', 'numeroVenta', 'cliente', 'vendedor', 'total', 'tipoPago','created_at'
+            'id', 'numeroVenta', 'cliente', 'vendedor_id', 'vendedor', 'total', 'tipoPago','created_at'
         );
     }
 }

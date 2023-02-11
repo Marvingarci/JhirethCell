@@ -38,6 +38,11 @@ class Ventas extends Model
         return $this->belongsTo(Organization::class, 'organization_id' , 'id');
     }
 
+    public function vendedor()
+    {
+        return $this->hasOne(User::class, 'id' , 'vendedor_id');
+    }
+
 
     public function scopeFilter($query, array $filters)
     {

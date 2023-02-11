@@ -268,7 +268,7 @@ class VentasController extends Controller
                 // esto pasa cuando se elimina una venta completa y se pasan los productos a stock nuevamente
                 foreach ($ventaAEliminar->venta_detalles as $v) {
                     $producto = Product::find($v->product_id);
-                    if($venta['category_id'] != 4){
+                    if($v['category_id'] != 4){
                         if($producto['dbType'] == 'colectivo'){
                             // Bajar el inventario a productos colectivos
                             $inve = Inventario::where('codebar', $v['product_code'])->first();
@@ -294,5 +294,35 @@ class VentasController extends Controller
         }else{
             return Redirect::back()->with('success', 'Exito');
         }
+    }
+
+    public function deleteItem(HttpRequest $request)
+    {
+        
+        
+        $ventaDetalleToDelete = VentaDetalle::find($request['product_id']);
+        $venta = Ventas::find($request['venta_id']);
+
+        if(isset($ventaDetalleToDelete)){
+            $venta->total = $venta->total - $ventaDetalleToDelete->total_producto;
+            $venta->save();
+        }
+
+        $producto = Product::find($ventaDetalleToDelete->product_id);
+        if($ventaDetalleToDelete['category_id'] != 4){
+            if($producto['dbType'] == 'colectivo'){
+                // Bajar el inventario a productos colectivos
+                $inve = Inventario::where('codebar', $ventaDetalleToDelete['product_code'])->first();
+                $inve->existencia = $inve->existencia + $ventaDetalleToDelete['cantidad'] ;
+                $inve->save();
+            }else{
+                Inventario::where('codebar', $ventaDetalleToDelete['product_code'])->update(['status' => 'stock']);
+            }
+        }
+        
+        $ventaDetalleToDelete->delete();
+
+
+        return Redirect::back()->with('success', 'Articulo eliminado de Venta');
     }
 }

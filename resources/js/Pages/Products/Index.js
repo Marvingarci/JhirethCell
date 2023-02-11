@@ -6,12 +6,12 @@ import SearchFilter from '@/Shared/SearchFilter';
 import Pagination from '@/Shared/Pagination';
 
 const Index = () => {
-  const { products, existencia } = usePage().props;
+  const { products, existencia, realExistencia } = usePage().props;
   const {
     data,
     meta: { links }
   } = products;
-  console.log(products, existencia)
+  console.log(products, existencia, realExistencia)
   return (
     <div>
       <h1 className="mb-8 text-3xl font-bold">Inventario</h1>
@@ -77,9 +77,9 @@ const Index = () => {
                       className="flex items-center px-6 py-2 focus:text-indigo focus:outline-none"
                     >
                       {       
-                      existencia.map(({product_id, existencia })=>{
-                        if(id ==   product_id){
-                            return(existencia)
+                      realExistencia.map((p)=>{
+                        if(id ==  p.id){
+                            return(p.realExistencia)
                         }
                       }) }
                     </InertiaLink>

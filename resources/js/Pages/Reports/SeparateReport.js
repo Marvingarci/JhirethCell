@@ -22,6 +22,10 @@ const SeparateReport = () => {
   var total_pantallas_e_u=0;
   var total_pantallas_p=0;
   var total_pantallas_p_u=0;
+  var total_pantallas_t=0;
+  var total_pantallas_t_u=0;
+  var total_pantallas_pos=0;
+  var total_pantallas_pos_u=0;
 
 
   var total_celulares_c=0;
@@ -30,6 +34,10 @@ const SeparateReport = () => {
   var total_celulares_e_u=0;
   var total_celulares_p=0;
   var total_celulares_p_u=0;
+  var total_celulares_t=0;
+  var total_celulares_t_u=0;
+  var total_celulares_pos=0;
+  var total_celulares_pos_u=0;
 
   var total_accesorios_c=0;
   var total_accesorios_c_u=0;
@@ -37,6 +45,10 @@ const SeparateReport = () => {
   var total_accesorios_e_u=0;
   var total_accesorios_p=0;
   var total_accesorios_p_u=0
+  var total_accesorios_t=0;
+  var total_accesorios_t_u=0
+  var total_accesorios_pos=0;
+  var total_accesorios_pos_u=0
 
   var total_servivios_c=0;
   var total_servivios_c_u=0;
@@ -44,8 +56,13 @@ const SeparateReport = () => {
   var total_servivios_e_u=0;
   var total_servivios_p=0;
   var total_servivios_p_u=0
+  var total_servivios_pos=0;
+  var total_servivios_pos_u=0
+  var total_servivios_t=0;
+  var total_servivios_t_u=0
 
-  console.log(productos)
+  
+  console.log(ventas_celulares)
   const date = new Date();
   const ahora =
     date.getDate() +
@@ -333,6 +350,198 @@ const SeparateReport = () => {
                     <td  className="border-t justify-center text-center items-center font-bold">{total_pantallas_c_u}</td>
                     }
                     <td  className="border-t justify-center text-center items-center font-bold">{total_pantallas_c}</td>
+                  </tr>
+                </tbody>
+              </table>
+      </div>
+
+
+      <div className="flex justify-between border-t">
+        <div className="font-bold m-2">Ventas con Transferencia</div>
+       </div>
+      <div className="bg-white rounded shadow">
+      <table className=" whitespace-nowrap w-full">
+      <thead>
+                  <tr className="font-bold text-left">
+                    <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center" >Cliente</th>
+                    {
+                      auth.user.owner == true && 
+                        <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    }
+                    <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
+                    {
+                      auth.user.owner == true && 
+                    <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
+                    }
+                    {/* <th className="px-auto pt-5 pb-4 text-center">Cantidad</th> */}
+                    <th className="px-6 pt-5 pb-4 text-center">Total Producto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ventas_pantallas.filter(v=> v.tipoPago == 'transferencia').map((venta) => (
+                      
+                      venta.venta_detalles.map((detalle)=>{
+                        total_pantallas_t += parseInt(detalle.total_producto) 
+                        return(
+                        <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                        <td className="border-t justify-center text-center items-center">
+                        {moment(detalle.created_at).locale("es").format("Do MM YYYY")}
+                        </td>
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.producto}
+                        </td>
+
+                        <td className="border-t justify-center text-center items-center">
+                            {venta.cliente}
+                        </td>
+
+                        {
+                          auth.user.owner == true && 
+                            <td className="border-t justify-center text-center items-center">
+                              { 
+                              productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                                return ps.cost_price
+                              })  
+                              }
+                            </td>                    
+                        }
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.total_producto}
+                        </td>
+                        {
+                      auth.user.owner == true && 
+                        <td className="border-t justify-center text-center items-center">
+                            { 
+                            productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                              total_pantallas_t_u += (detalle.total_producto - ps.cost_price)
+                              return detalle.total_producto - ps.cost_price
+                            })  
+                            }
+                        </td>
+                      }
+
+                        {/* <td className="border-t justify-center text-center items-center">
+                            {detalle.cantidad}
+                        </td> */}
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.total_producto}
+                        </td>
+                        </tr>)
+
+                      })
+                       
+                    )
+                  )}
+                  <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                    <td className="border-t justify-center text-center items-center"></td>
+                    <td className="border-t justify-center text-center items-center"></td>
+                    {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
+
+                    <td className="border-t justify-center text-center items-center"></td>
+                    <td  className="border-t justify-center text-center items-center font-bold">Total</td>
+                    {auth.user.owner == true &&
+                    <td  className="border-t justify-center text-center items-center font-bold">{total_pantallas_t_u}</td>
+                    }
+                    <td  className="border-t justify-center text-center items-center font-bold">{total_pantallas_t}</td>
+                  </tr>
+                </tbody>
+              </table>
+      </div>
+
+
+      <div className="flex justify-between border-t">
+        <div className="font-bold m-2">Ventas con POS</div>
+       </div>
+      <div className="bg-white rounded shadow">
+      <table className=" whitespace-nowrap w-full">
+      <thead>
+                  <tr className="font-bold text-left">
+                    <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center" >Cliente</th>
+                    {
+                      auth.user.owner == true && 
+                        <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    }
+                    <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
+                    {
+                      auth.user.owner == true && 
+                    <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
+                    }
+                    {/* <th className="px-auto pt-5 pb-4 text-center">Cantidad</th> */}
+                    <th className="px-6 pt-5 pb-4 text-center">Total Producto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ventas_pantallas.filter(v=> v.tipoPago == 'pos').map((venta) => (
+                      
+                      venta.venta_detalles.map((detalle)=>{
+                        total_pantallas_pos += parseInt(detalle.total_producto) 
+                        return(
+                        <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                        <td className="border-t justify-center text-center items-center">
+                        {moment(detalle.created_at).locale("es").format("Do MM YYYY")}
+                        </td>
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.producto}
+                        </td>
+
+                        <td className="border-t justify-center text-center items-center">
+                            {venta.cliente}
+                        </td>
+
+                        {
+                          auth.user.owner == true && 
+                            <td className="border-t justify-center text-center items-center">
+                              { 
+                              productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                                return ps.cost_price
+                              })  
+                              }
+                            </td>                    
+                        }
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.total_producto}
+                        </td>
+                        {
+                      auth.user.owner == true && 
+                        <td className="border-t justify-center text-center items-center">
+                            { 
+                            productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                              total_pantallas_pos_u += (detalle.total_producto - ps.cost_price)
+                              return detalle.total_producto - ps.cost_price
+                            })  
+                            }
+                        </td>
+                      }
+
+                        {/* <td className="border-t justify-center text-center items-center">
+                            {detalle.cantidad}
+                        </td> */}
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.total_producto}
+                        </td>
+                        </tr>)
+
+                      })
+                       
+                    )
+                  )}
+                  <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                    <td className="border-t justify-center text-center items-center"></td>
+                    <td className="border-t justify-center text-center items-center"></td>
+                    {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
+
+                    <td className="border-t justify-center text-center items-center"></td>
+                    <td  className="border-t justify-center text-center items-center font-bold">Total</td>
+                    {auth.user.owner == true &&
+                    <td  className="border-t justify-center text-center items-center font-bold">{total_pantallas_pos_u}</td>
+                    }
+                    <td  className="border-t justify-center text-center items-center font-bold">{total_pantallas_pos}</td>
                   </tr>
                 </tbody>
               </table>
@@ -663,6 +872,203 @@ const SeparateReport = () => {
       </div>
 
       <div className="flex justify-between border-t">
+        <div className="font-bold m-2">Ventas por Transferencia</div>
+       </div>
+      <div className="bg-white rounded shadow">
+      <table className=" whitespace-nowrap w-full">
+      <thead>
+      <tr className="font-bold text-left">
+                    <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
+                    {
+                      auth.user.owner == true && 
+                        <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    }
+                    <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
+                    {
+                      auth.user.owner == true && 
+                    <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
+}
+                    {/* <th className="px-auto pt-5 pb-4 text-center">Cantidad</th> */}
+                    <th className="px-6 pt-5 pb-4 text-center">Total Producto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {ventas_celulares.filter(v => v.tipoPago == 'transferencia').map((venta) => (
+                      
+                      venta.venta_detalles.map((detalle)=>{
+                        total_celulares_t += parseInt(detalle.total_producto) 
+                        return(
+                        <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+
+                        <td className="border-t justify-center text-center items-center">
+                          {moment(detalle.created_at).locale("es").format("Do MM YYYY")}
+                        </td>
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.producto}
+                        </td>
+
+                        
+                        <td className="border-t justify-center text-center items-center">
+                            {venta.cliente}
+                        </td>
+
+                        {
+                          (auth.user.owner == true && detalle.category_id != 4  )&& 
+                            <td className="border-t justify-center text-center items-center">
+                              { 
+                              productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                                return ps.cost_price
+                              })  
+                              }
+                            </td>                    
+                        }
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.total_producto}
+                        </td>
+                        {
+                      auth.user.owner == true && 
+                        <td className="border-t justify-center text-center items-center">
+                            { 
+                            productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                              total_celulares_t_u += (detalle.total_producto - ps.cost_price)
+                              return detalle.total_producto - ps.cost_price
+                            })  
+                            }
+                        </td>
+                      }
+
+                        {/* <td className="border-t justify-center text-center items-center">
+                            {detalle.cantidad}
+                        </td> */}
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.total_producto}
+                        </td>
+                        </tr>)
+
+                      })
+                       
+                    )
+                  )}
+                  <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                    <td className="border-t justify-center text-center items-center"></td>
+                    <td className="border-t justify-center text-center items-center"></td>
+                    {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
+
+                    <td className="border-t justify-center text-center items-center"></td>
+                    <td  className="border-t justify-center text-center items-center font-bold">Total</td>
+                    {auth.user.owner == true && 
+                    <td  className="border-t justify-center text-center items-center font-bold">{total_celulares_t_u}</td>
+                    }
+                    <td  className="border-t justify-center text-center items-center font-bold">{total_celulares_t}</td>
+                  </tr>
+                </tbody>
+              </table>
+      </div>
+
+
+      <div className="flex justify-between border-t">
+        <div className="font-bold m-2">Ventas POS</div>
+       </div>
+      <div className="bg-white rounded shadow">
+      <table className=" whitespace-nowrap w-full">
+      <thead>
+      <tr className="font-bold text-left">
+                    <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
+                    {
+                      auth.user.owner == true && 
+                        <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    }
+                    <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
+                    {
+                      auth.user.owner == true && 
+                    <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
+}
+                    {/* <th className="px-auto pt-5 pb-4 text-center">Cantidad</th> */}
+                    <th className="px-6 pt-5 pb-4 text-center">Total Producto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {ventas_celulares.filter(v => v.tipoPago == 'pos').map((venta) => (
+                      
+                      venta.venta_detalles.map((detalle)=>{
+                        total_celulares_pos += parseInt(detalle.total_producto) 
+                        return(
+                        <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+
+                        <td className="border-t justify-center text-center items-center">
+                          {moment(detalle.created_at).locale("es").format("Do MM YYYY")}
+                        </td>
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.producto}
+                        </td>
+
+                        
+                        <td className="border-t justify-center text-center items-center">
+                            {venta.cliente}
+                        </td>
+
+                        {
+                          (auth.user.owner == true && detalle.category_id != 4  )&& 
+                            <td className="border-t justify-center text-center items-center">
+                              { 
+                              productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                                return ps.cost_price
+                              })  
+                              }
+                            </td>                    
+                        }
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.total_producto}
+                        </td>
+                        {
+                      auth.user.owner == true && 
+                        <td className="border-t justify-center text-center items-center">
+                            { 
+                            productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                              total_celulares_pos_u += (detalle.total_producto - ps.cost_price)
+                              return detalle.total_producto - ps.cost_price
+                            })  
+                            }
+                        </td>
+                      }
+
+                        {/* <td className="border-t justify-center text-center items-center">
+                            {detalle.cantidad}
+                        </td> */}
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.total_producto}
+                        </td>
+                        </tr>)
+
+                      })
+                       
+                    )
+                  )}
+                  <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                    <td className="border-t justify-center text-center items-center"></td>
+                    <td className="border-t justify-center text-center items-center"></td>
+                    {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
+
+                    <td className="border-t justify-center text-center items-center"></td>
+                    <td  className="border-t justify-center text-center items-center font-bold">Total</td>
+                    {auth.user.owner == true && 
+                    <td  className="border-t justify-center text-center items-center font-bold">{total_celulares_pos_u}</td>
+                    }
+                    <td  className="border-t justify-center text-center items-center font-bold">{total_celulares_pos}</td>
+                  </tr>
+                </tbody>
+              </table>
+      </div>
+
+      <div className="flex justify-between border-t">
         <div className="font-bold m-2">Ventas Pendientes</div>
        </div>
       <div className="bg-white rounded shadow">
@@ -789,6 +1195,107 @@ const SeparateReport = () => {
         <div className="font-bold m-2">Jhireth Cell</div>
         <div className="font-bold m-2">Dia: {day ? moment(day).locale("es").format("Do MM YYYY") : ahora }</div>
        </div>
+
+       <div className="flex justify-between border-t">
+        <div className="font-bold m-2">Ventas Efectivas</div>
+       </div>
+      <div className="bg-white rounded shadow">
+      <table className=" whitespace-nowrap w-full">
+      <thead>
+      <tr className="font-bold text-left">
+                    <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
+                    {
+                      auth.user.owner == true && 
+                        <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    }                    
+                    <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
+                    {
+                      auth.user.owner == true && 
+                    <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
+                }
+                    {/* <th className="px-auto pt-5 pb-4 text-center">Cantidad</th> */}
+                    <th className="px-6 pt-5 pb-4 text-center">Total Producto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {ventas_accesorios.filter(v => v.tipoPago == 'efectivo').map((venta) => (
+                      
+                      venta.venta_detalles.map((detalle)=>{
+                        total_accesorios_e += parseInt(detalle.total_producto) 
+                        return(
+                        <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+
+                        <td className="border-t justify-center text-center items-center">
+                            {moment(detalle.created_at).locale("es").format("Do MM YYYY")}
+                        </td>
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.producto}
+                        </td>
+
+                        
+                        <td className="border-t justify-center text-center items-center">
+                            {venta.cliente}
+                        </td>
+
+                        {
+                          auth.user.owner == true && 
+                            <td className="border-t justify-center text-center items-center">
+                              { 
+                              productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                                return ps.cost_price
+                              })  
+                              }
+                            </td>                    
+                        }
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.total_producto}
+                        </td>
+                        {
+                      auth.user.owner == true && 
+                        <td className="border-t justify-center text-center items-center">
+                            { 
+                            productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                              total_accesorios_e_u += (detalle.total_producto - ps.cost_price)
+                              return detalle.total_producto - ps.cost_price
+                            })  
+                            }
+                        </td>
+                      }
+
+                        {/* <td className="border-t justify-center text-center items-center">
+                            {detalle.cantidad}
+                        </td> */}
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.total_producto}
+                        </td>
+                        </tr>)
+
+                      })
+                       
+                    )
+                  )}
+                  <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                    <td className="border-t justify-center text-center items-center"></td>
+                    <td className="border-t justify-center text-center items-center"></td>
+                    {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
+                    <td className="border-t justify-center text-center items-center"></td>
+                    <td  className="border-t justify-center text-center items-center font-bold">Total</td>
+                    {auth.user.owner == true && 
+                    <td  className="border-t justify-center text-center items-center font-bold">{total_accesorios_e_u}</td>
+                    }
+                    <td  className="border-t justify-center text-center items-center font-bold">{total_accesorios_e}</td>
+                  </tr>
+                </tbody>
+              </table>
+      </div>
+
+      <div className="flex justify-between border-t">
+        <div className="font-bold m-2">Ventas Credito</div>
+       </div>
       <div className="bg-white rounded shadow">
       <table className=" whitespace-nowrap w-full">
       <thead>
@@ -810,7 +1317,7 @@ const SeparateReport = () => {
                   </tr>
                 </thead>
                 <tbody>
-                {ventas_accesorios.map((venta) => (
+                {ventas_accesorios.filter(v => v.tipoPago == 'credito').map((venta) => (
                       
                       venta.venta_detalles.map((detalle)=>{
                         total_accesorios_c += parseInt(detalle.total_producto) 
@@ -882,6 +1389,302 @@ const SeparateReport = () => {
                 </tbody>
               </table>
       </div>
+
+
+      <div className="flex justify-between border-t">
+        <div className="font-bold m-2">Ventas por Transferencia</div>
+       </div>
+      <div className="bg-white rounded shadow">
+      <table className=" whitespace-nowrap w-full">
+      <thead>
+      <tr className="font-bold text-left">
+                    <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
+                    {
+                      auth.user.owner == true && 
+                        <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    }                    
+                    <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
+                    {
+                      auth.user.owner == true && 
+                    <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
+}
+                    {/* <th className="px-auto pt-5 pb-4 text-center">Cantidad</th> */}
+                    <th className="px-6 pt-5 pb-4 text-center">Total Producto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {ventas_accesorios.filter(v => v.tipoPago == 'transferencia').map((venta) => (
+                      
+                      venta.venta_detalles.map((detalle)=>{
+                        total_accesorios_t += parseInt(detalle.total_producto) 
+                        return(
+                        <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+
+                        <td className="border-t justify-center text-center items-center">
+                            {moment(detalle.created_at).locale("es").format("Do MM YYYY")}
+                        </td>
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.producto}
+                        </td>
+
+                        
+                        <td className="border-t justify-center text-center items-center">
+                            {venta.cliente}
+                        </td>
+
+                        {
+                          auth.user.owner == true && 
+                            <td className="border-t justify-center text-center items-center">
+                              { 
+                              productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                                return ps.cost_price
+                              })  
+                              }
+                            </td>                    
+                        }
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.total_producto}
+                        </td>
+                        {
+                      auth.user.owner == true && 
+                        <td className="border-t justify-center text-center items-center">
+                            { 
+                            productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                              total_accesorios_t_u += (detalle.total_producto - ps.cost_price)
+                              return detalle.total_producto - ps.cost_price
+                            })  
+                            }
+                        </td>
+                      }
+
+                        {/* <td className="border-t justify-center text-center items-center">
+                            {detalle.cantidad}
+                        </td> */}
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.total_producto}
+                        </td>
+                        </tr>)
+
+                      })
+                       
+                    )
+                  )}
+                  <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                    <td className="border-t justify-center text-center items-center"></td>
+                    <td className="border-t justify-center text-center items-center"></td>
+                    {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
+                    <td className="border-t justify-center text-center items-center"></td>
+                    <td  className="border-t justify-center text-center items-center font-bold">Total</td>
+                    {auth.user.owner == true && 
+                    <td  className="border-t justify-center text-center items-center font-bold">{total_accesorios_t_u}</td>
+                    }
+                    <td  className="border-t justify-center text-center items-center font-bold">{total_accesorios_t}</td>
+                  </tr>
+                </tbody>
+              </table>
+      </div>
+
+
+      <div className="flex justify-between border-t">
+        <div className="font-bold m-2">Ventas POS</div>
+       </div>
+      <div className="bg-white rounded shadow">
+      <table className=" whitespace-nowrap w-full">
+      <thead>
+      <tr className="font-bold text-left">
+                    <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
+                    {
+                      auth.user.owner == true && 
+                        <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    }                    
+                    <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
+                    {
+                      auth.user.owner == true && 
+                    <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
+}
+                    {/* <th className="px-auto pt-5 pb-4 text-center">Cantidad</th> */}
+                    <th className="px-6 pt-5 pb-4 text-center">Total Producto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {ventas_accesorios.filter(v => v.tipoPago == 'pos').map((venta) => (
+                      
+                      venta.venta_detalles.map((detalle)=>{
+                        total_accesorios_pos += parseInt(detalle.total_producto) 
+                        return(
+                        <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+
+                        <td className="border-t justify-center text-center items-center">
+                            {moment(detalle.created_at).locale("es").format("Do MM YYYY")}
+                        </td>
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.producto}
+                        </td>
+
+                        
+                        <td className="border-t justify-center text-center items-center">
+                            {venta.cliente}
+                        </td>
+
+                        {
+                          auth.user.owner == true && 
+                            <td className="border-t justify-center text-center items-center">
+                              { 
+                              productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                                return ps.cost_price
+                              })  
+                              }
+                            </td>                    
+                        }
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.total_producto}
+                        </td>
+                        {
+                      auth.user.owner == true && 
+                        <td className="border-t justify-center text-center items-center">
+                            { 
+                            productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                              total_accesorios_pos_u += (detalle.total_producto - ps.cost_price)
+                              return detalle.total_producto - ps.cost_price
+                            })  
+                            }
+                        </td>
+                      }
+
+                        {/* <td className="border-t justify-center text-center items-center">
+                            {detalle.cantidad}
+                        </td> */}
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.total_producto}
+                        </td>
+                        </tr>)
+
+                      })
+                       
+                    )
+                  )}
+                  <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                    <td className="border-t justify-center text-center items-center"></td>
+                    <td className="border-t justify-center text-center items-center"></td>
+                    {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
+                    <td className="border-t justify-center text-center items-center"></td>
+                    <td  className="border-t justify-center text-center items-center font-bold">Total</td>
+                    {auth.user.owner == true && 
+                    <td  className="border-t justify-center text-center items-center font-bold">{total_accesorios_pos_u}</td>
+                    }
+                    <td  className="border-t justify-center text-center items-center font-bold">{total_accesorios_pos}</td>
+                  </tr>
+                </tbody>
+              </table>
+      </div>
+
+
+
+      <div className="flex justify-between border-t">
+        <div className="font-bold m-2">Ventas Pendiente</div>
+       </div>
+      <div className="bg-white rounded shadow">
+      <table className=" whitespace-nowrap w-full">
+      <thead>
+      <tr className="font-bold text-left">
+                    <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
+                    {
+                      auth.user.owner == true && 
+                        <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    }                    
+                    <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
+                    {
+                      auth.user.owner == true && 
+                    <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
+}
+                    {/* <th className="px-auto pt-5 pb-4 text-center">Cantidad</th> */}
+                    <th className="px-6 pt-5 pb-4 text-center">Total Producto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {ventas_accesorios.filter(v => v.tipoPago == 'pendiente').map((venta) => (
+                      
+                      venta.venta_detalles.map((detalle)=>{
+                        total_accesorios_p += parseInt(detalle.total_producto) 
+                        return(
+                        <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+
+                        <td className="border-t justify-center text-center items-center">
+                            {moment(detalle.created_at).locale("es").format("Do MM YYYY")}
+                        </td>
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.producto}
+                        </td>
+
+                        
+                        <td className="border-t justify-center text-center items-center">
+                            {venta.cliente}
+                        </td>
+
+                        {
+                          auth.user.owner == true && 
+                            <td className="border-t justify-center text-center items-center">
+                              { 
+                              productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                                return ps.cost_price
+                              })  
+                              }
+                            </td>                    
+                        }
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.total_producto}
+                        </td>
+                        {
+                      auth.user.owner == true && 
+                        <td className="border-t justify-center text-center items-center">
+                            { 
+                            productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                              total_accesorios_p_u += (detalle.total_producto - ps.cost_price)
+                              return detalle.total_producto - ps.cost_price
+                            })  
+                            }
+                        </td>
+                      }
+
+                        {/* <td className="border-t justify-center text-center items-center">
+                            {detalle.cantidad}
+                        </td> */}
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.total_producto}
+                        </td>
+                        </tr>)
+
+                      })
+                       
+                    )
+                  )}
+                  <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                    <td className="border-t justify-center text-center items-center"></td>
+                    <td className="border-t justify-center text-center items-center"></td>
+                    {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
+                    <td className="border-t justify-center text-center items-center"></td>
+                    <td  className="border-t justify-center text-center items-center font-bold">Total</td>
+                    {auth.user.owner == true && 
+                    <td  className="border-t justify-center text-center items-center font-bold">{total_accesorios_p_u}</td>
+                    }
+                    <td  className="border-t justify-center text-center items-center font-bold">{total_accesorios_p}</td>
+                  </tr>
+                </tbody>
+              </table>
+      </div>
+
       </PDFExport>
       </div>
       }
@@ -1107,6 +1910,208 @@ const SeparateReport = () => {
                     <td  className="border-t justify-center text-center items-center font-bold">{total_servivios_c_u}</td>
                     }
                     <td  className="border-t justify-center text-center items-center font-bold">{total_servivios_c}</td>
+                  </tr>
+                </tbody>
+              </table>
+      </div>
+
+
+      <div className="flex justify-between border-t">
+        <div className="font-bold m-2">Ventas con Transferencia</div>
+       </div>
+      <div className="bg-white rounded shadow">
+      <table className=" whitespace-nowrap w-full">
+      <thead>
+      <tr className="font-bold text-left">
+                    <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Servicio</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
+                    {
+                      auth.user.owner == true && 
+                        <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    }                    
+                    <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
+                    {
+                      auth.user.owner == true && 
+                    <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
+}
+                    <th className="px-6 pt-5 pb-4 text-center">Total Producto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {servicios.filter(v => v.tipoPago == 'transferencia').map((venta) => (
+                      
+                      venta.venta_detalles.map((detalle)=>{
+                        total_servivios_t += parseInt(detalle.total_producto) 
+                        total_servivios_t_u += (parseInt(detalle.total_producto) - parseInt(detalle.costo_servicio))
+
+                        return(
+                        <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+
+                        <td className="border-t justify-center text-center items-center">
+                            {moment(detalle.created_at).locale("es").format("Do MM YYYY")}
+                        </td>
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.producto}
+                        </td>
+
+                        
+                        <td className="border-t justify-center text-center items-center">
+                            {venta.cliente}
+                        </td>
+
+                        {
+                          (auth.user.owner == true && detalle.category_id == 4  )&& 
+                            <td className="border-t justify-center text-center items-center">
+                             {detalle.costo_servicio}
+                            </td>                    
+                        }
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.total_producto}
+                        </td>
+
+                        {
+                          (auth.user.owner == true && detalle.category_id == 4  )&&
+                           
+                            <td className="border-t justify-center text-center items-center">
+
+                             { detalle.total_producto - detalle.costo_servicio}
+                            </td>                    
+                        }
+                        {/* <td className="border-t justify-center text-center items-center">
+                            { 
+                            productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                              total_servivios_c_u += (detalle.total_producto - ps.cost_price)
+                              return detalle.total_producto - ps.cost_price
+                            })  
+                            }
+                        </td> */}
+
+                        {/* <td className="border-t justify-center text-center items-center">
+                            {detalle.cantidad}
+                        </td> */}
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.total_producto}
+                        </td>
+                        </tr>)
+
+                      })
+                       
+                    )
+                  )}
+                  <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                    <td className="border-t justify-center text-center items-center"></td>
+                    <td className="border-t justify-center text-center items-center"></td>
+                    {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
+                    <td className="border-t justify-center text-center items-center"></td>
+                    <td  className="border-t justify-center text-center items-center font-bold">Total</td>
+                    {auth.user.owner == true && 
+                    <td  className="border-t justify-center text-center items-center font-bold">{total_servivios_t_u}</td>
+                    }
+                    <td  className="border-t justify-center text-center items-center font-bold">{total_servivios_t}</td>
+                  </tr>
+                </tbody>
+              </table>
+      </div>
+
+
+      <div className="flex justify-between border-t">
+        <div className="font-bold m-2">Ventas POS</div>
+       </div>
+      <div className="bg-white rounded shadow">
+      <table className=" whitespace-nowrap w-full">
+      <thead>
+      <tr className="font-bold text-left">
+                    <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Servicio</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
+                    {
+                      auth.user.owner == true && 
+                        <th className="px-6 pt-5 pb-4 text-center" >Costo</th>
+                    }                    
+                    <th className="px-6 pt-5 pb-4 text-center" >Precio Venta</th>
+                    {
+                      auth.user.owner == true && 
+                    <th className="px-6 pt-5 pb-4 text-center" >Utilidad</th>
+}
+                    <th className="px-6 pt-5 pb-4 text-center">Total Producto</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {servicios.filter(v => v.tipoPago == 'pos').map((venta) => (
+                      
+                      venta.venta_detalles.map((detalle)=>{
+                        total_servivios_pos += parseInt(detalle.total_producto) 
+                        total_servivios_pos_u += (parseInt(detalle.total_producto) - parseInt(detalle.costo_servicio))
+
+                        return(
+                        <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+
+                        <td className="border-t justify-center text-center items-center">
+                            {moment(detalle.created_at).locale("es").format("Do MM YYYY")}
+                        </td>
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.producto}
+                        </td>
+
+                        
+                        <td className="border-t justify-center text-center items-center">
+                            {venta.cliente}
+                        </td>
+
+                        {
+                          (auth.user.owner == true && detalle.category_id == 4  )&& 
+                            <td className="border-t justify-center text-center items-center">
+                             {detalle.costo_servicio}
+                            </td>                    
+                        }
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.total_producto}
+                        </td>
+
+                        {
+                          (auth.user.owner == true && detalle.category_id == 4  )&&
+                           
+                            <td className="border-t justify-center text-center items-center">
+
+                             { detalle.total_producto - detalle.costo_servicio}
+                            </td>                    
+                        }
+                        {/* <td className="border-t justify-center text-center items-center">
+                            { 
+                            productos.filter(p => p.id == detalle.product_id).map(ps =>{
+                              total_servivios_c_u += (detalle.total_producto - ps.cost_price)
+                              return detalle.total_producto - ps.cost_price
+                            })  
+                            }
+                        </td> */}
+
+                        {/* <td className="border-t justify-center text-center items-center">
+                            {detalle.cantidad}
+                        </td> */}
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.total_producto}
+                        </td>
+                        </tr>)
+
+                      })
+                       
+                    )
+                  )}
+                  <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                    <td className="border-t justify-center text-center items-center"></td>
+                    <td className="border-t justify-center text-center items-center"></td>
+                    {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
+                    <td className="border-t justify-center text-center items-center"></td>
+                    <td  className="border-t justify-center text-center items-center font-bold">Total</td>
+                    {auth.user.owner == true && 
+                    <td  className="border-t justify-center text-center items-center font-bold">{total_servivios_pos_u}</td>
+                    }
+                    <td  className="border-t justify-center text-center items-center font-bold">{total_servivios_pos}</td>
                   </tr>
                 </tbody>
               </table>

@@ -55,9 +55,9 @@ class UsersController extends Controller
     public function edit(User $user)
     {
 
-        $VentasPorMeses = Ventas::where('vendedor_id', $user->id)->with('venta_detalles')->get()
+        $VentasPorMeses = Ventas::where('vendedor_id', $user->id)->with('venta_detalles')->orderBy('created_at', 'desc')->get()
         ->groupBy(function($val) {
-            return Carbon::parse($val->created_at)->format('M');
+            return Carbon::parse($val->created_at)->format('F Y');
         });
 
         return Inertia::render('Users/Edit', [

@@ -21,7 +21,8 @@ const Edit = () => {
     total: venta[0].total,
     restante: venta[0].restante,
     limite_pago: venta[0].limite_pago,
-    tipoPago: venta[0].tipoPago
+    tipoPago: venta[0].tipoPago,
+    created_at: venta[0].created_at
   });
 
   const pdfExportComponent = React.useRef(null);
@@ -76,6 +77,29 @@ const Edit = () => {
         pdfExportComponent.current.save();
       }
     },3000) 
+  }
+
+  const deleteFromVenta = (product)=>{
+    if (confirm('¿Está seguro que desea eliminar este articulo?')) {
+    const values = {
+      venta_id: data.ventas_id,
+      product_id: product.id
+    }
+    Inertia.post(
+      route('deleteItem', values),
+       values ,
+      {
+        onSuccess: page => {
+          console.log(page)
+          // redirect to same page to reload
+          Inertia.get(route('ventas.edit', data.ventas_id))
+        },
+        onError: error => {
+          console.log(error);
+        }
+      }
+    );
+    }
   }
 
   const addPayment =()=>{
@@ -171,7 +195,7 @@ const Edit = () => {
             label="Fecha"
             name="first_name"
             disabled
-            value={ahora}
+            value={moment(data.created_at).locale("es").format("Do MM YYYY")}
           />
           <TextInput
             className="w-full pb-8 pr-6 lg:w-1/5"
@@ -195,10 +219,11 @@ const Edit = () => {
               <thead>
                 <tr className="font-bold text-left">
                   <th className="px-6 pt-5 pb-4">Producto</th>
+                  <th className="px-6 pt-5 pb-4">Codigo</th>
                   <th className="px-3 pt-5 pb-4">Cantidad</th>
                   <th className="px-6 pt-5 pb-4">Precio</th>
                   <th className="px-6 pt-5 pb-4">Descuento</th>
-                  <th className="px-6 pt-5 pb-4 " colSpan="2">
+                  <th className="px-6 pt-5 pb-4 " colSpan="3">
                     Total
                   </th>
                 </tr>
@@ -211,6 +236,7 @@ const Edit = () => {
                   ) => (
                     <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                       <td className="border-t px-6 pt-5 pb-4">{p.producto}</td>
+                      <td className="border-t px-6 pt-5 pb-4">{p?.product_code}</td>
                       <td className="border-t px-6 pt-5 pb-4">{p.cantidad}</td>
                       <td className="border-t px-6 pt-5 pb-4">{p.precio}</td>
                       <td className="border-t px-6 pt-5 pb-4">{p.descuento}</td>
@@ -220,6 +246,12 @@ const Edit = () => {
                       <td>
                       <LoadingButton onClick={e => printWarranty(p)} className="btn-indigo">
               Garantia
+            </LoadingButton>
+           
+                      </td>
+                      <td className='ml-2'>
+                      <LoadingButton onClick={e => deleteFromVenta(p)} className="btn-indigo">
+              Eliminar
             </LoadingButton>
                       </td>
                     </tr>

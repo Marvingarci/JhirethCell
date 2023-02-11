@@ -29,6 +29,11 @@ class Contact extends Model
         $query->orderBy('last_name')->orderBy('first_name');
     }
 
+    public function scopeVentasCredito($query)
+    {
+        $query->has('ventas');
+    }
+
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {

@@ -394,6 +394,8 @@ const Create = () => {
               <option value=""></option>
               <option value="efectivo">Efectivo</option>
               <option value="credito">Credito</option>
+              <option value="transferencia">Transferencia</option>
+              <option value="pos">POS</option>
             </SelectInput>
 
             { data.tipoPago == 'credito' && 

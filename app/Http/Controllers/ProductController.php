@@ -25,21 +25,41 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $existenciaPorP = DB::table("inventarios")
-        ->select(DB::raw("product_id ,  COUNT(*) as existencia "))
-        ->where('status', 'stock')
-        ->groupBy('product_id')
-        ->get();
+
+        $realExistencia = Product::get();
+        
+        $pre = new ProductCollection(
+            Auth::user()->account->products()
+                ->orderBy('name')
+                ->filter(Request::only('search', 'trashed'))
+                ->paginate()
+                ->appends(Request::all())
+        );
+
+        foreach ($realExistencia as $p) {
+                $quan = DB::table("inventarios")
+                ->select(DB::raw("product_id ,  COUNT(*) as cuenta,  SUM(existencia) as suma"))
+                ->where('status', 'stock')
+                ->where('product_id', $p->id)
+                ->groupBy('product_id')
+                ->first();
+
+                if(isset($quan)){
+                    if($p->dbType == 'colectivo'){
+                        $p->realExistencia = $quan->suma;
+                    }else{
+                        $p->realExistencia = $quan->cuenta;
+                    }
+                } else{
+                    $p->realExistencia = 0;
+                }
+        }
+
+
         return Inertia::render('Products/Index', [
             'filters' => Request::all('search', 'trashed'),
-            'existencia' => $existenciaPorP,
-            'products' => new ProductCollection(
-                Auth::user()->account->products()
-                    ->orderBy('name')
-                    ->filter(Request::only('search', 'trashed'))
-                    ->paginate()
-                    ->appends(Request::all())
-            ),
+            'realExistencia' => $realExistencia,
+            'products' => $pre,
         ]);
     }
 

@@ -41,9 +41,13 @@ class ContactsController extends Controller
         //     $query->where('tipoPago', 'credito');
         // }])->orderByName()->filter(Request::only('search', 'trashed'))->paginate()->get();
         
-        $contacts = Contact::with(['organization', 'ventas' => function ($query) {
+        $contacts = new ContactCollection(
+            Contact::with(['organization', 'ventas' => function ($query) {
             $query->where('tipoPago', 'credito');
-        }])->get(); 
+        }])->filter(Request::only('search', 'trashed'))
+        ->paginate()
+        ->appends(Request::all())); 
+        
         $contactsWithCredit = [];
         foreach ($contacts as $c) {
             if(count($c->ventas) > 0){
@@ -54,7 +58,17 @@ class ContactsController extends Controller
 
         return Inertia::render('Contacts/IndexCredit', [
             'filters' => Request::all('search', 'trashed'),
-            'contacts' => $contactsWithCredit,
+            'contacts' => new ContactCollection(
+                Contact::with(['organization', 'ventas' => function ($query) {
+                $query->where('tipoPago', 'credito');
+            }])->filter(Request::only('search', 'trashed'))
+            ->ventasCredito()
+            // ->whereHas('ventas', function($q){
+            //     $q->where('id', 'in');
+            // })
+            ->paginate()
+            ->appends(Request::all())),
+        'ventasNoMayo' => Ventas::with(['organization', 'vendedor'])->where([['contact_id', null], ['tipoPago', 'credito']])->get()
         ]);
     }
     

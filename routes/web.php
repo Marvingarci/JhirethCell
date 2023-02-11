@@ -84,6 +84,7 @@ Route::get('ventas')->name('ventas')->uses('VentasController@index')->middleware
 Route::get('ventas/ventas_rapidas')->name('ventas_rapidas')->uses('VentasController@ventas_rapidas')->middleware('remember', 'permission:Caja');
 Route::get('ventas/create')->name('ventas.create')->uses('VentasController@create')->middleware('permission:Caja');
 Route::post('ventas')->name('ventas.store')->uses('VentasController@store')->middleware('permission:Caja');
+Route::post('deleteItemfromVenta')->name('deleteItem')->uses('VentasController@deleteItem')->middleware('permission:Caja');
 Route::get('ventas/{venta}/edit')->name('ventas.edit')->uses('VentasController@edit')->middleware('permission:Caja');
 Route::put('ventas/{venta}')->name('ventas.actualizar')->uses('VentasController@update')->middleware('permission:Caja');
 Route::put('ventasfast/{venta}')->name('ventas.actualizarfast')->uses('VentasController@updateFast')->middleware('permission:Caja');

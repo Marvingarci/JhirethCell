@@ -34,7 +34,10 @@ class VentaStoreRequest extends FormRequest
             'total' => ['required', 'numeric'],
             'organization_id' => ['required', 'numeric'],
             'ventas'=>['required'],
-            'restante'=>['required']
+            'restante'=>['required'],
+            'multiplePayments' => [''],
+            'phone'=>[''],
+            'pagos' => ['']
         ];
     }
 }

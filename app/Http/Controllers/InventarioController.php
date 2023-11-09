@@ -34,7 +34,7 @@ class InventarioController extends Controller
             'usuarios'=> User::all(['id','first_name','last_name']),
             'ventas_dia' => new VentaCollection(
                 Auth::user()->account->ventas()
-                    ->orderBy('created_at')
+                    ->orderBy('created_at', 'asc')
                     ->filter(Request::only('search', 'trashed'))
                     ->paginate()
                     ->appends(Request::all())
@@ -45,11 +45,13 @@ class InventarioController extends Controller
 
     public function buscarProducto()
     {
+        $inventario = Inventario::where('codebar',Request::only('search', 'trashed'))->with('product')->first();
+        $inventario->saleDate = $inventario->saleDate;
         return Inertia::render('Inventories/Index', [
             'filters' => Request::all('search', 'trashed'),
             'categorias' => Category::all(),
             'usuarios'=> User::all(['id','first_name','last_name']),
-            'producto'=> Inventario::where('codebar',Request::only('search', 'trashed'))->with('product')->first(),
+            'producto'=> $inventario,
         ]);
     }
     /**
@@ -78,6 +80,7 @@ class InventarioController extends Controller
     {
         $inve = Inventario::find($request->productId);
         $inve->existencia = $request->existencia;
+        $inve->existenciaDividida = $request->existenciaDividida;
         $inve->save();
         return Redirect::back()->with('success', 'Inventario actualizado correctamente.');
     }
@@ -106,7 +109,7 @@ class InventarioController extends Controller
         $product = Product::find($id);
         return Inertia::render('Inventories/Edit', [
             'filters' => Request::all('search', 'trashed'),
-            'inventario' => Inventario::where('product_id', $id)->get(),
+            'inventario' => Inventario::where('product_id', $id)->orderBy('status', 'asc')->get(),
             'product' => new ProductResource($product),
             'categorias'=> Category::All(),
             'organizations'=> Organization::All(),

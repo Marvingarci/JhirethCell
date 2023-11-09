@@ -120,11 +120,15 @@ const IndexFast = () => {
         return false;
       }
 
-      if(producto.product.dbType == 'colectivo'){
-        reset()
-        return false
+      if (carrito.length == 1) {
+        reset();
+        return false;
       }
+
       const newProduct = producto.product;
+      if(producto.product.dbType == 'colectivo'){
+        newProduct.existenciaDividida = producto.existenciaDividida;
+      }
       newProduct.cantidad = 1;
       newProduct.codebar = producto.codebar;
       newProduct.real_sell_price = newProduct.whole_sell_price;
@@ -144,7 +148,7 @@ const IndexFast = () => {
       SumaTotal();
     }
   }, [producto]);
-  setDescuento;
+
 
   const setDescuento = (index, descuento) => {
     carrito[index].descuento = descuento;
@@ -156,13 +160,13 @@ const IndexFast = () => {
     SumaTotal();
   };
 
-  // const setCantidad = (index, cantidad) => {
-  //   carrito[index].cantidad = parseFloat(cantidad);
-  //   carrito[index].total_producto =
-  //     carrito[index].cantidad * carrito[index].real_sell_price;
-  //   setCarrito([...carrito]);
-  //   SumaTotal();
-  // };
+  const setCantidad = (index, cantidad) => {
+    carrito[index].cantidad = parseInt(cantidad);
+    carrito[index].total_producto =
+      carrito[index].cantidad * carrito[index].real_sell_price;
+    setCarrito([...carrito]);
+    SumaTotal();
+  };
 
   const SumaTotal = () => {
     let contar = 0;
@@ -176,8 +180,26 @@ const IndexFast = () => {
     setData('vendedor_id', user_id)
     data.vendedor_id = user_id
     let user = usuarios.find(us => us.id == user_id)
-    console.log(user)
     setData('organization_id' ,user.organization_id)
+    inventarioColectivoExisteInTienda()
+  }
+
+  const inventarioColectivoExisteInTienda = () =>{
+    console.log(carrito)
+    if(carrito[0].dbType == 'colectivo'){
+      let existe = false;
+      carrito.filter(e => e.dbType == 'colectivo').map(item => {
+        if(item.existenciaDividida != null && item.existenciaDividida != undefined){
+          let organizations = JSON.parse(item.existenciaDividida)
+          existe =  !!organizations.find(e => e.organization_id == user.organization_id)
+        }
+      });
+      if(!existe){
+        setData('vendedor_id', 0)
+        setData('organization_id' ,0)
+        alert("Este usuario esta registrando en una tienda donde no hay existencia del producto, hacer transferencia primero")
+      }
+    }
   }
 
   const eliminar = codigo => {
@@ -191,7 +213,7 @@ const IndexFast = () => {
   };
 
   const handleConfirm = venta => {
-    if (confirm('¿Está seguro de desea dar por hecho esta venta?')) {
+    if (confirm('¿Está seguro de desea dar por hecha esta venta?')) {
       Inertia.put(
         route('ventas.actualizarfast', {
           id: venta.id,
@@ -262,10 +284,10 @@ const IndexFast = () => {
             <table className=" whitespace-nowrap w-full">
               <thead>
                 <tr className="font-bold text-left">
-                  {/* <th className="px-3 pt-5 pb-4">Fecha</th> */}
                   <th className="px-6 pt-5 pb-4">Nombre</th>
                   <th className="px-6 pt-5 pb-4">Mayorista</th>
                   <th className="px-6 pt-5 pb-4">Vendedor</th>
+                  { carrito[0]?.dbType == 'colectivo' && <th className="px-3 pt-5 pb-4">Cantidad</th>}
                   <th className="px-6 pt-5 pb-4">Precio</th>
                   <th className="px-6 pt-5 pb-4">Descuento</th>
                   <th className="px-6 pt-5 pb-4 " colSpan="2">
@@ -281,6 +303,7 @@ const IndexFast = () => {
                       name,
                       existencia,
                       cantidad,
+                      dbType,
                       sell_price,
                       total_producto,
                       real_sell_price,
@@ -333,17 +356,20 @@ const IndexFast = () => {
                           ))}
                         </SelectInput>
                       </td>
-                      {/* <td className="border-t justify-center text-center items-center">
-                        <TextInput
-                          className="w-20"
-                          type="number"
-                          value={cantidad}
-                          inputProps={{
-                            min: 1
-                          }}
-                          onChange={e => setCantidad(index, e.target.value)}
-                        />
-                      </td> */}
+                      {
+                        dbType == 'colectivo' &&
+                        <td className="border-t justify-center text-center items-center">
+                          <TextInput
+                            className="w-20"
+                            type="number"
+                            value={cantidad}
+                            inputProps={{
+                              min: 1
+                            }}
+                            onChange={e => setCantidad(index, e.target.value)}
+                          />
+                        </td>
+                      }
 
                       <td className="border-t justify-center text-center items-center">
                         {real_sell_price}
@@ -376,6 +402,12 @@ const IndexFast = () => {
                           className="bg-newblue-200 ring-2 text-white py-2 px-1 rounded-xl m-1"
                         >
                           Agregar
+                        </button>
+                        <button
+                          onClick={e => eliminar(product_code)}
+                          className="bg-newblue-200 ring-2 text-white py-2 px-1 rounded-xl m-1"
+                        >
+                          Cancelar
                         </button>
                       </td>
                     </tr>
@@ -411,6 +443,7 @@ const IndexFast = () => {
                 <th className="px-6 pt-5 pb-4">Nombre</th>
                 <th className="px-6 pt-5 pb-4">Cliente</th>
                 <th className="px-6 pt-5 pb-4">Vendedor</th>
+                <th className="px-6 pt-5 pb-4">Cantidad</th>
                 <th className="px-6 pt-5 pb-4">Precio</th>
                 <th className="px-6 pt-5 pb-4">Descuento</th>
                 <th className="px-6 pt-5 pb-4 " colSpan="2">
@@ -424,8 +457,9 @@ const IndexFast = () => {
                   ({
                     producto,
                     product_code,
-                    precio,
+                    cantidad,
                     descuento,
+                    real_sell_price,
                     total_producto,
                     created_at
                   }) => (
@@ -452,9 +486,11 @@ const IndexFast = () => {
                               first_name + ' ' + last_name
                           )}
                       </td>
-
                       <td className="border-t justify-center text-center items-center">
-                        {precio}
+                        {cantidad}
+                      </td>
+                      <td className="border-t justify-center text-center items-center">
+                        {real_sell_price}
                       </td>
                       <td className="border-t justify-center text-center items-center">
                         {descuento}

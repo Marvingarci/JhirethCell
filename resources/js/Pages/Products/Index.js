@@ -6,12 +6,12 @@ import SearchFilter from '@/Shared/SearchFilter';
 import Pagination from '@/Shared/Pagination';
 
 const Index = () => {
-  const { products, existencia, realExistencia } = usePage().props;
+  const { products, existencia } = usePage().props;
   const {
     data,
     meta: { links }
   } = products;
-  console.log(products, existencia, realExistencia)
+  console.log(products, existencia)
   return (
     <div>
       <h1 className="mb-8 text-3xl font-bold">Inventario</h1>
@@ -32,13 +32,14 @@ const Index = () => {
               <th className="px-6 pt-5 pb-4">Nombre</th>
               <th className="px-6 pt-5 pb-4">Color</th>
               <th className="px-6 pt-5 pb-4">Existencia</th>
+              <th className="px-6 pt-5 pb-4">Precio Mayorista</th>
               <th className="px-6 pt-5 pb-4" colSpan="2">
-                Precio
+                Precio Normal
               </th>
             </tr>
           </thead>
           <tbody>
-            {data.map(({ id, name, color, dbType,  sell_price, deleted_at }) => {
+            {data.map(({ id, name, color,  sell_price, whole_sell_price, realExistencia }) => {
               return (
                 <tr
                   key={id}
@@ -50,12 +51,12 @@ const Index = () => {
                       className="flex items-center px-6 py-2 focus:text-indigo-700 focus:outline-none"
                     >
                       {name}
-                      {deleted_at && (
+                      {/* {deleted_at && (
                         <Icon
                           name="trash"
                           className="flex-shrink-0 w-3 h-3 ml-2 text-gray-400 fill-current"
                         />
-                      )}
+                      )} */}
                     </InertiaLink>
                   </td>
                   <td className="border-t">
@@ -77,11 +78,17 @@ const Index = () => {
                       className="flex items-center px-6 py-2 focus:text-indigo focus:outline-none"
                     >
                       {       
-                      realExistencia.map((p)=>{
-                        if(id ==  p.id){
-                            return(p.realExistencia)
-                        }
-                      }) }
+                      realExistencia 
+                      }
+                    </InertiaLink>
+                  </td>
+                  <td className="border-t">
+                    <InertiaLink
+                      tabIndex="-1"
+                      href={route('products.edit', id)}
+                      className="flex items-center px-6 py-2 focus:text-indigo focus:outline-none"
+                    >
+                      {whole_sell_price}
                     </InertiaLink>
                   </td>
                   <td className="border-t">

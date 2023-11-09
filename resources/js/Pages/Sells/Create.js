@@ -19,6 +19,16 @@ const customStyles = {
     transform: 'translate(-50%, -50%)',
   },
 };
+const customStyles1 = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    // bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+  },
+};
 Modal.setAppElement('#app');
 
 const Create = () => {
@@ -32,17 +42,22 @@ const Create = () => {
     dias_credito: 0,
     organization_id: auth.user.organization_id || null,
     tipoPago: '',
-    ventas: []
+    ventas: [],
+    multiplePayments : '',
+    payments: [],
+    phone: '',
   });
 
   const [carrito, setCarrito] = useState([]);
-  const [servicio, setServicio] = useState(null);
+  const [pagos, setPagos] = useState([]);
   const [pin, setPin] = useState('');
   const [messagePin, setMessagePin] = useState('');
-  const [organization_id, setOrganizationId] = useState(0);
+  const [pagado, setPagado] = useState(0);
+  const [cash, setCash] = useState(0);
   const [tipoCliente, setTipoCliente] = useState(true);
   const [modalIsOpen, setIsOpen] = useState(false);
   const [modalServicioIsOpen, setServicioIsOpen] = useState(false);
+  const [modalPaymentsIsOpen, setPaymentsIsOpen] = useState(false);
 
   const setOrganization = (user_id) => {
     setData('vendedor_id', user_id)
@@ -54,6 +69,7 @@ const Create = () => {
   const closeModal = () => {
     setIsOpen(false);
     setServicioIsOpen(false);
+    setPaymentsIsOpen(false)
   }
   const openModal = () => {
     setIsOpen(true);
@@ -80,6 +96,10 @@ const Create = () => {
       data.restante = data.total
     }
 
+    if(data.tipoPago == "multiple"){
+      data.multiplePayments = JSON.stringify(pagos)
+      data.payments = pagos
+    }
     if(checkVendor()){
       console.log(data);
       post(route('ventas.store'));
@@ -158,6 +178,10 @@ const Create = () => {
       }
 
 
+      if(!inventarioColectivoExisteInTienda(producto)){
+        reset()
+        return
+      }
       //Agg scaned product to the shopcart and set new values
       const newProduct = producto.product;
       newProduct.cantidad = 1;
@@ -173,30 +197,23 @@ const Create = () => {
         newProduct.descuento = 0;
         newProduct.total_producto = newProduct.cantidad * newProduct.whole_sell_price;
       }
-     
       //check is the car is empty 
       if (carrito.length == 0) {
         setCarrito([...carrito, newProduct]);
-        //SumaTotal();
-
       } else {
         //if the article exists, it doesnt make anything
         if (carrito.find(item => item.codebar === newProduct.codebar)) {
         } else {
           setCarrito([...carrito, newProduct]);
-         // SumaTotal();
-
         }
 
       }
 
       reset();
 
-     // SumaTotal();
 
     }
     reset();
- // SumaTotal();
 
     console.log(usuarios)
   }, [producto]);
@@ -209,19 +226,72 @@ const Create = () => {
  
 
 
-  const setDescuento = (index, descuento) => {
-    carrito[index].descuento = descuento;
-    if(tipoCliente){
-      carrito[index].real_sell_price = carrito[index].sell_price - (carrito[index].sell_price * descuento);
-      carrito[index].total_producto = carrito[index].cantidad * carrito[index].real_sell_price;
-    }else{
-      carrito[index].real_sell_price = carrito[index].whole_sell_price - (carrito[index].whole_sell_price * descuento);
-      carrito[index].total_producto = carrito[index].cantidad * carrito[index].real_sell_price;
-    }
+  // const setDescuento = (index, descuento) => {
+  //   carrito[index].descuento = descuento;
+  //   if(tipoCliente){
+  //     carrito[index].real_sell_price = carrito[index].sell_price - (carrito[index].sell_price * descuento);
+  //     carrito[index].total_producto = carrito[index].cantidad * carrito[index].real_sell_price;
+  //   }else{
+  //     carrito[index].real_sell_price = carrito[index].whole_sell_price - (carrito[index].whole_sell_price * descuento);
+  //     carrito[index].total_producto = carrito[index].cantidad * carrito[index].real_sell_price;
+  //   }
   
-    setCarrito([...carrito]);
-    SumaTotal();
-  };
+  //   setCarrito([...carrito]);
+  //   SumaTotal();
+  // };
+
+  const inventarioColectivoExisteInTienda = (p) =>{
+    console.log(p)
+    if(p.product.dbType == 'colectivo'){
+      let existe = false;
+      let organizations = null;
+        if(p.existenciaDividida != null && p.existenciaDividida != undefined){
+          organizations = JSON.parse(p.existenciaDividida)
+          existe =  !!organizations.find(e => (e.organization_id == auth.user.organization_id && parseInt(e.cantidad) > 0 ))
+        }
+      if(!existe){
+        let stockData = organizations.filter(e => parseInt(e.cantidad) > 0).reduce((acc, item)=> acc + item.company_name+": "+item.cantidad+" unidades, ", "")
+        setData('vendedor_id', 0)
+        setData('organization_id' ,0)
+        alert("Este usuario esta registrando en una tienda donde no hay existencia del producto, hacer transferencia primero desde "+stockData)
+        return false
+      }
+      return true
+    }
+    return true
+  }
+
+  const savePayments = () =>{
+    setData('multiplePayments', JSON.stringify(pagos))
+    setData('payments', pagos)
+    setPaymentsIsOpen(false)
+  }
+
+  const setCantidadPago = (index, cantidad) =>{
+    pagos[index].cantidad = parseFloat(cantidad) ;
+    let pagao = parseFloat(pagos.reduce((total, item)=> total + (item.cantidad || 0), 0))
+    setPagado(pagao)
+  }
+
+  const setPago = (value)=>{
+    setData('tipoPago', value);
+    if(value == 'multiple' && pagos.length == 0){
+      pagos.push({ventas_id: null, vendedor_id: data.vendedor_id, cantidad: data.total, concepto: 'efectivo', comentario: ''});
+      let pagao = parseFloat(pagos.reduce((total, item)=> total + (item.cantidad || 0), 0))
+      setPagado(pagao)
+      setPaymentsIsOpen(true);
+    }else{
+      setPagos([])
+    }
+  }
+
+  const addPayments = ()=>{
+    pagos.push({ventas_id: null, vendedor_id: data.vendedor_id, cantidad: data.total - pagado, concepto: 'efectivo', comentario: ''});
+    setPagos([... pagos])
+    let pagao = parseFloat(pagos.reduce((total, item)=> total + item.cantidad , 0))
+    setPagado(pagao)
+  }
+
 
   const setDescuentoCantidad = (index, descuento) =>{
     console.log('descuento cantidad',index, descuento, carrito)
@@ -337,7 +407,7 @@ const Create = () => {
             {
               tipoCliente ?
               ( <TextInput
-                className="w-full pb-8 pr-6 lg:w-1/3"
+                className="w-full pb-8 pr-6 lg:w-1/4"
                 label="Cliente"
                 name="first_name"
                 errors={errors.cliente}
@@ -348,7 +418,7 @@ const Create = () => {
               :
               (
                 <SelectInput
-              className="w-full pb-8 pr-6 lg:w-1/3"
+              className="w-full pb-8 pr-6 lg:w-1/4"
               label="Mayorista"
               name="cliente"
               errors={errors.cliente}
@@ -364,7 +434,7 @@ const Create = () => {
               
             }
             <SelectInput
-              className="w-full pb-8 pr-6 lg:w-1/3"
+              className="w-full pb-8 pr-6 lg:w-1/4"
               label="Vendedor"
               name="organization_id"
               errors={errors.vendedor_id}
@@ -377,25 +447,34 @@ const Create = () => {
               ))}
             </SelectInput>
             <TextInput
-              className="w-full pb-8 pr-6 lg:w-1/3"
+              className="w-full pb-8 pr-6 lg:w-1/4"
+              label="Telefono"
+              name="phone"
+              value={data.phone}
+              errors={errors.phone}
+              onChange={e => setData('phone', e.target.value)}
+            />
+            <TextInput
+              className="w-full pb-8 pr-6 lg:w-1/4"
               label="Fecha"
               name="first_name"
               disabled
               value={ahora}
             />
-            <SearchFilter className="w-full pb-8 pr-6 lg:w-1/3" ref={myref} />
+            <SearchFilter className="w-full pb-8 lg:w-1/3" ref={myref} />
             <SelectInput
-              className="w-full pr-6 lg:w-1/3"
               label="Pago"
+              className="w-full pb-8 pr-6 lg:w-1/3"
               errors={errors.tipoPago}
               value={data.tipoPago}
-              onChange={e => setData('tipoPago', e.target.value)}
+              onChange={e => setPago(e.target.value)}
             >
               <option value=""></option>
               <option value="efectivo">Efectivo</option>
               <option value="credito">Credito</option>
               <option value="transferencia">Transferencia</option>
               <option value="pos">POS</option>
+                <option value="multiple">Multiple</option>
             </SelectInput>
 
             { data.tipoPago == 'credito' && 
@@ -412,6 +491,27 @@ const Create = () => {
                 <p className='text-gray-500 font-semibold italic'>Fecha estimada { data.dias_credito != 0 && moment().add(data.dias_credito , 'days').locale("es").format("DD MMM YYYY")}</p>
               </div>
             }
+             { data.tipoPago == 'efectivo' && 
+
+            <div className="w-full pr-6 flex gap-2 items-center">
+               <TextInput
+                  className=""
+                  label="Efectivo recibido"
+                  type="number" 
+                  value={cash}
+                  onChange={e => setCash(e.target.value)}
+                  />
+                  <span className='text-gray-500 font-semibold italic'>Cambio: {(cash == 0 ? data.total : cash) - data.total}</span>
+            </div>
+            }
+
+            { data.tipoPago == 'multiple' && 
+
+            <div className="w-full pr-6 flex gap-2 items-center">
+              <LoadingButton type="button" onClick={e => setPaymentsIsOpen(true)} className="btn-indigo" >Ver Multiples Pagos</LoadingButton>
+            </div>
+            }
+
 
             
             </div>
@@ -620,7 +720,7 @@ const Create = () => {
         isOpen={modalServicioIsOpen}
         onRequestClose={closeModal}
         contentLabel="Seleccione el Servicio"
-        //style={customStyles}
+        style={customStyles1}
      
       >
         <div className='flex justify-between pb-5'>
@@ -633,7 +733,7 @@ const Create = () => {
         { 
           servicios.map(servicio => {
             return(
-            <div className='flex justify-between gap-5 pb-2' >
+            <div className='flex justify-between gap-5 pb-2 border-2' >
             {/* <TextInput
                 className="w-full pb-8 pr-6 lg:w-1/3"
                 label="Pin"
@@ -651,6 +751,64 @@ const Create = () => {
             )
           })
         }
+        </div>
+        
+
+      </Modal>
+
+      <Modal
+        isOpen={modalPaymentsIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Multiples Pagos"
+        style={customStyles1}
+      >
+        <div className='flex justify-between pb-5'>
+
+          <h2 className='text-gray-500 text-2xl font-bold'>Multiples Pagos</h2>
+          <LoadingButton className="btn-indigo" type="button" onClick={savePayments}>Guardar</LoadingButton>
+        </div>
+        <div className='flex flex-col h-full overflow-y-auto'>
+
+        { 
+          pagos.map((pago, indice) => {
+            return(
+            <div className='flex justify-between gap-5 p-1 border-2' >
+            <SelectInput
+              className="w-full pr-6 lg:w-1/3"
+              label="Pago"
+              value={pago.concepto}
+              onChange={e => {pagos[indice].concepto = e.target.value; setPagos([...pagos]);} }
+            >
+              <option value=""></option>
+              <option value="efectivo">Efectivo</option>
+              <option value="credito">Credito</option>
+              <option value="transferencia">Transferencia</option>
+              <option value="pos">POS</option>
+            </SelectInput>
+            
+            <div className='flex gap-1'>
+            <TextInput 
+                  label="Cantidad"
+                  type="number"
+                  value={pago.cantidad}
+                  onChange={e => setCantidadPago(indice, e.target.value)}
+                />
+            </div>
+          </div>
+            )
+          })
+        }
+        <div className='flex justify-between'>
+        <div>
+        <LoadingButton className="btn-indigo" type="button" onClick={ e => addPayments()}>Nuevo</LoadingButton>
+        </div>
+        <div className='flex flex-col'>
+        <span className="text-lg text-end">Total: {data.total}</span>
+        <span className="text-lg border-b-2 text-end">Pagado: {pagado}</span>
+        <span className="text-lg font-bold border-2 text-end">Balance: {data.total - pagado}</span>
+
+        </div>
+        </div>
         </div>
         
 

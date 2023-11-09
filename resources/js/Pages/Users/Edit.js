@@ -7,7 +7,6 @@ import DeleteButton from '@/Shared/DeleteButton';
 import LoadingButton from '@/Shared/LoadingButton';
 import TextInput from '@/Shared/TextInput';
 import SelectInput from '@/Shared/SelectInput';
-import FileInput from '@/Shared/FileInput';
 import TrashedMessage from '@/Shared/TrashedMessage';
 import moment from 'moment';
 import Icon from '@/Shared/Icon';
@@ -29,7 +28,7 @@ const Edit = () => {
         pin: user.pin || '',
         owner: user.owner ? '1' : '0' || '0',
         photo: '',
-
+        deleteProduct: user.deleteProduct ? '1' : '0' || '0',
         // NOTE: When working with Laravel PUT/PATCH requests and FormData
         // you SHOULD send POST request and fake the PUT request like this.
         _method: 'PUT'
@@ -65,11 +64,11 @@ const Edit = () => {
               href={route('users')}
               className="text-indigo-600 hover:text-indigo-700"
             >
-              Users
+              Usuarios
             </InertiaLink>
             <span className="mx-2 font-medium text-indigo-600">/</span>
-            {data.first_name}
-            {data.last_name}{' '}
+            {data.first_name}{' '}
+            {data.last_name}
           </h1>
           {user.photo && (
             <img className="block w-8 h-8 ml-4 rounded-full" src={user.photo} />
@@ -85,7 +84,7 @@ const Edit = () => {
             <div className="flex flex-wrap p-8 -mb-8 -mr-6">
               <TextInput
                 className="w-full pb-8 pr-6 lg:w-1/2"
-                label="First Name"
+                label="Nobre"
                 name="first_name"
                 errors={errors.first_name}
                 value={data.first_name}
@@ -93,7 +92,7 @@ const Edit = () => {
               />
               <TextInput
                 className="w-full pb-8 pr-6 lg:w-1/2"
-                label="Last Name"
+                label="Apellido"
                 name="last_name"
                 errors={errors.last_name}
                 value={data.last_name}
@@ -101,7 +100,7 @@ const Edit = () => {
               />
               <TextInput
                 className="w-full pb-8 pr-6 lg:w-1/2"
-                label="Email"
+                label="Correo Electronico"
                 name="email"
                 type="email"
                 errors={errors.email}
@@ -110,7 +109,7 @@ const Edit = () => {
               />
               <TextInput
                 className="w-full pb-8 pr-6 lg:w-1/2"
-                label="Password"
+                label="Contraseña"
                 name="password"
                 type="password"
                 errors={errors.password}
@@ -128,7 +127,7 @@ const Edit = () => {
               />
               <SelectInput
                 className="w-full pb-8 pr-6 lg:w-1/2"
-                label="Owner"
+                label="Propietario"
                 name="owner"
                 errors={errors.owner}
                 value={data.owner}
@@ -137,6 +136,19 @@ const Edit = () => {
                 <option value="1">Yes</option>
                 <option value="0">No</option>
               </SelectInput>
+
+              <SelectInput
+              className="w-full pb-8 pr-6 lg:w-1/2"
+              label="Puede actulizar o eliminar productos"
+              name="deleteProduct"
+              errors={errors.deleteProduct}
+              value={data.deleteProduct}
+              onChange={e => setData('deleteProduct', e.target.value)}
+            >
+              <option value="1">Si</option>
+              <option value="0">No</option>
+            </SelectInput>
+
               <SelectInput
                 className="w-full pb-8 pr-6 lg:w-1/2"
                 label="Organizacion"
@@ -152,7 +164,7 @@ const Edit = () => {
             </div>
             <div className="flex items-center px-8 py-4 bg-gray-100 border-t border-gray-200">
               {!user.deleted_at && (
-                <DeleteButton onDelete={destroy}>Delete User</DeleteButton>
+                <DeleteButton onDelete={destroy}>Eliminar Usuario</DeleteButton>
               )}
 
               <LoadingButton
@@ -160,7 +172,7 @@ const Edit = () => {
                 type="submit"
                 className="ml-auto btn-indigo"
               >
-                Update User
+                Actualizar usuario
               </LoadingButton>
             </div>
           </form>

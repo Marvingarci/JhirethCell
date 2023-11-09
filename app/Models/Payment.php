@@ -14,7 +14,8 @@ class Payment extends Model
         'ventas_id',
         'vendedor_id',
         'comentario',
-        'cantidad'
+        'cantidad',
+        'concepto'
     ];
 
     public function venta()

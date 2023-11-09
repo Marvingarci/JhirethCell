@@ -40,7 +40,7 @@ const Edit = () => {
     _method: 'PUT'
   });
 
-  console.log(product);
+  console.log(auth);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -161,8 +161,10 @@ const Edit = () => {
               })}
             </SelectInput>
           </div>
+          {(auth.user.deleteProduct) && (
+
           <div className="flex items-center px-8 py-4 bg-gray-100 border-t border-gray-200">
-            {!product.deleted_at && (
+            {(!product.deleted_at) && (
               <DeleteButton onDelete={destroy}>Borrar Producto</DeleteButton>
             )}
 
@@ -173,14 +175,15 @@ const Edit = () => {
               Administrar Inventarios
             </InertiaLink>
 
-            <LoadingButton
-              loading={processing}
-              type="submit"
-              className="ml-auto btn-indigo"
-            >
-              Editar Producto
-            </LoadingButton>
+              <LoadingButton
+                loading={processing}
+                type="submit"
+                className="ml-auto btn-indigo"
+              >
+                Editar Producto
+              </LoadingButton>
           </div>
+            )}
         </form>
       </div>
     </div>

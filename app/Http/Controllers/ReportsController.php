@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
+use App\Http\Resources\ProductCollection;
 
 class ReportsController extends Controller
 {
@@ -157,6 +158,75 @@ class ReportsController extends Controller
             'organizations'=> $organizations
         ]);    
     }
+
+    public function inventarioReport()
+    {
+        $today = Carbon::today();
+        $organizations = Organization::all();
+
+        // $pre = new ProductCollection(
+        //     Product::orderBy('name')->get());
+
+        return Inertia::render('Reports/InventarioReport',[
+            // 'products'=> $pre,
+            'organizations'=> $organizations
+        ]);    
+    }
+
+    public function inventarioPorTienda(Request $request)
+    {
+        $organization_id = $request->organization; 
+        $organizations = Organization::all();
+
+        $pre =new ProductCollection(
+            Product::orderBy('name')->take(100)->get());
+        
+        $final = $pre->filter(function($product)use($organization_id){
+            $found = false;
+            if(!empty($product->existenciaDividida) && count($product->existenciaDividida) > 0){
+                foreach ($product->existenciaDividida as $item) {
+                    if($item->organization_id == $organization_id && $item->cantidad > 0){
+                        $found= true;
+                    }
+                }
+            }
+            return $found;
+        })->map(function ($item) {
+            // Access both original and mutated attributes
+            return [
+                'id' => $item->id,
+                'name' => $item->name,
+                'category_id' => $item->category_id,
+                'color' => $item->color,
+                'dbType' => $item->dbType,
+                'whole_sell_price' => $item->whole_sell_price,
+                'sell_price' => $item->sell_price,
+                'created_at' => $item->created_at,
+                'realExistencia' => $item->realExistencia,
+                'existenciaDividida' => $item->existenciaDividida,
+            ];
+        });
+        
+
+        
+        return Inertia::render('Reports/InventarioReport',[
+            'products'=> $final,
+            'organizations'=> $organizations,
+        ]);    
+    }
+
+    function filterByOrganization($product, $key){
+        $found = false;
+        if(!empty($product->existenciaDividida)){
+            foreach ($product->existenciaDividida as $item) {
+                if($item['organization_id'] == '1'){
+                    $found= true;
+                }
+            }
+        }
+        return $found;
+    }
+    
 
     public function creditReportByDay(Request $request)
     {

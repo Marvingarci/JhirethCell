@@ -22,7 +22,8 @@ const Edit = () => {
     restante: venta[0].restante,
     limite_pago: venta[0].limite_pago,
     tipoPago: venta[0].tipoPago,
-    created_at: venta[0].created_at
+    created_at: venta[0].created_at,
+    phone: venta[0].phone,
   });
 
   const pdfExportComponent = React.useRef(null);
@@ -175,14 +176,21 @@ const Edit = () => {
         </div>
         <div className="flex flex-wrap p-8 -mb-8 -mr-6">
           <TextInput
-            className="w-full pb-8 pr-6 lg:w-1/5"
+            className="w-full pb-8 pr-6 lg:w-1/6"
             label="Cliente"
             name="first_name"
             disabled
             value={data.cliente}
           />
           <TextInput
-            className="w-full pb-8 pr-6 lg:w-1/5"
+            className="w-full pb-8 pr-6 lg:w-1/6"
+            label="Telefono"
+            name="telefono"
+            disabled
+            value={data.phone}
+          />
+          <TextInput
+            className="w-full pb-8 pr-6 lg:w-1/6"
             label="Vendedor"
             name="first_name"
             disabled
@@ -191,14 +199,14 @@ const Edit = () => {
               .map(filter => filter.first_name + ' ' + filter.last_name)}
           />
           <TextInput
-            className="w-full pb-8 pr-6 lg:w-1/5"
+            className="w-full pb-8 pr-6 lg:w-1/6"
             label="Fecha"
             name="first_name"
             disabled
             value={moment(data.created_at).locale("es").format("Do MM YYYY")}
           />
           <TextInput
-            className="w-full pb-8 pr-6 lg:w-1/5"
+            className="w-full pb-8 pr-6 lg:w-1/6"
             label="Tipo de Pago"
             name="first_name"
             disabled
@@ -206,7 +214,7 @@ const Edit = () => {
           />
           { data.limite_pago != null &&
            <TextInput
-            className="w-full pb-8 pr-6 lg:w-1/5"
+            className="w-full pb-8 pr-6 lg:w-1/6"
             label="Limite de Pago"
             disabled
             value={ moment(data.limite_pago).locale("es").format("DD MMM YYYY")}
@@ -299,10 +307,12 @@ const Edit = () => {
         </div>
       </div>
       {
-        data.tipoPago == 'credito' &&
+        (data.tipoPago == 'credito' || data.tipoPago == 'multiple') &&
         <div className="overflow-x-auto   bg-white rounded shadow">
-        <h1 className="text-xl font-bold py-2">Pagos  restante: {data.restante}</h1>
-  
+          {data.tipoPago == 'credito' &&
+          <>
+          
+          <h1 className="text-xl font-bold py-2">Pagos  restante: {data.restante}</h1>
           <div className="flex flex-row gap-4 items-center justify-between">
           <TextInput
                   className="w-full p-4 pr-6 lg:w-1/4"
@@ -336,6 +346,10 @@ const Edit = () => {
                 Agregar pago
               </LoadingButton>
           </div>
+          </>
+          }
+        
+        
   
   
               <table className=" whitespace-nowrap">
@@ -343,6 +357,7 @@ const Edit = () => {
                   <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4">fecha</th>
                     <th className="px-6 pt-5 pb-4">Usuario</th>
+                    <th className="px-6 pt-5 pb-4">Concepto</th>
                     <th className="px-3 pt-5 pb-4">Cantidad</th>
                     <th className="px-3 pt-5 pb-4">Comentario</th>
                   </tr>
@@ -356,6 +371,7 @@ const Edit = () => {
                       <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                         <td className="border-t px-6 pt-5 pb-4">{moment(p.created_at).locale("es").format("Do MMM YYYY")}</td>
                         <td className="border-t px-6 pt-5 pb-4">{p.vendedor_id}</td>
+                        <td className="border-t px-6 pt-5 pb-4">{p.concepto}</td>
                         <td className="border-t px-6 pt-5 pb-4">{p.cantidad}</td>
                         <td className="border-t px-6 pt-5 pb-4">{p.comentario}</td>
                       </tr>

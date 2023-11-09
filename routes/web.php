@@ -66,6 +66,9 @@ Route::post('reports/separadosPorDia')->name('reports.divididosPorDia')->uses('R
 Route::get('reports/abonos')->name('reports.abonos')->uses('ReportsController@paymentsReport')->middleware('auth');
 Route::post('reports/abonosPorDia')->name('reports.abonosPorDia')->uses('ReportsController@creditReportByDay')->middleware('auth');
 
+// Route::post('reports/inventario')->name('reports.inventario')->uses('ReportsController@inventarioByDay')->middleware('auth');
+Route::get('reports/inventario')->name('reports.inventario')->uses('ReportsController@inventarioReport')->middleware('auth');
+Route::post('reports/inventarioPorTienda')->name('reports.inventarioPorTienda')->uses('ReportsController@inventarioPorTienda')->middleware('auth');
 
 // 500 error
 
@@ -78,6 +81,16 @@ Route::get('products/{contact}/edit')->name('products.edit')->uses('ProductContr
 Route::put('products/{contact}')->name('products.update')->uses('ProductController@update')->middleware('auth');
 Route::delete('products/{contact}')->name('products.destroy')->uses('ProductController@destroy')->middleware('auth');
 Route::put('products/{contact}/restore')->name('products.restore')->uses('ProductController@restore')->middleware('auth');
+
+// Transferencias
+Route::get('transfer')->name('transfer')->uses('TransferenciaController@index')->middleware('remember', 'auth');
+Route::get('transfershow')->name('transfer.show')->uses('TransferenciaController@show')->middleware('remember', 'auth');
+Route::get('transfer/create')->name('transfer.create')->uses('TransferenciaController@create')->middleware('auth');
+Route::post('transfer')->name('transfer.store')->uses('TransferenciaController@store')->middleware('auth');
+Route::get('transfer/{contact}/edit')->name('transfer.edit')->uses('TransferenciaController@edit')->middleware('auth');
+Route::put('transfer/{transferencia}')->name('transfer.update')->uses('TransferenciaController@update');
+Route::delete('transfer/{contact}')->name('transfer.destroy')->uses('TransferenciaController@destroy')->middleware('auth');
+Route::put('transfer/{contact}/restore')->name('transfer.restore')->uses('TransferenciaController@restore')->middleware('auth');
 
 //Ventas
 Route::get('ventas')->name('ventas')->uses('VentasController@index')->middleware('remember', 'permission:Caja');

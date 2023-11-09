@@ -28,6 +28,7 @@ class VentaUpdateRequest extends FormRequest
         return [
             'id'=>'required',
             'venta_detalles'=>['required'],
+            'phone'=>[''],
 
         ];
     }

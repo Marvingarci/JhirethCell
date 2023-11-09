@@ -32,8 +32,8 @@ class InventarioStoreRequest extends FormRequest
             'existencia' => [''],    
             'organization_id' => ['required'],    
             'color' => ['required'],    
-            'status' => ['required']    
-
+            'status' => ['required'],    
+            'existenciaDividida' => ['']
         ];
     }
 }

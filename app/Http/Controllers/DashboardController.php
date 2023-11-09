@@ -43,10 +43,13 @@ class DashboardController extends Controller
         ->get();
 
 
+        $macAddressWin = exec('getmac'); // On Windows
+        $macAddressMAC = exec('ifconfig -a | grep -o -E "([0-9a-fA-F]{2}[:-]){5}([0-9a-fA-F]{2})" | head -n 1');
 
         return Inertia::render('Dashboard/Index',[
             'mas_vendidos' => $mas_vendidos,
-            'best_clientes' => $mejores_clientes
+            'best_clientes' => $mejores_clientes,
+            'macAddress' => $macAddressWin,
         ]);
     }
 }

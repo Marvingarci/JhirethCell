@@ -171,6 +171,7 @@ const SeparateReport = () => {
                   <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Codigo</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
                     {/* <th className="px-6 pt-5 pb-4 text-center">Vendedor</th> */}
                     {
@@ -200,6 +201,10 @@ const SeparateReport = () => {
 
                         <td className="border-t justify-center text-center items-center">
                             {detalle.producto}
+                        </td>
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.product_code}
                         </td>
 
                         <td className="border-t justify-center text-center items-center">
@@ -248,6 +253,7 @@ const SeparateReport = () => {
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
+                    <td className="border-t justify-center text-center items-center"></td>
                     {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
                     <td className="border-t justify-center text-center items-center"></td>
                     <td  className="border-t justify-center text-center items-center font-bold">Total</td>
@@ -269,6 +275,7 @@ const SeparateReport = () => {
                   <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Codigo</th>
                     <th className="px-6 pt-5 pb-4 text-center" >Cliente</th>
                     {
                       auth.user.owner == true && 
@@ -295,6 +302,10 @@ const SeparateReport = () => {
                         </td>
                         <td className="border-t justify-center text-center items-center">
                             {detalle.producto}
+                        </td>
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.product_code}
                         </td>
 
                         <td className="border-t justify-center text-center items-center">
@@ -342,6 +353,7 @@ const SeparateReport = () => {
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
+                    <td className="border-t justify-center text-center items-center"></td>
                     {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
 
                     <td className="border-t justify-center text-center items-center"></td>
@@ -365,6 +377,7 @@ const SeparateReport = () => {
                   <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Codigo</th>
                     <th className="px-6 pt-5 pb-4 text-center" >Cliente</th>
                     {
                       auth.user.owner == true && 
@@ -391,6 +404,9 @@ const SeparateReport = () => {
                         </td>
                         <td className="border-t justify-center text-center items-center">
                             {detalle.producto}
+                        </td>
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.product_code}
                         </td>
 
                         <td className="border-t justify-center text-center items-center">
@@ -438,6 +454,7 @@ const SeparateReport = () => {
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
+                    <td className="border-t justify-center text-center items-center"></td>
                     {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
 
                     <td className="border-t justify-center text-center items-center"></td>
@@ -461,6 +478,7 @@ const SeparateReport = () => {
                   <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Codigo</th>
                     <th className="px-6 pt-5 pb-4 text-center" >Cliente</th>
                     {
                       auth.user.owner == true && 
@@ -487,6 +505,10 @@ const SeparateReport = () => {
                         </td>
                         <td className="border-t justify-center text-center items-center">
                             {detalle.producto}
+                        </td>
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.product_code}
                         </td>
 
                         <td className="border-t justify-center text-center items-center">
@@ -534,6 +556,7 @@ const SeparateReport = () => {
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
+                    <td className="border-t justify-center text-center items-center"></td>
                     {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
 
                     <td className="border-t justify-center text-center items-center"></td>
@@ -557,6 +580,7 @@ const SeparateReport = () => {
                   <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Codigo</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
                     {
                       auth.user.owner == true && 
@@ -584,6 +608,10 @@ const SeparateReport = () => {
 
                         <td className="border-t justify-center text-center items-center">
                             {detalle.producto}
+                        </td>
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.product_code}
                         </td>
 
                         <td className="border-t justify-center text-center items-center">
@@ -629,6 +657,7 @@ const SeparateReport = () => {
                     )
                   )}
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                    <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
                     {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
@@ -682,6 +711,7 @@ const SeparateReport = () => {
       <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Codigo</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
                     {
                       auth.user.owner == true && 
@@ -708,6 +738,10 @@ const SeparateReport = () => {
                             </td>
                             <td className="border-t justify-center text-center items-center">
                               {detalle.producto}
+                            </td>
+
+                            <td className="border-t justify-center text-center items-center">
+                              {detalle.product_code}
                             </td>
 
                             <td className="border-t justify-center text-center items-center">
@@ -759,6 +793,7 @@ const SeparateReport = () => {
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
+                    <td className="border-t justify-center text-center items-center"></td>
                     {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
 
                     <td className="border-t justify-center text-center items-center"></td>
@@ -782,6 +817,7 @@ const SeparateReport = () => {
       <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Codigo</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
                     {
                       auth.user.owner == true && 
@@ -810,6 +846,10 @@ const SeparateReport = () => {
 
                         <td className="border-t justify-center text-center items-center">
                             {detalle.producto}
+                        </td>
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.product_code}
                         </td>
 
                         
@@ -858,6 +898,7 @@ const SeparateReport = () => {
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
+                    <td className="border-t justify-center text-center items-center"></td>
                     {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
 
                     <td className="border-t justify-center text-center items-center"></td>
@@ -880,6 +921,7 @@ const SeparateReport = () => {
       <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Codigo</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
                     {
                       auth.user.owner == true && 
@@ -910,7 +952,10 @@ const SeparateReport = () => {
                             {detalle.producto}
                         </td>
 
-                        
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.product_code}
+                        </td>
+
                         <td className="border-t justify-center text-center items-center">
                             {venta.cliente}
                         </td>
@@ -956,6 +1001,7 @@ const SeparateReport = () => {
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
+                    <td className="border-t justify-center text-center items-center"></td>
                     {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
 
                     <td className="border-t justify-center text-center items-center"></td>
@@ -979,6 +1025,7 @@ const SeparateReport = () => {
       <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Codigo</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
                     {
                       auth.user.owner == true && 
@@ -1009,6 +1056,9 @@ const SeparateReport = () => {
                             {detalle.producto}
                         </td>
 
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.product_code}
+                        </td>
                         
                         <td className="border-t justify-center text-center items-center">
                             {venta.cliente}
@@ -1055,6 +1105,7 @@ const SeparateReport = () => {
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
+                    <td className="border-t justify-center text-center items-center"></td>
                     {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
 
                     <td className="border-t justify-center text-center items-center"></td>
@@ -1077,6 +1128,7 @@ const SeparateReport = () => {
       <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Codigo</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
                     {
                       auth.user.owner == true && 
@@ -1105,6 +1157,10 @@ const SeparateReport = () => {
 
                         <td className="border-t justify-center text-center items-center">
                             {detalle.producto}
+                        </td>
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.product_code}
                         </td>
 
 
@@ -1151,6 +1207,7 @@ const SeparateReport = () => {
                     )
                   )}
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                    <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
                     {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
@@ -1205,6 +1262,7 @@ const SeparateReport = () => {
       <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Codigo</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
                     {
                       auth.user.owner == true && 
@@ -1233,6 +1291,10 @@ const SeparateReport = () => {
 
                         <td className="border-t justify-center text-center items-center">
                             {detalle.producto}
+                        </td>
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.product_code}
                         </td>
 
                         
@@ -1281,6 +1343,7 @@ const SeparateReport = () => {
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
+                    <td className="border-t justify-center text-center items-center"></td>
                     {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
                     <td className="border-t justify-center text-center items-center"></td>
                     <td  className="border-t justify-center text-center items-center font-bold">Total</td>
@@ -1302,6 +1365,7 @@ const SeparateReport = () => {
       <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Codigo</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
                     {
                       auth.user.owner == true && 
@@ -1330,6 +1394,10 @@ const SeparateReport = () => {
 
                         <td className="border-t justify-center text-center items-center">
                             {detalle.producto}
+                        </td>
+
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.product_code}
                         </td>
 
                         
@@ -1378,6 +1446,7 @@ const SeparateReport = () => {
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
+                    <td className="border-t justify-center text-center items-center"></td>
                     {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
                     <td className="border-t justify-center text-center items-center"></td>
                     <td  className="border-t justify-center text-center items-center font-bold">Total</td>
@@ -1400,6 +1469,7 @@ const SeparateReport = () => {
       <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Codigo</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
                     {
                       auth.user.owner == true && 
@@ -1430,6 +1500,9 @@ const SeparateReport = () => {
                             {detalle.producto}
                         </td>
 
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.product_code}
+                        </td>
                         
                         <td className="border-t justify-center text-center items-center">
                             {venta.cliente}
@@ -1476,6 +1549,7 @@ const SeparateReport = () => {
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
+                    <td className="border-t justify-center text-center items-center"></td>
                     {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
                     <td className="border-t justify-center text-center items-center"></td>
                     <td  className="border-t justify-center text-center items-center font-bold">Total</td>
@@ -1498,6 +1572,7 @@ const SeparateReport = () => {
       <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Codigo</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
                     {
                       auth.user.owner == true && 
@@ -1528,6 +1603,9 @@ const SeparateReport = () => {
                             {detalle.producto}
                         </td>
 
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.product_code}
+                        </td>
                         
                         <td className="border-t justify-center text-center items-center">
                             {venta.cliente}
@@ -1574,6 +1652,7 @@ const SeparateReport = () => {
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
+                    <td className="border-t justify-center text-center items-center"></td>
                     {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}
                     <td className="border-t justify-center text-center items-center"></td>
                     <td  className="border-t justify-center text-center items-center font-bold">Total</td>
@@ -1597,6 +1676,7 @@ const SeparateReport = () => {
       <tr className="font-bold text-left">
                     <th className="px-6 pt-5 pb-4 text-center">Fecha creacion</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
+                    <th className="px-6 pt-5 pb-4 text-center">Codigo</th>
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
                     {
                       auth.user.owner == true && 
@@ -1627,6 +1707,9 @@ const SeparateReport = () => {
                             {detalle.producto}
                         </td>
 
+                        <td className="border-t justify-center text-center items-center">
+                            {detalle.product_code}
+                        </td>
                         
                         <td className="border-t justify-center text-center items-center">
                             {venta.cliente}
@@ -1671,6 +1754,7 @@ const SeparateReport = () => {
                     )
                   )}
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                    <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
                     {auth.user.owner == true &&  <td className="border-t justify-center text-center items-center"></td>}

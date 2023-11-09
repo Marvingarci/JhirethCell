@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Helmet from 'react-helmet';
 import { Inertia } from '@inertiajs/inertia';
 import { InertiaLink, usePage, useForm } from '@inertiajs/inertia-react';
@@ -15,7 +15,19 @@ const colores = [
 ]
 const Edit = () => {
   const { product , inventario, organizations, auth} = usePage().props;
-  const [inventories, setInventories] = useState(inventario)
+  const convert = (inventario) => {
+    inventario.forEach(el => {
+      if(el.existenciaDividida != null ){
+        if(typeof el.existenciaDividida  !== 'object'){
+          el.existenciaDividida = JSON.parse(el.existenciaDividida)
+        }
+      }
+    });
+    console.log(inventario)
+    return inventario;
+  }
+  const [inventories, setInventories] = useState(convert(inventario))
+  const [new_organization_id, setNewOrganizationId] = useState("")
   const { data, setData, errors, post, processing , reset} = useForm({
     product_id: product.id || '',
     codebar: '',
@@ -24,6 +36,7 @@ const Edit = () => {
     color: 'indefinido',
     organization_id: auth.user.organization_id,
     status:'stock',
+    existenciaDividida: ""
      // NOTE: When working with Laravel PUT/PATCH requests and FormData
     // you SHOULD send POST request and fake the PUT request like this.
    // _method: 'PUT'
@@ -34,9 +47,17 @@ const Edit = () => {
     e.preventDefault();
         // NOTE: We are using POST method here, not PUT/PACH. See comment above.
     data.imei = data.codebar
-    // if(product.dbType == 'colectivo'){
-    //   data.color = 'indefinido'
-    // }
+    if(product.dbType == 'colectivo'){
+      let organizationame = organizations.filter((orga) => orga.id == data.organization_id);
+      let existenciaJson = [
+        {
+          organization_id : data.organization_id,
+          company_name : organizationame[0]?.name,
+          cantidad: data.existencia
+        }
+      ]
+      data.existenciaDividida = JSON.stringify(existenciaJson)
+    }
     console.log(data)
     post(route('inventario.store'),{
       onSuccess: page => {
@@ -47,18 +68,21 @@ const Edit = () => {
         console.log(errors)
       }
     });
+
+    console.log(auth.user.organization_id)
   }
 
   const reseteo=()=>{
     reset()
   }
 
-  const actualizarInventario = (id, newExitencia) =>{
+  const actualizarInventario = (id, newExitencia, existenciaDividida) =>{
     // e.preventDefault();
     console.log(id, newExitencia)
     let data1 = {
       productId : id ,
-      existencia : newExitencia
+      existencia : newExitencia,
+      existenciaDividida : existenciaDividida == null ? null : (typeof existenciaDividida === 'object' ? JSON.stringify(existenciaDividida) : existenciaDividida) 
     }
     if (confirm('¿Está seguro que desea actualizar la cantidad de este producto?')) {
       Inertia.post(route('inventario.actualizarInventario', data1));
@@ -69,6 +93,23 @@ const Edit = () => {
     inventories[index].existencia = parseInt(cantidad);
     setInventories([... inventories])
   };
+
+  const newInventorieOrga = (id, organization_id, index) =>{
+    let organizationame = organizations.filter((orga) => orga.id == organization_id);
+    setNewOrganizationId(organization_id)  
+    inventories[index].existenciaDividida.push({organization_id: parseInt(organization_id), company_name: organizationame[0].name, cantidad: 0})
+    // setInventories([... inventories])
+
+    console.log(id, organization_id)
+  }
+
+  const setInventarioDividido = (index,  ind, cantidad) => {
+    inventories[index].existenciaDividida[ind].cantidad = parseInt(cantidad);
+    inventories[index].existencia = parseInt(inventories[index].existenciaDividida.reduce((total, item) => total + parseInt(item.cantidad), 0));
+    console.log(inventories)
+    setInventories([... inventories])
+  };
+
 
   function destroy(id) {
     if (confirm('¿Está seguro que desea borrar este registro?')) {
@@ -266,14 +307,16 @@ const Edit = () => {
                         <th className="px-6 pt-5 pb-4">Id</th>
                         <th className="px-6 pt-5 pb-4">Codigo</th>
                         <th className="px-6 pt-5 pb-4">Color</th>
-                        <th className="px-6 pt-5 pb-4">Tienda</th>
+                        {/* <th className="px-6 pt-5 pb-4">Tienda</th> */}
                         <th className="px-3 pt-5 pb-4">Existencia</th>
                         <th className="px-3 pt-5 pb-4">Estado</th>
                       </tr>
                     </thead>
                     <tbody>
                       {inventories.map(
-                        ({ id, product_id, color, codebar, existencia, status, organization_id }, index) => (
+                        ({ id, product_id, color, codebar, existencia, status, organization_id, existenciaDividida }, index) => {
+                        let existing = [];
+                        return (
                           <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                             <td className="border-t justify-center text-center items-center">
                               {id}
@@ -284,29 +327,77 @@ const Edit = () => {
                             <td className="border-t justify-center text-center items-center">
                             {color}
                           </td>
-                            <td className="border-t justify-center text-center items-center">
+                            {/* <td className="border-t justify-center text-center items-center">
                           {organizations.map(({id, name })=>{
                             if(id == organization_id){
                               return(name)
                             }
                             }) 
                           }
-                          </td>
+                          </td> */}
+                            { existenciaDividida == null ?(
+                              <td className="border-t justify-center text-center items-center">
+                              <TextInput
+                                className="w-1/2"
+                                type="number"
+                                value={existencia}
+                                onChange={e =>
+                                  setInventario(index ,e.target.value)
+                                }
+                              />
+                              </td>
+                            ):(
+                              <td className="border-t justify-center text-center items-center">
+                                {
+                                  existenciaDividida.map(({ organization_id, company_name, cantidad }, ind) => {
+                                    existing.push(organization_id);
+                                    return ( 
+                                      <div>
+                                        <TextInput
+                                          className="w-1/2"
+                                          type="number"
+                                          label={company_name}
+                                          value={cantidad}
+                                          onChange={e =>
+                                            setInventarioDividido(index, ind ,e.target.value)
+                                          }
+                                          />
+                                          <div>
 
-                            <td className="border-t justify-center text-center items-center">
-                            <TextInput
-                              className="w-1/2"
-                              type="number"
-                              value={existencia}
-                              onChange={e =>
-                                setInventario(index ,e.target.value)
-                              }
-                            />
-                            </td>
+                                          </div>
+                                      </div>
+                                    )
+                                  })
+                                  
+                                }
+                                
+                             
+                              </td>
+                            )
+
+                            }
+                           
                             <td className="border-t justify-center text-center items-center">
                               {status}
                             </td>
                             <td className="border-t">
+                                  <div>
+                                    {
+                                      <SelectInput
+                                      className=""
+                                      label="Otra tienda"
+                                      value={new_organization_id}
+                                      onChange={e => newInventorieOrga(id, e.target.value, index)}
+                                    >
+                                      <option value=""></option>
+                                      {organizations.filter(e => !existing.includes(e.id) ).map(({ id, name }) => (
+                                        <option key={id} value={id}>
+                                          {name}
+                                        </option>
+                                      ))}
+                                    </SelectInput>
+                                    }
+                                  </div>
                               <button
                                 type='button'
                                 onClick={e => destroy(id)}
@@ -315,7 +406,7 @@ const Edit = () => {
                                 Eliminar
                               </button>
                               <button
-                                onClick={e => actualizarInventario(id, existencia)}
+                                onClick={e => actualizarInventario(id, existencia, existenciaDividida)}
                                 className="bg-newblue-200 ring-2 text-white py-2 px-1 rounded-xl m-1"
                               >
                                 Actualizar
@@ -323,6 +414,7 @@ const Edit = () => {
                             </td>
                           </tr>
                         )
+                                  }
                       )}
                       {inventario.length === 0 && (
                         <tr>

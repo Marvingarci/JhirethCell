@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Product extends Model
 {
@@ -20,10 +21,81 @@ class Product extends Model
         'category_id'
     ];
 
+    protected $casts = [
+        'existenciaDividida' => 'array',
+        'realExistencia' => 'integer',
+    ];
 
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function getRealExistenciaAttribute()
+    {
+        $quan = DB::table("inventarios")
+        ->select(DB::raw("product_id ,  COUNT(*) as cuenta,  SUM(existencia) as suma"))
+        ->where('status', 'stock')
+        ->where('product_id', $this->id)
+        ->groupBy('product_id')
+        ->first();
+        $real = 0;
+        if(isset($quan)){
+            if($this->dbType == 'colectivo'){
+                $real= $quan->suma;
+            }else{
+                $real = $quan->cuenta;
+            }
+        } else{
+            $real = 0;
+        }
+        return $real;
+    }
+
+    public function getExistenciaDivididaAttribute()
+    {
+        $inventarios = DB::table("inventarios")
+        ->select(DB::raw("product_id , existenciaDividida"))
+        ->where('product_id', $this->id)
+        ->get();
+
+        $real = [];
+        if($this->dbType == 'colectivo'){
+                $total = 0;
+                foreach ($inventarios as $quan) {
+                    if(isset($quan->existenciaDividida)){
+                    $json = json_decode($quan->existenciaDividida);
+                        foreach ($json as $orga) {
+                            if($orga->organization_id != null){
+                                array_push($real, $orga);
+                                $total = intval($orga->cantidad);
+                            }
+                        }
+                
+                    }
+                }                
+            } elseif($this->dbType == 'individual'){
+                // $real = 0;
+                $quan = DB::table("inventarios as i")
+                ->leftJoin('organizations as orga', 'orga.id' , '=', 'i.organization_id')
+                ->select(DB::raw("COUNT(*) as cuenta, i.organization_id, name"))
+                ->where('i.status', 'stock')
+                ->where('i.product_id', $this->id)
+                ->groupBy('i.organization_id')
+                ->get();
+
+                foreach ($quan as $orga) {
+                    if($orga->organization_id != null){
+                        array_push($real, (object)["organization_id" => $orga->organization_id, "company_name" => $orga->name, "cantidad" => $orga->cuenta]);
+                    }
+                }
+            }
+        
+        return $real;
+    }
+
+    public function hello(){
+        return "Hello";
     }
 
     public function inventarios()

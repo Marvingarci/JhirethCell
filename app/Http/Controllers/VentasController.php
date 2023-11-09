@@ -17,6 +17,7 @@ use App\Models\Inventario;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\Servicios;
+use App\Models\Payment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -55,7 +56,7 @@ class VentasController extends Controller
         'categorias' => Category::all(),
             'servicios' => Servicios::all(),
             'usuarios'=> User::with('organization')->get(),
-            'contactos'=> Contact::all(['id','first_name','last_name', 'organization_id']),
+            'contactos'=> Contact::all(['id','first_name','last_name', 'organization_id', 'phone']),
             'producto'=> Inventario::where('codebar',Request::only('search', 'trashed'))->with('product')->first(),
         ]);
     }
@@ -77,6 +78,16 @@ class VentasController extends Controller
         if($registro->tipoPago == 'credito'){
             $registro->limite_pago = Carbon::now()->addDays($registro->dias_credito); 
         }
+
+        if($registro->tipoPago == 'multiple'){
+            $pagos = $request->payments;
+            foreach ($pagos as $pay) {
+                $newpayment = Payment::create(['ventas_id' => $registro->id, 'vendedor_id' => $pay['vendedor_id'], 'cantidad' => $pay['cantidad'], 'concepto' => $pay['concepto'], 'comentario' => '']);
+                $newpayment->save();
+            }
+        }
+
+
 
         $registro->save();
 
@@ -118,6 +129,16 @@ class VentasController extends Controller
                     // Bajar el inventario a productos colectivos
                     $inve = Inventario::where('codebar', $venta['codebar'])->first();
                     $inve->existencia = $inve->existencia - $venta['cantidad'] ;
+                    $organizations = $inve->existenciaDividida == null ? [] : json_decode($inve->existenciaDividida);
+                    if(count($organizations) > 0){
+                        foreach ($organizations as $orga) {
+                            if($orga->organization_id == $request['organization_id']){
+                                $orga->cantidad -= $venta['cantidad'];
+                            }
+                        }   
+
+                        $inve->existenciaDividida = json_encode($organizations);
+                    }
                     $inve->save();
                 }else{
                     if($request->tipoPago == 'efectivo' || $request->tipoPago == 'credito'){
@@ -242,6 +263,15 @@ class VentasController extends Controller
                         // Bajar el inventario a productos colectivos
                         $inve = Inventario::where('codebar', $request->venta_detalles['product_code'])->first();
                         $inve->existencia = $inve->existencia + $request->venta_detalles['cantidad'];
+                        $organizations = $inve->existenciaDividida == null ? [] : json_decode($inve->existenciaDividida);
+                        if(count($organizations) > 0){
+                            foreach ($organizations as $orga) {
+                                if($orga->organization_id == $venta['organization_id']){
+                                    $orga->cantidad += $request->venta_detalles['cantidad'];
+                                }
+                            }   
+                            $inve->existenciaDividida = json_encode($organizations);
+                        }
                         $inve->save();
                     }else{
                         Inventario::where('codebar', $request->venta_detalles['product_code'])->update(['status' => 'stock']);
@@ -273,6 +303,15 @@ class VentasController extends Controller
                             // Bajar el inventario a productos colectivos
                             $inve = Inventario::where('codebar', $v['product_code'])->first();
                             $inve->existencia = $inve->existencia + $v['cantidad'] ;
+                            $organizations = $inve->existenciaDividida == null ? [] : json_decode($inve->existenciaDividida);
+                            if(count($organizations) > 0){
+                                foreach ($organizations as $orga) {
+                                    if($orga->organization_id == $ventaAEliminar->organization_id){
+                                        $orga->cantidad += $v['cantidad'];
+                                    }
+                                }   
+                                $inve->existenciaDividida = json_encode($organizations);
+                            }
                             $inve->save();
                         }else{
                             Inventario::where('codebar', $v['product_code'])->update(['status' => 'stock']);
@@ -314,6 +353,16 @@ class VentasController extends Controller
                 // Bajar el inventario a productos colectivos
                 $inve = Inventario::where('codebar', $ventaDetalleToDelete['product_code'])->first();
                 $inve->existencia = $inve->existencia + $ventaDetalleToDelete['cantidad'] ;
+                $organizations = $inve->existenciaDividida == null ? [] : json_decode($inve->existenciaDividida);
+                if(count($organizations) > 0){
+                    foreach ($organizations as $orga) {
+                        if($orga->organization_id == $venta['organization_id']){
+                            $orga->cantidad += $ventaDetalleToDelete['cantidad'];
+                        }
+                    }   
+
+                    $inve->existenciaDividida = json_encode($organizations);
+                }
                 $inve->save();
             }else{
                 Inventario::where('codebar', $ventaDetalleToDelete['product_code'])->update(['status' => 'stock']);

@@ -1,12 +1,10 @@
 import React , {useEffect}from 'react';
 import Layout from '@/Shared/Layout';
-import Icon from '@/Shared/Icon';
 import SearchFilter from '@/Shared/SearchFilter';
-import Pagination from '@/Shared/Pagination';
 import SelectInput from '@/Shared/SelectInput';
-import { InertiaLink, usePage, useForm } from '@inertiajs/inertia-react';
+import { usePage, useForm } from '@inertiajs/inertia-react';
 import LoadingButton from '@/Shared/LoadingButton';
-
+import * as moment from 'moment';
 
 const Index = () => {
   const { categorias, usuarios, producto } = usePage().props;
@@ -20,6 +18,7 @@ const Index = () => {
   
 
   useEffect(() => {
+    console.log(producto)
     if (producto != null) {
        cargardata()
     }else{
@@ -74,6 +73,8 @@ const Index = () => {
               <div className="text-lg"> {producto.product.name}</div>
               <p className="font-bold text-lg" >Precio de venta</p>
               <div className="text-lg"> {producto.product.sell_price}</div>
+              <p className="font-bold text-lg" >Precio de Mayorista</p>
+              <div className="text-lg"> {producto.product.whole_sell_price}</div>
               <p className="font-bold text-lg" >Color</p>
               <div className="text-lg"> {producto.product.color}</div>
               <p className="font-bold text-lg" >Fecha creacion</p>
@@ -89,6 +90,13 @@ const Index = () => {
               }
               <p className="font-bold text-lg " >Actual estado</p>
               <div className="text-lg"> { producto.status}</div>
+              {
+                (producto.status == 'vendido' || producto.status == 'pendiente' )&&
+                <>
+                  <p className="font-bold text-lg " >Fecha de venta</p>
+                  <div className="text-lg"> {moment(producto.saleDate).locale("es").calendar()}</div>
+                </>
+              }
               {
                 producto.product.dbType == 'individual' &&
                  <p className="font-bold text-lg " >Cambiar Estado</p>

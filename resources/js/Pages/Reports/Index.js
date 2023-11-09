@@ -12,11 +12,12 @@ const Index = ({children}) => {
   return (
     <div>
 
-      <div className=" w-full flex flex-row justify-between px-10 -mt-5 mb-5">
+      <div className=" w-full flex flex-wrap px-10 -mt-5 my-3 space-x-2">
           <a onClick={()=> Inertia.get(route('reports.diarios'))} className= "font-bold transition ease-in-out hover:text-white hover:bg-newGreen-100 rounded-xl py-3 text-newGreen-100 bg-white px-16">Reporte Diario</a>
           <a onClick={()=> Inertia.get(route('reports.creditos'))} className="font-bold transition ease-in-out  hover:text-white hover:bg-newGreen-100 rounded-xl py-3 text-newGreen-100 bg-white px-16">Reporte Credito</a>
           <a onClick={()=> Inertia.get(route('reports.divididos'))} className="font-bold transition ease-in-out  hover:text-white hover:bg-newGreen-100 rounded-xl py-3 text-newGreen-100 bg-white px-16">Reporte Separado</a> 
           <a onClick={()=> Inertia.get(route('reports.abonos'))} className="font-bold transition ease-in-out  hover:text-white hover:bg-newGreen-100 rounded-xl py-3 text-newGreen-100 bg-white px-16">Reporte Abonos</a> 
+          <a onClick={()=> Inertia.get(route('reports.inventario'))} className="font-bold transition ease-in-out  hover:text-white hover:bg-newGreen-100 rounded-xl py-3 text-newGreen-100 bg-white px-16">Reporte Inventario</a> 
       </div>
 
       <div>

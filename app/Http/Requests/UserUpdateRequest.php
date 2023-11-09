@@ -28,6 +28,7 @@ class UserUpdateRequest extends FormRequest
             'organization_id' => ['required'],
             'pin' => ['required'],
             'owner' => ['required', 'boolean'],
+            'deleteProduct' => ['required', 'boolean'],
             'photo' => ['nullable', 'image'],
         ];
     }

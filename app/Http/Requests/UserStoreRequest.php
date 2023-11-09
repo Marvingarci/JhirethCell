@@ -32,6 +32,7 @@ class UserStoreRequest extends FormRequest
             'organization_id' => ['required'],
             'pin' => ['required'],
             'owner' => ['required', 'boolean'],
+            'deleteProduct' => ['nullable', 'boolean'],
             'photo' => ['nullable', 'image'],
         ];
     }

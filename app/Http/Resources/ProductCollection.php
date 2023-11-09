@@ -15,7 +15,7 @@ class ProductCollection extends ResourceCollection
     public function toArray($request)
     {
         return $this->collection->map->only(
-            'id', 'name', 'product_code', 'category_id', 'dbType',  'color', 'cost_price', 'sell_price','whole_sell_price', 'existencia','created_at'
+            'id', 'name', 'product_code', 'category_id', 'dbType',  'color', 'cost_price', 'sell_price','whole_sell_price', 'existencia', 'realExistencia', 'existenciaDividida','created_at'
         );
     }
 }

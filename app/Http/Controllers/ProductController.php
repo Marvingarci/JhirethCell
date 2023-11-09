@@ -26,7 +26,7 @@ class ProductController extends Controller
     public function index()
     {
 
-        $realExistencia = Product::get();
+        // $realExistencia = Product::select('id', 'dbType')->get();
         
         $pre = new ProductCollection(
             Auth::user()->account->products()
@@ -36,29 +36,10 @@ class ProductController extends Controller
                 ->appends(Request::all())
         );
 
-        foreach ($realExistencia as $p) {
-                $quan = DB::table("inventarios")
-                ->select(DB::raw("product_id ,  COUNT(*) as cuenta,  SUM(existencia) as suma"))
-                ->where('status', 'stock')
-                ->where('product_id', $p->id)
-                ->groupBy('product_id')
-                ->first();
-
-                if(isset($quan)){
-                    if($p->dbType == 'colectivo'){
-                        $p->realExistencia = $quan->suma;
-                    }else{
-                        $p->realExistencia = $quan->cuenta;
-                    }
-                } else{
-                    $p->realExistencia = 0;
-                }
-        }
-
 
         return Inertia::render('Products/Index', [
             'filters' => Request::all('search', 'trashed'),
-            'realExistencia' => $realExistencia,
+            // 'realExistencia' => $realExistencia,
             'products' => $pre,
         ]);
     }

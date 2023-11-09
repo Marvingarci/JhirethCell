@@ -20,6 +20,8 @@ class Ventas extends Model
         'limite_pago',
         'total', 
         'restante', 
+        'multiplePayments',
+        'phone'
     ];
 
 

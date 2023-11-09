@@ -67,6 +67,14 @@ class UsersController extends Controller
         ]);
     }
 
+    public function updateOrganization(HttpRequest $request) {
+        $user = User::find($request->user_id);
+        $user->organization_id = $request->newcompany_id;
+        $user->save();
+
+        return Redirect::back()->with('success', 'Usuario actualizado a nueva tienda');
+    }
+
     public function update(User $user, UserUpdateRequest $request)
     {
         $user->update(

@@ -20,13 +20,20 @@ const customStyles = {
 Modal.setAppElement('#app');
 
 const Dashboard = () => {
-  const { macAddress, organizations, mas_vendidos, best_clientes } = usePage().props;
+  const { macAddress, organizations, mas_vendidos, best_clientes, auth } = usePage().props;
   const [modalIsOpen, setIsOpen] = useState(false);
+  const [modalIsOpenChangeOrganization, setIsOpenChangeOrganization] = useState(false);
 
   const { data, setData, errors, post, processing } = useForm({
     macAddress: macAddress,
     company_id: '',
   });
+
+  const { data: dataPostUser, setData: setDataUser, errors: errorsUser, post: postUpdateUser, processing: processingUser } = useForm({
+    user_id: auth.user.id,
+    newcompany_id: 0,
+  });
+  const [actualOrganization, setActualOrganization] = useState(null);
 
   const checkIfDevicesExists = () => {
     let exists = false
@@ -35,6 +42,9 @@ const Dashboard = () => {
                
       }else{
         exists = orga.devices.some(device => device === macAddress);
+        if(exists){
+          setActualOrganization(orga);
+        }
       }
     });
     return exists;
@@ -43,9 +53,15 @@ const Dashboard = () => {
   useEffect(() => {
     if(!checkIfDevicesExists()){
       openModal();
-      
+    }else{
+      console.log(auth.user, actualOrganization)
+      if(actualOrganization != null){
+        if(actualOrganization.id != auth.user.organization_id){
+          setIsOpenChangeOrganization(true);
+        }
+      }
     }
-  }, [])
+  }, [actualOrganization])
 
   const closeModal = () => {
     setIsOpen(false);
@@ -57,18 +73,23 @@ const Dashboard = () => {
   const SaveDevice = (e) => {
     e.preventDefault();
     console.log(data);
-    post(route('save.device'),{
-      onSuccess: page => {
-        console.log(page)
-        closeModal();
+    post(route('save.device'), {
+      onSuccess: () => {
+        closeModal()
+        //logout using inertia
+        Inertia.post(route('logout'));
       },
-      onError: errors =>{
-        console.log(errors)
-      }
     });
   }
 
-  console.log(organizations, macAddress, checkIfDevicesExists());
+  const SaveDeviceChangeOrganization = (e) => {
+    e.preventDefault();
+    dataPostUser.newcompany_id = actualOrganization.id
+    console.log(dataPostUser);
+    postUpdateUser(route('users.update.organization'));
+    setIsOpenChangeOrganization(false);
+  }
+
   return (
     // <div></div>
     <div>
@@ -204,6 +225,25 @@ const Dashboard = () => {
 
         </div>
         </div> */}
+        </div>
+        
+
+      </Modal>
+
+      <Modal
+        isOpen={modalIsOpenChangeOrganization}
+        onRequestClose={e => setIsOpenChangeOrganization(false)}
+        contentLabel="Cambiar Usuario"
+        style={customStyles}
+      >
+        <div className='flex justify-between pb-5 px-5'>
+          <h2 className='text-gray-500 text-xl font-bold'>Cambiar Usuario de Tienda</h2>
+        </div>
+        <div className='flex flex-col h-full overflow-y-auto'>
+            <div className='text-gray-700 pb-10 text-break'>Hemos detectado inicio de sesion en otra tienda a la que no estas asignado,¿Quiere que te cambiemos a {actualOrganization?.name}?</div>
+            <div className='flex  justify-between gap-5 p-1 border-2' >
+            <LoadingButton className="btn-indigo" type="button" onClick={SaveDeviceChangeOrganization}>Aceptar</LoadingButton>
+          </div>
         </div>
         
 

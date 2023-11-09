@@ -33,7 +33,8 @@ Route::delete('users/{user}')->name('users.destroy')->uses('UsersController@dest
 Route::put('users/{user}/restore')->name('users.restore')->uses('UsersController@restore')->middleware('permission:Usuarios');
 Route::post('assign-permissions/{user}')->name('permisos.assign')->uses('UsersController@assignPermissions')
     ->middleware('permission:Usuarios');
-            
+Route::post('users-update-organization')->name('users.update.organization')->uses('UsersController@updateOrganization')->middleware('permission:Usuarios');
+    
 
 // Images
 Route::get('/img/{path}', 'ImagesController@show')->where('path', '.*');

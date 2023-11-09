@@ -49,11 +49,11 @@ class DashboardController extends Controller
         $macAddressMAC = exec('ifconfig -a | grep -o -E "([0-9a-fA-F]{2}[:-]){5}([0-9a-fA-F]{2})" | head -n 1');
 
         $organizations = Organization::all(['id', 'name', 'devices']);
-
+        // $actualOrganization = 
         return Inertia::render('Dashboard/Index',[
             'mas_vendidos' => $mas_vendidos,
             'best_clientes' => $mejores_clientes,
-            'macAddress' => $macAddressMAC,
+            'macAddress' => $macAddressWin,
             'organizations' => $organizations,
         ]);
     }
@@ -66,6 +66,7 @@ class DashboardController extends Controller
             $organization->devices = [$request->macAddress];
         }
         $organization->save();
-        Redirect::back()->with('success', 'Dispositivo Registrado con exito.');
+        
+        return Redirect::route('dashboard')->with('success', 'Dispositivo Registrado con exito.');
     }
 }

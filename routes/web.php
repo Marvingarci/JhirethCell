@@ -115,6 +115,7 @@ Route::put('ventasR/{venta}/restore')->name('ventas_rapidas.restore')->uses('Ven
 
 //Garantias
 Route::get('ver-garantias')->name('garantias')->uses('VentaRapidaController@verGarantias')->middleware('remember', 'auth');
+Route::post('save-device')->name('save.device')->uses('DashboardController@saveCompany');
 
 //Servicios
 //Products

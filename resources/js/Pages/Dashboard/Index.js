@@ -1,35 +1,74 @@
-import React from 'react';
-import { InertiaLink } from '@inertiajs/inertia-react';
+import React, { useEffect, useState } from 'react';
 import Layout from '@/Shared/Layout';
-import { usePage } from '@inertiajs/inertia-react';
+import { usePage, useForm } from '@inertiajs/inertia-react';
 import { Pie } from 'react-chartjs-2';
-import LoadingButton from '@/Shared/LoadingButton';
 import { Inertia } from '@inertiajs/inertia';
+import LoadingButton from '@/Shared/LoadingButton';
+import SelectInput from '@/Shared/SelectInput';
+import Modal from 'react-modal';
+
+const customStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+  },
+};
+Modal.setAppElement('#app');
 
 const Dashboard = () => {
-  const { macAddress, mas_vendidos, best_clientes } = usePage().props;
+  const { macAddress, organizations, mas_vendidos, best_clientes } = usePage().props;
+  const [modalIsOpen, setIsOpen] = useState(false);
 
-  // fuction to get current location
-  const getLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(success); 
-    } else {
-      console.log("Geolocation is not supported by this browser.");
-    }
-  }  
+  const { data, setData, errors, post, processing } = useForm({
+    macAddress: macAddress,
+    company_id: '',
+  });
 
-  const success = (pos) =>{
-    const crd = pos.coords;
-  
-    console.log("Your current position is:");
-    console.log(`Latitude : ${crd.latitude}`);
-    console.log(`Longitude: ${crd.longitude}`);
-    console.log(`More or less ${crd.accuracy} meters.`);
+  const checkIfDevicesExists = () => {
+    let exists = false
+    organizations.map(orga => {
+      if(orga.devices == null){
+               
+      }else{
+        exists = orga.devices.some(device => device === macAddress);
+      }
+    });
+    return exists;
   }
 
-  getLocation()
+  useEffect(() => {
+    if(!checkIfDevicesExists()){
+      openModal();
+      
+    }
+  }, [])
 
-  console.log(macAddress);
+  const closeModal = () => {
+    setIsOpen(false);
+  }
+  const openModal = () => {
+    setIsOpen(true);
+  }
+
+  const SaveDevice = (e) => {
+    e.preventDefault();
+    console.log(data);
+    post(route('save.device'),{
+      onSuccess: page => {
+        console.log(page)
+        closeModal();
+      },
+      onError: errors =>{
+        console.log(errors)
+      }
+    });
+  }
+
+  console.log(organizations, macAddress, checkIfDevicesExists());
   return (
     // <div></div>
     <div>
@@ -121,12 +160,60 @@ const Dashboard = () => {
 
         </div>
        </div>
+
+       <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Agregar Computadora"
+        style={customStyles}
+      >
+        <div className='flex justify-between pb-5 px-5'>
+          <h2 className='text-gray-500 text-xl font-bold'>Agregar Computadora</h2>
+        </div>
+        <div className='flex flex-col h-full overflow-y-auto'>
+            <div className='text-gray-700 pb-10 text-break'>Este Dispositivo no ha sido registrado, porfavor selecciona la tienda a la que pertenece esta computadora</div>
+            <div className='flex  justify-between gap-5 p-1 border-2' >
+            <SelectInput
+              className="w-full pr-6 lg:w-1/3"
+              label="Empresa"
+              value={data.company_id}
+              onChange={e => setData('company_id', e.target.value) }
+            >
+              <option value=""></option>
+              {
+                organizations.map((orga, index) => {
+                 return  <option key={index} value={orga.id}>{orga.name}</option>
+                }
+                )
+              }
+              {/* <option value="efectivo">Efectivo</option>
+              <option value="credito">Credito</option>
+              <option value="transferencia">Transferencia</option>
+              <option value="pos">POS</option> */}
+            </SelectInput>
+            <LoadingButton className="btn-indigo" type="button" onClick={SaveDevice}>Guardar</LoadingButton>
+          </div>
+        {/* <div className='flex justify-between'>
+        <div>
+        <LoadingButton className="btn-indigo" type="button" onClick={ e => addPayments()}>Nuevo</LoadingButton>
+        </div>
+        <div className='flex flex-col'>
+        <span className="text-lg text-end">Total: {data.total}</span>
+        <span className="text-lg border-b-2 text-end">Pagado: {pagado}</span>
+        <span className="text-lg font-bold border-2 text-end">Balance: {data.total - pagado}</span>
+
+        </div>
+        </div> */}
+        </div>
+        
+
+      </Modal>
      </div>
+
+     
   );
 };
 
-// Persistent layout
-// Docs: https://inertiajs.com/pages#persistent-layouts
 Dashboard.layout = page => <Layout title="Dashboard" children={page} />;
 
 export default Dashboard;

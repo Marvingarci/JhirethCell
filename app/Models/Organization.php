@@ -9,6 +9,9 @@ class Organization extends Model
 {
     use SoftDeletes, HasFactory;
 
+    protected $casts = [
+        'devices' => 'array',
+    ];
     public function contacts()
     {
         return $this->hasMany(Contact::class);

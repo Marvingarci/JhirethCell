@@ -25,7 +25,6 @@ class OrganizationResource extends JsonResource
             'country' => $this->country,
             'postal_code' => $this->postal_code,
             'deleted_at' => $this->deleted_at,
-            'devices' => $this->devices,
             'contacts' => $this->contacts()->orderByName()->get()->map->only('id', 'name', 'city', 'phone'),
         ];
     }

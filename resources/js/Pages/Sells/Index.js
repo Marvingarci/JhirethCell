@@ -8,13 +8,13 @@ import { first } from 'lodash';
 import moment from 'moment';
 
 const Index = () => {
-  const { ventas_dia , usuarios} = usePage().props;
+  const { ventas_dia , usuarios, user} = usePage().props;
   const {
     data,
     meta: { links }
   } = ventas_dia;
 
-  console.log(usuarios)
+  console.log(user)
   return (
     <div>
       <h1 className="mb-8 text-3xl font-bold">Caja</h1>

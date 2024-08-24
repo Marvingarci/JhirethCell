@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class UserCollection extends ResourceCollection
+class GastoCollection extends ResourceCollection
 {
     /**
      * Transform the resource collection into an array.
@@ -15,7 +15,16 @@ class UserCollection extends ResourceCollection
     public function toArray($request)
     {
         return $this->collection->map->only(
-            'id', 'name', 'email', 'owner', 'photo', 'pin', 'organization_id',  'deleted_at', 'permissions'
+            'id',
+            'vendedor_id',
+            'organization_id',
+            'title',
+            'description',
+            'total',
+            'invoice',
+            'evidence',
+            'created_at',
+            'vendedor_name'
         );
     }
 }

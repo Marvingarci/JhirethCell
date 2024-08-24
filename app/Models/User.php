@@ -24,7 +24,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     protected $casts = [
         'owner' => 'boolean',
-        'deleteProduct' => 'boolean',
     ];
 
     public function account()

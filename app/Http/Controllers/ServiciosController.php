@@ -30,7 +30,6 @@ class ServiciosController extends Controller
      */
     public function index()
     {
-
         return Inertia::render('Servicios/Index', [
             'filters' => Request::all('search', 'trashed'),
             'usuarios'=> User::all(['id','first_name','last_name', 'organization_id']),

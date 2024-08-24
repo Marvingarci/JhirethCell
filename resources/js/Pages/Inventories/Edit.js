@@ -27,7 +27,6 @@ const Edit = () => {
     return inventario;
   }
   const [inventories, setInventories] = useState(convert(inventario))
-  const [new_organization_id, setNewOrganizationId] = useState("")
   const { data, setData, errors, post, processing , reset} = useForm({
     product_id: product.id || '',
     codebar: '',
@@ -68,8 +67,6 @@ const Edit = () => {
         console.log(errors)
       }
     });
-
-    console.log(auth.user.organization_id)
   }
 
   const reseteo=()=>{
@@ -94,18 +91,9 @@ const Edit = () => {
     setInventories([... inventories])
   };
 
-  const newInventorieOrga = (id, organization_id, index) =>{
-    let organizationame = organizations.filter((orga) => orga.id == organization_id);
-    setNewOrganizationId(organization_id)  
-    inventories[index].existenciaDividida.push({organization_id: parseInt(organization_id), company_name: organizationame[0].name, cantidad: 0})
-    // setInventories([... inventories])
-
-    console.log(id, organization_id)
-  }
-
   const setInventarioDividido = (index,  ind, cantidad) => {
     inventories[index].existenciaDividida[ind].cantidad = parseInt(cantidad);
-    inventories[index].existencia = parseInt(inventories[index].existenciaDividida.reduce((total, item) => total + parseInt(item.cantidad), 0));
+    inventories[index].existencia = parseInt(inventories[index].existenciaDividida.reduce((total, item) => total + item.cantidad, 0));
     console.log(inventories)
     setInventories([... inventories])
   };
@@ -145,6 +133,10 @@ const Edit = () => {
         {product.dbType == 'individual' ? (
           <form onSubmit={handleSubmit}>
             <div className="flex flex-wrap p-8 -mb-8 -mr-6">
+             {
+                auth.user.owner && (
+                  <>
+                  
               <TextInput
                 className="w-full pr-6 lg:w-1/4"
                 label="Escanee Código o IMEI"
@@ -187,6 +179,10 @@ const Edit = () => {
                   Guardar
                 </LoadingButton>
               </div>
+                  </>
+                )
+              }
+              
               {/* Comienzo tabla */}
               <div className="overflow-x-auto bg-white rounded shadow w-full">
                 <table className=" whitespace-nowrap w-full">
@@ -230,6 +226,8 @@ const Edit = () => {
                           <td className="border-t justify-center text-center items-center">
                             {status}
                           </td>
+                          {
+                            auth.user.owner && (
                           <td className="border-t">
                             <button
                               onClick={e => destroy(id)}
@@ -238,6 +236,8 @@ const Edit = () => {
                               Eliminar
                             </button>
                           </td>
+                            )
+                          }
                         </tr>
                       )
                     )}
@@ -258,6 +258,9 @@ const Edit = () => {
         ) : (
           <div>
               <div >
+                {
+                  auth.user.owner && (
+
                 <form className="flex flex-wrap p-8 -mb-8 -mr-6" onSubmit={handleSubmit}>
                 <TextInput
                   className="w-full pb-8 pr-6 lg:w-1/4"
@@ -298,6 +301,8 @@ const Edit = () => {
                   </LoadingButton>
                 </div>
                 </form>
+                  )
+                }
 
                 {/* Comienzo tabla */}
                 <div className="overflow-x-auto bg-white rounded shadow w-full">
@@ -307,16 +312,14 @@ const Edit = () => {
                         <th className="px-6 pt-5 pb-4">Id</th>
                         <th className="px-6 pt-5 pb-4">Codigo</th>
                         <th className="px-6 pt-5 pb-4">Color</th>
-                        {/* <th className="px-6 pt-5 pb-4">Tienda</th> */}
+                        <th className="px-6 pt-5 pb-4">Tienda</th>
                         <th className="px-3 pt-5 pb-4">Existencia</th>
                         <th className="px-3 pt-5 pb-4">Estado</th>
                       </tr>
                     </thead>
                     <tbody>
                       {inventories.map(
-                        ({ id, product_id, color, codebar, existencia, status, organization_id, existenciaDividida }, index) => {
-                        let existing = [];
-                        return (
+                        ({ id, product_id, color, codebar, existencia, status, organization_id, existenciaDividida }, index) => (
                           <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                             <td className="border-t justify-center text-center items-center">
                               {id}
@@ -327,14 +330,14 @@ const Edit = () => {
                             <td className="border-t justify-center text-center items-center">
                             {color}
                           </td>
-                            {/* <td className="border-t justify-center text-center items-center">
+                            <td className="border-t justify-center text-center items-center">
                           {organizations.map(({id, name })=>{
                             if(id == organization_id){
                               return(name)
                             }
                             }) 
                           }
-                          </td> */}
+                          </td>
                             { existenciaDividida == null ?(
                               <td className="border-t justify-center text-center items-center">
                               <TextInput
@@ -349,28 +352,26 @@ const Edit = () => {
                             ):(
                               <td className="border-t justify-center text-center items-center">
                                 {
-                                  existenciaDividida.map(({ organization_id, company_name, cantidad }, ind) => {
-                                    existing.push(organization_id);
+                                  existenciaDividida.map(({ company_name, cantidad }, ind) => {
                                     return ( 
                                       <div>
+                                        <div>
+
+                                        </div>
                                         <TextInput
                                           className="w-1/2"
                                           type="number"
+                                          disabled={!auth.user.owner}
                                           label={company_name}
                                           value={cantidad}
                                           onChange={e =>
                                             setInventarioDividido(index, ind ,e.target.value)
                                           }
-                                          />
-                                          <div>
-
-                                          </div>
+                                        />
                                       </div>
                                     )
                                   })
-                                  
                                 }
-                                
                              
                               </td>
                             )
@@ -380,24 +381,9 @@ const Edit = () => {
                             <td className="border-t justify-center text-center items-center">
                               {status}
                             </td>
+                            {
+                              auth.user.owner && (
                             <td className="border-t">
-                                  <div>
-                                    {
-                                      <SelectInput
-                                      className=""
-                                      label="Otra tienda"
-                                      value={new_organization_id}
-                                      onChange={e => newInventorieOrga(id, e.target.value, index)}
-                                    >
-                                      <option value=""></option>
-                                      {organizations.filter(e => !existing.includes(e.id) ).map(({ id, name }) => (
-                                        <option key={id} value={id}>
-                                          {name}
-                                        </option>
-                                      ))}
-                                    </SelectInput>
-                                    }
-                                  </div>
                               <button
                                 type='button'
                                 onClick={e => destroy(id)}
@@ -412,9 +398,10 @@ const Edit = () => {
                                 Actualizar
                               </button>
                             </td>
+                              )
+                            }
                           </tr>
                         )
-                                  }
                       )}
                       {inventario.length === 0 && (
                         <tr>

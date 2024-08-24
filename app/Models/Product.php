@@ -33,23 +33,45 @@ class Product extends Model
 
     public function getRealExistenciaAttribute()
     {
-        $quan = DB::table("inventarios")
-        ->select(DB::raw("product_id ,  COUNT(*) as cuenta,  SUM(existencia) as suma"))
-        ->where('status', 'stock')
+
+        $inventarios = DB::table("inventarios")
+        ->select(DB::raw("product_id , existenciaDividida"))
         ->where('product_id', $this->id)
-        ->groupBy('product_id')
-        ->first();
+        ->get();
+
         $real = 0;
-        if(isset($quan)){
-            if($this->dbType == 'colectivo'){
-                $real= $quan->suma;
-            }else{
-                $real = $quan->cuenta;
+        if($this->dbType == 'colectivo'){
+                $total = 0;
+                foreach ($inventarios as $quan) {
+                    if(isset($quan->existenciaDividida)){
+                    $json = json_decode($quan->existenciaDividida);
+                        foreach ($json as $orga) {
+                            if($orga->organization_id != null){
+                                $total += intval($orga->cantidad);
+                            }
+                        }
+                
+                    }
+                }
+                $real = $total;
+            } elseif($this->dbType == 'individual'){
+                $real = 0;
+                $quan = DB::table("inventarios as i")
+                ->select(DB::raw("COUNT(*) as cuenta, i.organization_id"))
+                ->where('i.status', 'stock')
+                ->where('i.product_id', $this->id)
+                ->groupBy('i.organization_id')
+                ->get();
+
+                foreach ($quan as $orga) {
+                    if($orga->organization_id != null){
+                        $real += $orga->cuenta;
+                    }
+                }
             }
-        } else{
-            $real = 0;
-        }
+
         return $real;
+
     }
 
     public function getExistenciaDivididaAttribute()

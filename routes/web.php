@@ -33,8 +33,7 @@ Route::delete('users/{user}')->name('users.destroy')->uses('UsersController@dest
 Route::put('users/{user}/restore')->name('users.restore')->uses('UsersController@restore')->middleware('permission:Usuarios');
 Route::post('assign-permissions/{user}')->name('permisos.assign')->uses('UsersController@assignPermissions')
     ->middleware('permission:Usuarios');
-Route::post('users-update-organization')->name('users.update.organization')->uses('UsersController@updateOrganization')->middleware('permission:Usuarios');
-    
+            
 
 // Images
 Route::get('/img/{path}', 'ImagesController@show')->where('path', '.*');
@@ -61,6 +60,7 @@ Route::put('contacts/{contact}/restore')->name('contacts.restore')->uses('Contac
 // Reports
 Route::get('reports')->name('reports')->uses('ReportsController')->middleware('auth');
 Route::get('reports/diarios')->name('reports.diarios')->uses('ReportsController@dailyReport')->middleware('auth');
+Route::post('reports/diarioPorDia')->name('reports.diarioPorDia')->uses('ReportsController@dailyReportByDay')->middleware('auth');
 Route::get('reports/creditos')->name('reports.creditos')->uses('ReportsController@creditReport')->middleware('auth');
 Route::get('reports/separados')->name('reports.divididos')->uses('ReportsController@separateReport')->middleware('auth');
 Route::post('reports/separadosPorDia')->name('reports.divididosPorDia')->uses('ReportsController@separateReportByDay')->middleware('auth');
@@ -116,7 +116,6 @@ Route::put('ventasR/{venta}/restore')->name('ventas_rapidas.restore')->uses('Ven
 
 //Garantias
 Route::get('ver-garantias')->name('garantias')->uses('VentaRapidaController@verGarantias')->middleware('remember', 'auth');
-Route::post('save-device')->name('save.device')->uses('DashboardController@saveCompany');
 
 //Servicios
 //Products
@@ -150,8 +149,13 @@ Route::post('pagos')->name('pagos.store')->uses('PaymentController@store')->midd
 // Route::delete('inventario/{id}')->name('inventario.destroy')->uses('InventarioController@destroy')->middleware('auth');
 // Route::put('inventario/{contact}/restore')->name('inventario.restore')->uses('InventarioController@restore')->middleware('auth');
 
-
-
+//Gastos
+Route::get('gastos')->name('gastos')->uses('GastoController@index')->middleware( 'auth');
+Route::get('gastos/create')->name('gastos.create')->uses('GastoController@create')->middleware('auth');
+Route::post('gastos')->name('gastos.store')->uses('GastoController@store')->middleware('auth');
+Route::get('gastos/{gasto}/edit')->name('gastos.edit')->uses('GastoController@edit')->middleware('auth');
+Route::put('gastos/{gasto}')->name('gastos.update')->uses('GastoController@update')->middleware('auth');
+Route::delete('gastos/{gasto}')->name('gastos.destroy')->uses('GastoController@destroy')->middleware('auth');
 
 
 

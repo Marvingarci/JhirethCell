@@ -7,12 +7,14 @@ use App\Models\Payment;
 use App\Models\Product;
 use Inertia\Inertia;
 use App\Models\Ventas;
+use App\Models\Gasto;
 use App\Models\VentaDetalle;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Http\Request;
 use App\Http\Resources\ProductCollection;
+use Illuminate\Support\Facades\Auth;
 
 class ReportsController extends Controller
 {
@@ -45,10 +47,17 @@ class ReportsController extends Controller
 
     public function dailyReport()
     {
+        $user = Auth::user();
         $today = Carbon::today();
-        $Ventas_hoy = Ventas::where([['created_at', 'like', $today->format('Y-m-d') . '%'],['tipoPago', 'efectivo']])->with('venta_detalles')->get();
+        $gastosByDay = Gasto::where([['created_at', 'like', $today->format('Y-m-d') . '%'],['organization_id', $user->organization_id]])->get();
+        $Ventas_hoy = Ventas::where([
+            ['created_at', 'like', $today->format('Y-m-d') . '%'],
+            ['tipoPago', '!=', 'credito'],
+            ['organization_id', $user->organization_id]
+            ])->with('venta_detalles')->get();
         return Inertia::render('Reports/DayliReport',[
-            'ventas'=> $Ventas_hoy
+            'ventas'=> $Ventas_hoy,
+            'gastos'=> $gastosByDay,
         ]);
     }
 
@@ -147,6 +156,26 @@ class ReportsController extends Controller
         ]);     
     }
 
+    public function dailyReportByDay(Request $request)
+    {
+        $today = $request->day; 
+        $organization_id = $request->organization;
+        
+        $gastosByDay = Gasto::where([['created_at', 'like', $today . '%'],['organization_id', $organization_id]])->get();
+        $Ventas_hoy = Ventas::where([
+            ['created_at', 'like', $today . '%'],
+            ['tipoPago', '!=', 'credito'],
+            ['organization_id', $organization_id]
+            ])->with('venta_detalles')->get();
+
+       
+
+        return Inertia::render('Reports/DayliReport',[
+            'ventas'=> $Ventas_hoy,
+            'gastos'=> $gastosByDay,
+        ]);     
+    }
+
     public function creditReport()
     {
         $today = Carbon::today();
@@ -179,11 +208,11 @@ class ReportsController extends Controller
         $organizations = Organization::all();
 
         $pre =new ProductCollection(
-            Product::orderBy('name')->take(100)->get());
+            Product::orderBy('name')->get());
         
         $final = $pre->filter(function($product)use($organization_id){
             $found = false;
-            if(!empty($product->existenciaDividida) && count($product->existenciaDividida) > 0){
+            if(!empty($product->existenciaDividida)){
                 foreach ($product->existenciaDividida as $item) {
                     if($item->organization_id == $organization_id && $item->cantidad > 0){
                         $found= true;

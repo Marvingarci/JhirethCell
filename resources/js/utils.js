@@ -6,3 +6,9 @@ export function filesize(size) {
     ['B', 'kB', 'MB', 'GB', 'TB'][i]
   );
 }
+
+export const showOnlyCapitalLetter = (name) => {
+  let initials = name.match(/\b\w/g) || [];
+  initials = ((initials.shift() || '') + (initials.pop() || '')).toUpperCase();
+  return initials;
+}

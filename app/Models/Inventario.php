@@ -21,22 +21,9 @@ class Inventario extends Model
         'status'
     ];
 
-    protected $casts = [
-        'saleDate' => 'string',
-    ];
-
     public function product()
     {
         return $this->belongsTo(Product::class);
-    }
-
-    public function getSaleDateAttribute()
-    {
-        if($this->status == 'vendido' || $this->status == 'pendiente'){
-            return VentaDetalle::where('product_code', $this->codebar)->first()->created_at;
-        }else{
-            return null;
-        }
     }
     
     public function scopeFilter($query, array $filters)

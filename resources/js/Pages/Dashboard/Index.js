@@ -1,101 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { InertiaLink } from '@inertiajs/inertia-react';
 import Layout from '@/Shared/Layout';
-import { usePage, useForm } from '@inertiajs/inertia-react';
+import { usePage } from '@inertiajs/inertia-react';
 import { Pie } from 'react-chartjs-2';
-import { Inertia } from '@inertiajs/inertia';
 import LoadingButton from '@/Shared/LoadingButton';
-import SelectInput from '@/Shared/SelectInput';
-import Modal from 'react-modal';
-
-const customStyles = {
-  content: {
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-  },
-};
-Modal.setAppElement('#app');
+import { Inertia } from '@inertiajs/inertia';
 
 const Dashboard = () => {
-  const { macAddress, organizations, mas_vendidos, best_clientes, auth } = usePage().props;
-  const [modalIsOpen, setIsOpen] = useState(false);
-  const [modalIsOpenChangeOrganization, setIsOpenChangeOrganization] = useState(false);
+  const { mas_vendidos, best_clientes } = usePage().props;
 
-  const { data, setData, errors, post, processing } = useForm({
-    macAddress: macAddress,
-    company_id: '',
-  });
-
-  const { data: dataPostUser, setData: setDataUser, errors: errorsUser, post: postUpdateUser, processing: processingUser } = useForm({
-    user_id: auth.user.id,
-    newcompany_id: 0,
-  });
-  const [actualOrganization, setActualOrganization] = useState(null);
-
-  const checkIfDevicesExists = () => {
-    let exists = false
-    organizations.map(orga => {
-      if(orga.devices == null){
-               
-      }else{
-        exists = orga.devices.some(device => device === macAddress);
-        if(exists){
-          setActualOrganization(orga);
-        }
-      }
-    });
-    return exists;
-  }
-
-  useEffect(() => {
-    if(!checkIfDevicesExists()){
-      openModal();
-    }else{
-      console.log(auth.user, actualOrganization)
-      if(actualOrganization != null){
-        if(actualOrganization.id != auth.user.organization_id){
-          setIsOpenChangeOrganization(true);
-        }
-      }
-    }
-  }, [actualOrganization])
-
-  const closeModal = () => {
-    setIsOpen(false);
-  }
-  const openModal = () => {
-    setIsOpen(true);
-  }
-
-  const SaveDevice = (e) => {
-    e.preventDefault();
-    console.log(data);
-    post(route('save.device'), {
-      onSuccess: () => {
-        closeModal()
-        //logout using inertia
-        Inertia.post(route('logout'));
-      },
-    });
-  }
-
-  const SaveDeviceChangeOrganization = (e) => {
-    e.preventDefault();
-    dataPostUser.newcompany_id = actualOrganization.id
-    console.log(dataPostUser);
-    postUpdateUser(route('users.update.organization'));
-    setIsOpenChangeOrganization(false);
-  }
-
+  console.log(best_clientes);
   return (
     // <div></div>
     <div>
       <h1 className="mb-8 text-3xl font-bold">Principal</h1>
       <div className="grid grid-cols-2 gap-3">
-        {(mas_vendidos != undefined  && mas_vendidos.length > 0) &&
         <div className="flex justify-center items-center bg-white shadow-xl rounded-xl">
           <div className="flex flex-col justify-center items-center p-3">
             <h1 className="text-2xl text-center font-bold">
@@ -122,11 +41,7 @@ const Dashboard = () => {
             ))}
           </div>
         </div>
-        }
         {/* Segundo div */}
-          {
-            (best_clientes != undefined && best_clientes.length > 0) &&
-
         <div className="flex flex-row justify-center text-center items-center bg-white shadow-xl rounded-xl">
         <p className="text-lg font-bold w-1/4">Mejores Clientes</p>
           <div className="w-3/4">
@@ -164,7 +79,6 @@ const Dashboard = () => {
             </div>
 
         </div>
-          }
 
         {/* Tercer div */}
 
@@ -181,79 +95,12 @@ const Dashboard = () => {
 
         </div>
        </div>
-
-       <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        contentLabel="Agregar Computadora"
-        style={customStyles}
-      >
-        <div className='flex justify-between pb-5 px-5'>
-          <h2 className='text-gray-500 text-xl font-bold'>Agregar Computadora</h2>
-        </div>
-        <div className='flex flex-col h-full overflow-y-auto'>
-            <div className='text-gray-700 pb-10 text-break'>Este Dispositivo no ha sido registrado, porfavor selecciona la tienda a la que pertenece esta computadora</div>
-            <div className='flex  justify-between gap-5 p-1 border-2' >
-            <SelectInput
-              className="w-full pr-6 lg:w-1/3"
-              label="Empresa"
-              value={data.company_id}
-              onChange={e => setData('company_id', e.target.value) }
-            >
-              <option value=""></option>
-              {
-                organizations.map((orga, index) => {
-                 return  <option key={index} value={orga.id}>{orga.name}</option>
-                }
-                )
-              }
-              {/* <option value="efectivo">Efectivo</option>
-              <option value="credito">Credito</option>
-              <option value="transferencia">Transferencia</option>
-              <option value="pos">POS</option> */}
-            </SelectInput>
-            <LoadingButton className="btn-indigo" type="button" onClick={SaveDevice}>Guardar</LoadingButton>
-          </div>
-        {/* <div className='flex justify-between'>
-        <div>
-        <LoadingButton className="btn-indigo" type="button" onClick={ e => addPayments()}>Nuevo</LoadingButton>
-        </div>
-        <div className='flex flex-col'>
-        <span className="text-lg text-end">Total: {data.total}</span>
-        <span className="text-lg border-b-2 text-end">Pagado: {pagado}</span>
-        <span className="text-lg font-bold border-2 text-end">Balance: {data.total - pagado}</span>
-
-        </div>
-        </div> */}
-        </div>
-        
-
-      </Modal>
-
-      <Modal
-        isOpen={modalIsOpenChangeOrganization}
-        onRequestClose={e => setIsOpenChangeOrganization(false)}
-        contentLabel="Cambiar Usuario"
-        style={customStyles}
-      >
-        <div className='flex justify-between pb-5 px-5'>
-          <h2 className='text-gray-500 text-xl font-bold'>Cambiar Usuario de Tienda</h2>
-        </div>
-        <div className='flex flex-col h-full overflow-y-auto'>
-            <div className='text-gray-700 pb-10 text-break'>Hemos detectado inicio de sesion en otra tienda a la que no estas asignado,¿Quiere que te cambiemos a {actualOrganization?.name}?</div>
-            <div className='flex  justify-between gap-5 p-1 border-2' >
-            <LoadingButton className="btn-indigo" type="button" onClick={SaveDeviceChangeOrganization}>Aceptar</LoadingButton>
-          </div>
-        </div>
-        
-
-      </Modal>
      </div>
-
-     
   );
 };
 
+// Persistent layout
+// Docs: https://inertiajs.com/pages#persistent-layouts
 Dashboard.layout = page => <Layout title="Dashboard" children={page} />;
 
 export default Dashboard;

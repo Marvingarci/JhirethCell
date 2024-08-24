@@ -40,7 +40,7 @@ const Edit = () => {
     _method: 'PUT'
   });
 
-  console.log(auth);
+  console.log(auth.user.owner);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -85,6 +85,7 @@ const Edit = () => {
               className="w-full pb-8 pr-6 lg:w-1/2"
               label="Nombre"
               name="name"
+              disabled={!auth.user.owner}
               errors={errors.name}
               value={data.name}
               onChange={e => setData('name', e.target.value)}
@@ -102,6 +103,7 @@ const Edit = () => {
               className="w-full pb-8 pr-6 lg:w-1/2"
               label="Tipo de producto"
               name="Categoria"
+              disabled={!auth.user.owner}
               errors={errors.dbType}
               value={data.dbType}
               onChange={e => setData('dbType', e.target.value)}
@@ -132,16 +134,18 @@ const Edit = () => {
               label="Precio de venta"
               name="region"
               type="number"
+              disabled={!auth.user.owner}
               errors={errors.sell_price}
               value={data.sell_price}
               onChange={e => setData('sell_price', e.target.value)}
             />
 
-<TextInput
+            <TextInput
               className="w-full pb-8 pr-6 lg:w-1/2"
               label="Precio de Mayorista"
               name="region"
               type="number"
+              disabled={!auth.user.owner}
               errors={errors.whole_sell_price}
               value={data.whole_sell_price}
               onChange={e => setData('whole_sell_price', e.target.value)}
@@ -151,6 +155,7 @@ const Edit = () => {
               className="w-full pb-8 pr-6 lg:w-1/2"
               label="Categoría"
               name="country"
+              disabled={!auth.user.owner}
               errors={errors.category_id}
               value={data.category_id}
               onChange={e => setData('category_id', e.target.value)}
@@ -161,10 +166,8 @@ const Edit = () => {
               })}
             </SelectInput>
           </div>
-          {(auth.user.deleteProduct) && (
-
           <div className="flex items-center px-8 py-4 bg-gray-100 border-t border-gray-200">
-            {(!product.deleted_at) && (
+            {(!product.deleted_at && auth.user.owner == true) && (
               <DeleteButton onDelete={destroy}>Borrar Producto</DeleteButton>
             )}
 
@@ -174,16 +177,17 @@ const Edit = () => {
             >
               Administrar Inventarios
             </InertiaLink>
+            {auth.user.owner == true && (
 
-              <LoadingButton
-                loading={processing}
-                type="submit"
-                className="ml-auto btn-indigo"
-              >
-                Editar Producto
-              </LoadingButton>
-          </div>
+            <LoadingButton
+              loading={processing}
+              type="submit"
+              className="ml-auto btn-indigo"
+            >
+              Editar Producto
+            </LoadingButton>
             )}
+          </div>
         </form>
       </div>
     </div>

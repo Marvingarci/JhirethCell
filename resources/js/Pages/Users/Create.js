@@ -17,7 +17,6 @@ const Create = () => {
     organization_id: 0,
     pin: '',
     owner: '0',
-    deleteProduct: '',
     photo: ''
   });
 
@@ -34,9 +33,9 @@ const Create = () => {
             href={route('users')}
             className="text-indigo-600 hover:text-indigo-700"
           >
-            Usuarios
+            Users
           </InertiaLink>
-          <span className="font-medium text-indigo-600"> /</span> Crear
+          <span className="font-medium text-indigo-600"> /</span> Create
         </h1>
       </div>
       <div className="max-w-3xl overflow-hidden bg-white rounded shadow">
@@ -69,7 +68,7 @@ const Create = () => {
             />
             <TextInput
               className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Contraseña"
+              label="Contrasena"
               name="password"
               type="password"
               errors={errors.password}
@@ -97,19 +96,6 @@ const Create = () => {
               <option value="1">Si</option>
               <option value="0">No</option>
             </SelectInput>
-
-            <SelectInput
-              className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Puede actulizar o eliminar productos"
-              name="deleteProduct"
-              errors={errors.deleteProduct}
-              value={data.deleteProduct}
-              onChange={e => setData('deleteProduct', e.target.value)}
-            >
-              <option value="1">Si</option>
-              <option value="0">No</option>
-            </SelectInput>
-            
             <SelectInput
               className="w-full pb-8 pr-6 lg:w-1/2"
               label="Organizacion"
@@ -124,7 +110,6 @@ const Create = () => {
               }
               {/* <option value="0">No</option> */}
             </SelectInput>
-
             {/* <FileInput
               className="w-full pb-8 pr-6 lg:w-1/2"
               label="Photo"
@@ -141,7 +126,7 @@ const Create = () => {
               type="submit"
               className="btn-indigo"
             >
-              Crear usuario
+              Create User
             </LoadingButton>
           </div>
         </form>
@@ -150,6 +135,6 @@ const Create = () => {
   );
 };
 
-Create.layout = page => <Layout title="Crear Usuario" children={page} />;
+Create.layout = page => <Layout title="Create User" children={page} />;
 
 export default Create;

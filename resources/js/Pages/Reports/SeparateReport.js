@@ -11,9 +11,8 @@ import TextInput from '@/Shared/TextInput';
 
 const SeparateReport = () => {
   const { ventas_pantallas, ventas_celulares, ventas_accesorios, servicios, day, productos, auth, organizations } = usePage().props;
-  const [total_ventas_diarias, setTotalVentas] = useState(0);
   const [fecha, setFecha] = useState(0);
-  const [organization, setOrganization] = useState(1);
+  const [organization, setOrganization] = useState(auth.user.owner == false ? auth.user.organization_id : 0);
   const [readyToPrit, setReadyToPrint] = useState(true);
 
   var total_pantallas_c=0;
@@ -76,28 +75,14 @@ const SeparateReport = () => {
     const pdfExportComponentP = React.useRef(null);
     const pdfExportComponentC = React.useRef(null);
     const pdfExportComponentA = React.useRef(null);
+    const pdfExportComponentS = React.useRef(null);
 
- 
-  const printPantallas=()=>{
-    setReadyToPrint(true)
-      if (pdfExportComponentP.current) {
-        pdfExportComponentP.current.save();
-      }
-  }
-
-  const printCellphone=()=>{
-    setReadyToPrint(true)
-      if (pdfExportComponentC.current) {
-        pdfExportComponentC.current.save();
-      }
-  }
-
-  const printAccesories=()=>{
-    setReadyToPrint(true)
-      if (pdfExportComponentA.current) {
-        pdfExportComponentA.current.save();
-      }
-  }
+    const print = (exportComponent) =>{
+      setReadyToPrint(true)
+        if (exportComponent.current) {
+          exportComponent.current.save();
+        }
+    }
 
   const buscarPorFecha =()=>{
     Inertia.post(route('reports.divididosPorDia'), {day: fecha, organization : organization} ,{
@@ -111,6 +96,7 @@ const SeparateReport = () => {
     );
   }
 
+  console.log(ventas_accesorios)
   return (
     <div>
 
@@ -120,6 +106,7 @@ const SeparateReport = () => {
         <SelectInput
                 className="pr-6 w-2/5 "
                 label="Tienda"
+                disabled={!auth.user.owner}
                 value={organization}
                 onChange={e => setOrganization(e.target.value)}
               >
@@ -135,9 +122,10 @@ const SeparateReport = () => {
      
       
       <div className="flex justify-between gap-4">
-      <LoadingButton onClick={e => printPantallas()} className="btn-indigo">Imprimir Reporte de Pantallas</LoadingButton>
-      <LoadingButton onClick={e => printCellphone()} className="btn-indigo">Imprimir Reporte de Celulares</LoadingButton>
-      <LoadingButton onClick={e => printAccesories()} className="btn-indigo">Imprimir Reporte de Accesorios</LoadingButton>
+      <LoadingButton onClick={e => print(pdfExportComponentP)} className="btn-indigo">Imprimir Reporte de Pantallas</LoadingButton>
+      <LoadingButton onClick={e => print(pdfExportComponentC)} className="btn-indigo">Imprimir Reporte de Celulares</LoadingButton>
+      <LoadingButton onClick={e => print(pdfExportComponentA)} className="btn-indigo">Imprimir Reporte de Accesorios</LoadingButton>
+      <LoadingButton onClick={e => print(pdfExportComponentS)} className="btn-indigo">Imprimir Reporte de Servicios</LoadingButton>
       </div>
       {
         readyToPrit &&
@@ -232,7 +220,7 @@ const SeparateReport = () => {
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
                               total_pantallas_e_u += (detalle.total_producto - ps.cost_price)
-                              return detalle.total_producto - ps.cost_price
+                              return detalle.total_producto - (ps.cost_price * detalle.cantidad)
                             })  
                             }
                         </td>
@@ -332,7 +320,7 @@ const SeparateReport = () => {
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
                               total_pantallas_c_u += (detalle.total_producto - ps.cost_price)
-                              return detalle.total_producto - ps.cost_price
+                              return detalle.total_producto - (ps.cost_price * detalle.cantidad)
                             })  
                             }
                         </td>
@@ -433,7 +421,7 @@ const SeparateReport = () => {
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
                               total_pantallas_t_u += (detalle.total_producto - ps.cost_price)
-                              return detalle.total_producto - ps.cost_price
+                              return detalle.total_producto - (ps.cost_price * detalle.cantidad)
                             })  
                             }
                         </td>
@@ -535,7 +523,7 @@ const SeparateReport = () => {
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
                               total_pantallas_pos_u += (detalle.total_producto - ps.cost_price)
-                              return detalle.total_producto - ps.cost_price
+                              return detalle.total_producto - (ps.cost_price * detalle.cantidad)
                             })  
                             }
                         </td>
@@ -638,7 +626,7 @@ const SeparateReport = () => {
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
                               total_pantallas_p_u += (detalle.total_producto - ps.cost_price)
-                              return detalle.total_producto - ps.cost_price
+                              return detalle.total_producto - (ps.cost_price * detalle.cantidad)
                             })  
                             }
                         </td>
@@ -770,7 +758,7 @@ const SeparateReport = () => {
                         .map(ps => {
                           total_celulares_e_u +=
                             detalle.total_producto - ps.cost_price;
-                          return detalle.total_producto - ps.cost_price;
+                          return detalle.total_producto - (ps.cost_price * detalle.cantidad);
                         })}
                     </td>
                     }  
@@ -877,7 +865,7 @@ const SeparateReport = () => {
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
                               total_celulares_c_u += (detalle.total_producto - ps.cost_price)
-                              return detalle.total_producto - ps.cost_price
+                              return detalle.total_producto - (ps.cost_price * detalle.cantidad)
                             })  
                             }
                         </td>
@@ -980,7 +968,7 @@ const SeparateReport = () => {
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
                               total_celulares_t_u += (detalle.total_producto - ps.cost_price)
-                              return detalle.total_producto - ps.cost_price
+                              return detalle.total_producto - (ps.cost_price * detalle.cantidad)
                             })  
                             }
                         </td>
@@ -1084,7 +1072,7 @@ const SeparateReport = () => {
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
                               total_celulares_pos_u += (detalle.total_producto - ps.cost_price)
-                              return detalle.total_producto - ps.cost_price
+                              return detalle.total_producto - (ps.cost_price * detalle.cantidad)
                             })  
                             }
                         </td>
@@ -1189,7 +1177,7 @@ const SeparateReport = () => {
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
                               total_celulares_p_u += (detalle.total_producto - ps.cost_price)
-                              return detalle.total_producto - ps.cost_price
+                              return detalle.total_producto - (ps.cost_price * detalle.cantidad)
                             })  
                             }
                         </td>
@@ -1322,7 +1310,7 @@ const SeparateReport = () => {
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
                               total_accesorios_e_u += (detalle.total_producto - ps.cost_price)
-                              return detalle.total_producto - ps.cost_price
+                              return detalle.total_producto - (ps.cost_price * detalle.cantidad)
                             })  
                             }
                         </td>
@@ -1425,7 +1413,7 @@ const SeparateReport = () => {
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
                               total_accesorios_c_u += (detalle.total_producto - ps.cost_price)
-                              return detalle.total_producto - ps.cost_price
+                              return detalle.total_producto - (ps.cost_price * detalle.cantidad)
                             })  
                             }
                         </td>
@@ -1528,7 +1516,7 @@ const SeparateReport = () => {
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
                               total_accesorios_t_u += (detalle.total_producto - ps.cost_price)
-                              return detalle.total_producto - ps.cost_price
+                              return detalle.total_producto - (ps.cost_price * detalle.cantidad)
                             })  
                             }
                         </td>
@@ -1631,7 +1619,7 @@ const SeparateReport = () => {
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
                               total_accesorios_pos_u += (detalle.total_producto - ps.cost_price)
-                              return detalle.total_producto - ps.cost_price
+                              return detalle.total_producto - (ps.cost_price * detalle.cantidad)
                             })  
                             }
                         </td>
@@ -1735,7 +1723,7 @@ const SeparateReport = () => {
                             { 
                             productos.filter(p => p.id == detalle.product_id).map(ps =>{
                               total_accesorios_p_u += (detalle.total_producto - ps.cost_price)
-                              return detalle.total_producto - ps.cost_price
+                              return detalle.total_producto - (ps.cost_price * detalle.cantidad)
                             })  
                             }
                         </td>
@@ -1788,8 +1776,8 @@ const SeparateReport = () => {
           scale={0.45}
           paperSize="letter"
           margin="0.5cm"
-          ref={pdfExportComponentA}
-          fileName={`Venta de Accesorios-${day ? moment(day).locale("es").format("Do MM YYYY") : ahora}`}
+          ref={pdfExportComponentS}
+          fileName={`Venta de Servicios-${day ? moment(day).locale("es").format("Do MM YYYY") : ahora}`}
         >
       
 

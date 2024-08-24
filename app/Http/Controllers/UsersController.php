@@ -54,8 +54,20 @@ class UsersController extends Controller
 
     public function edit(User $user)
     {
+        $VentasPorMeses = Ventas::where('vendedor_id', $user->id)
+        ->where('tipoPago', '!=', 'credito')
+        ->with('venta_detalles')
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->groupBy(function($val) {
+            return Carbon::parse($val->created_at)->format('F Y');
+        });
 
-        $VentasPorMeses = Ventas::where('vendedor_id', $user->id)->with('venta_detalles')->orderBy('created_at', 'desc')->get()
+        $VentasCreditoPorMeses = Ventas::where('vendedor_id', $user->id)
+        ->where('tipoPago', 'credito')
+        ->with('venta_detalles')
+        ->orderBy('created_at', 'desc')
+        ->get()
         ->groupBy(function($val) {
             return Carbon::parse($val->created_at)->format('F Y');
         });
@@ -64,15 +76,8 @@ class UsersController extends Controller
             'user' => new UserResource($user),
             'organizations' => Organization::all(),
             'VentasPorMeses' => $VentasPorMeses,
+            'VentasCreditoPorMeses' => $VentasCreditoPorMeses,
         ]);
-    }
-
-    public function updateOrganization(HttpRequest $request) {
-        $user = User::find($request->user_id);
-        $user->organization_id = $request->newcompany_id;
-        $user->save();
-
-        return Redirect::back()->with('success', 'Usuario actualizado a nueva tienda');
     }
 
     public function update(User $user, UserUpdateRequest $request)

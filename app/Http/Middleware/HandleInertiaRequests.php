@@ -46,6 +46,9 @@ class HandleInertiaRequests extends Middleware
                     'user' => Auth::check() ? new UserResource(Auth::user()->load('account')) : null
                 ];
             },
+            'organizations' => function () {
+                return Auth::check() ? Auth::user()->organization->all() : null;
+            },
             'notifications' => function () {
                 $tomorrow = Carbon::now()->addDays(1);
 

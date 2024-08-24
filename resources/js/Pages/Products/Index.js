@@ -4,6 +4,7 @@ import Layout from '@/Shared/Layout';
 import Icon from '@/Shared/Icon';
 import SearchFilter from '@/Shared/SearchFilter';
 import Pagination from '@/Shared/Pagination';
+import { showOnlyCapitalLetter } from '../../utils';
 
 const Index = () => {
   const { products, existencia } = usePage().props;
@@ -11,6 +12,8 @@ const Index = () => {
     data,
     meta: { links }
   } = products;
+
+
   console.log(products, existencia)
   return (
     <div>
@@ -30,8 +33,9 @@ const Index = () => {
           <thead>
             <tr className="font-bold text-left">
               <th className="px-6 pt-5 pb-4">Nombre</th>
-              <th className="px-6 pt-5 pb-4">Color</th>
+              {/* <th className="px-6 pt-5 pb-4">Color</th> */}
               <th className="px-6 pt-5 pb-4">Existencia</th>
+              <th className="px-6 pt-5 pb-4">Dividida</th>
               <th className="px-6 pt-5 pb-4">Precio Mayorista</th>
               <th className="px-6 pt-5 pb-4" colSpan="2">
                 Precio Normal
@@ -39,7 +43,7 @@ const Index = () => {
             </tr>
           </thead>
           <tbody>
-            {data.map(({ id, name, color,  sell_price, whole_sell_price, realExistencia }) => {
+            {data.map(({ id, name, color,  sell_price, whole_sell_price, realExistencia, existenciaDividida }) => {
               return (
                 <tr
                   key={id}
@@ -65,21 +69,29 @@ const Index = () => {
                       href={route('products.edit', id)}
                       className="flex items-center px-6 py-2 focus:text-indigo focus:outline-none"
                     >
-                      {color}
+                      {       
+                      realExistencia 
+                      }
                     </InertiaLink>
                   </td>
                   <td className="border-t">
-                    {
-                      
-                    }
                     <InertiaLink
                       tabIndex="-1"
                       href={route('products.edit', id)}
                       className="flex items-center px-6 py-2 focus:text-indigo focus:outline-none"
                     >
-                      {       
-                      realExistencia 
+                      <div className='flex flex-col'>
+
+                      {
+                        existenciaDividida.map((el) => {
+                          return (
+                            <div key={el.organization_id}>
+                              {showOnlyCapitalLetter(el.company_name)} : {el.cantidad}
+                            </div>
+                          )
+                        })
                       }
+                      </div>
                     </InertiaLink>
                   </td>
                   <td className="border-t">

@@ -22,8 +22,7 @@ const Edit = () => {
     restante: venta[0].restante,
     limite_pago: venta[0].limite_pago,
     tipoPago: venta[0].tipoPago,
-    created_at: venta[0].created_at,
-    phone: venta[0].phone,
+    created_at: venta[0].created_at
   });
 
   const pdfExportComponent = React.useRef(null);
@@ -176,21 +175,14 @@ const Edit = () => {
         </div>
         <div className="flex flex-wrap p-8 -mb-8 -mr-6">
           <TextInput
-            className="w-full pb-8 pr-6 lg:w-1/6"
+            className="w-full pb-8 pr-6 lg:w-1/5"
             label="Cliente"
             name="first_name"
             disabled
             value={data.cliente}
           />
           <TextInput
-            className="w-full pb-8 pr-6 lg:w-1/6"
-            label="Telefono"
-            name="telefono"
-            disabled
-            value={data.phone}
-          />
-          <TextInput
-            className="w-full pb-8 pr-6 lg:w-1/6"
+            className="w-full pb-8 pr-6 lg:w-1/5"
             label="Vendedor"
             name="first_name"
             disabled
@@ -199,14 +191,14 @@ const Edit = () => {
               .map(filter => filter.first_name + ' ' + filter.last_name)}
           />
           <TextInput
-            className="w-full pb-8 pr-6 lg:w-1/6"
+            className="w-full pb-8 pr-6 lg:w-1/5"
             label="Fecha"
             name="first_name"
             disabled
             value={moment(data.created_at).locale("es").format("Do MM YYYY")}
           />
           <TextInput
-            className="w-full pb-8 pr-6 lg:w-1/6"
+            className="w-full pb-8 pr-6 lg:w-1/5"
             label="Tipo de Pago"
             name="first_name"
             disabled
@@ -214,7 +206,7 @@ const Edit = () => {
           />
           { data.limite_pago != null &&
            <TextInput
-            className="w-full pb-8 pr-6 lg:w-1/6"
+            className="w-full pb-8 pr-6 lg:w-1/5"
             label="Limite de Pago"
             disabled
             value={ moment(data.limite_pago).locale("es").format("DD MMM YYYY")}

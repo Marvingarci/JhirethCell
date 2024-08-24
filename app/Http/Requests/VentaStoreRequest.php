@@ -36,7 +36,6 @@ class VentaStoreRequest extends FormRequest
             'ventas'=>['required'],
             'restante'=>['required'],
             'multiplePayments' => [''],
-            'phone'=>[''],
             'pagos' => ['']
         ];
     }

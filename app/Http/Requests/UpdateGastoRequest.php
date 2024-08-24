@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
-class VentaUpdateRequest extends FormRequest
+class UpdateGastoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,9 +24,13 @@ class VentaUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'id'=>'required',
-            'venta_detalles'=>['required'],
-
+            'vendedor_id'  => ['required'],
+            'organization_id' => ['required'],
+            'title' => ['required'],
+            'description' => ['required'],
+            'total' => ['required', 'numeric'],
+            'invoice' => [''],
+            'evidence' => ['']
         ];
     }
 }

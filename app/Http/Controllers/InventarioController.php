@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Http\Resources\ProductCollection;
 
 class InventarioController extends Controller
 {
@@ -45,13 +46,16 @@ class InventarioController extends Controller
 
     public function buscarProducto()
     {
-        $inventario = Inventario::where('codebar',Request::only('search', 'trashed'))->with('product')->first();
-        $inventario->saleDate = $inventario->saleDate;
+        $inventario = Inventario::where('codebar',Request::only('search', 'trashed'))->first();
         return Inertia::render('Inventories/Index', [
-            'filters' => Request::all('search', 'trashed'),
-            'categorias' => Category::all(),
-            'usuarios'=> User::all(['id','first_name','last_name']),
-            'producto'=> $inventario,
+            'filters' => Request::all('search'),
+            'producto'=> New ProductCollection(
+                Product::where('id',
+                 isset($inventario->product_id) ? $inventario->product_id : 0
+                 )->get()
+            ), 
+            'inventario' => $inventario,
+
         ]);
     }
     /**
@@ -112,7 +116,6 @@ class InventarioController extends Controller
             'inventario' => Inventario::where('product_id', $id)->orderBy('status', 'asc')->get(),
             'product' => new ProductResource($product),
             'categorias'=> Category::All(),
-            'organizations'=> Organization::All(),
         ]);
     }
 

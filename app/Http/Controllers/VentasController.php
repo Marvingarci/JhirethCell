@@ -29,12 +29,14 @@ class VentasController extends Controller
    
    public function index()
     {
+        $user = Auth::user();
         return Inertia::render('Sells/Index', [
             'filters' => Request::all('search', 'trashed'),
-            'usuarios'=> User::all(['id','first_name','last_name', 'organization_id']),
+            'usuarios'=> User::all(['id','first_name','last_name', 'organization_id']), 
             'ventas_dia' => new VentaCollection(
                 Ventas::
                     orderBy('created_at', 'desc')
+                    ->where('organization_id', $user->organization_id)
                     ->filter(Request::only('search', 'trashed'))
                     ->paginate()
                     ->appends(Request::all())
@@ -56,7 +58,7 @@ class VentasController extends Controller
         'categorias' => Category::all(),
             'servicios' => Servicios::all(),
             'usuarios'=> User::with('organization')->get(),
-            'contactos'=> Contact::all(['id','first_name','last_name', 'organization_id', 'phone']),
+            'contactos'=> Contact::all(['id','first_name','last_name', 'organization_id']),
             'producto'=> Inventario::where('codebar',Request::only('search', 'trashed'))->with('product')->first(),
         ]);
     }

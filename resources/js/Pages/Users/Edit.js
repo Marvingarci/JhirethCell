@@ -1,4 +1,4 @@
-import React from 'react';
+import React,  {useState} from 'react';
 import Helmet from 'react-helmet';
 import {Inertia} from '@inertiajs/inertia';
 import {InertiaLink, usePage, useForm} from '@inertiajs/inertia-react';
@@ -7,12 +7,13 @@ import DeleteButton from '@/Shared/DeleteButton';
 import LoadingButton from '@/Shared/LoadingButton';
 import TextInput from '@/Shared/TextInput';
 import SelectInput from '@/Shared/SelectInput';
+import FileInput from '@/Shared/FileInput';
 import TrashedMessage from '@/Shared/TrashedMessage';
 import moment from 'moment';
 import Icon from '@/Shared/Icon';
 
 const Edit = () => {
-    const {user, organizations, VentasPorMeses} = usePage().props;
+    const {user, organizations, VentasPorMeses, VentasCreditoPorMeses} = usePage().props;
     const {
         data,
         setData,
@@ -28,11 +29,13 @@ const Edit = () => {
         pin: user.pin || '',
         owner: user.owner ? '1' : '0' || '0',
         photo: '',
-        deleteProduct: user.deleteProduct ? '1' : '0' || '0',
+
         // NOTE: When working with Laravel PUT/PATCH requests and FormData
         // you SHOULD send POST request and fake the PUT request like this.
         _method: 'PUT'
     });
+    const [tab, setTab] = useState('ventas')
+
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -64,11 +67,11 @@ const Edit = () => {
               href={route('users')}
               className="text-indigo-600 hover:text-indigo-700"
             >
-              Usuarios
+              Users
             </InertiaLink>
             <span className="mx-2 font-medium text-indigo-600">/</span>
-            {data.first_name}{' '}
-            {data.last_name}
+            {data.first_name}
+            {data.last_name}{' '}
           </h1>
           {user.photo && (
             <img className="block w-8 h-8 ml-4 rounded-full" src={user.photo} />
@@ -84,7 +87,7 @@ const Edit = () => {
             <div className="flex flex-wrap p-8 -mb-8 -mr-6">
               <TextInput
                 className="w-full pb-8 pr-6 lg:w-1/2"
-                label="Nobre"
+                label="First Name"
                 name="first_name"
                 errors={errors.first_name}
                 value={data.first_name}
@@ -92,7 +95,7 @@ const Edit = () => {
               />
               <TextInput
                 className="w-full pb-8 pr-6 lg:w-1/2"
-                label="Apellido"
+                label="Last Name"
                 name="last_name"
                 errors={errors.last_name}
                 value={data.last_name}
@@ -100,7 +103,7 @@ const Edit = () => {
               />
               <TextInput
                 className="w-full pb-8 pr-6 lg:w-1/2"
-                label="Correo Electronico"
+                label="Email"
                 name="email"
                 type="email"
                 errors={errors.email}
@@ -109,7 +112,7 @@ const Edit = () => {
               />
               <TextInput
                 className="w-full pb-8 pr-6 lg:w-1/2"
-                label="Contraseña"
+                label="Password"
                 name="password"
                 type="password"
                 errors={errors.password}
@@ -127,7 +130,7 @@ const Edit = () => {
               />
               <SelectInput
                 className="w-full pb-8 pr-6 lg:w-1/2"
-                label="Propietario"
+                label="Owner"
                 name="owner"
                 errors={errors.owner}
                 value={data.owner}
@@ -136,19 +139,6 @@ const Edit = () => {
                 <option value="1">Yes</option>
                 <option value="0">No</option>
               </SelectInput>
-
-              <SelectInput
-              className="w-full pb-8 pr-6 lg:w-1/2"
-              label="Puede actulizar o eliminar productos"
-              name="deleteProduct"
-              errors={errors.deleteProduct}
-              value={data.deleteProduct}
-              onChange={e => setData('deleteProduct', e.target.value)}
-            >
-              <option value="1">Si</option>
-              <option value="0">No</option>
-            </SelectInput>
-
               <SelectInput
                 className="w-full pb-8 pr-6 lg:w-1/2"
                 label="Organizacion"
@@ -164,7 +154,7 @@ const Edit = () => {
             </div>
             <div className="flex items-center px-8 py-4 bg-gray-100 border-t border-gray-200">
               {!user.deleted_at && (
-                <DeleteButton onDelete={destroy}>Eliminar Usuario</DeleteButton>
+                <DeleteButton onDelete={destroy}>Delete User</DeleteButton>
               )}
 
               <LoadingButton
@@ -172,116 +162,223 @@ const Edit = () => {
                 type="submit"
                 className="ml-auto btn-indigo"
               >
-                Actualizar usuario
+                Update User
               </LoadingButton>
             </div>
           </form>
         </div>
         <div className='m-5 bg-white rounded-md'>
-          <div className='text-center p-5 text-xl '>
-          Reporte de Ventas por vendedor
-          </div> 
+          <div className='flex mb-4'>
+            <div onClick={e => setTab('ventas')} className={ tab == 'ventas' ? 'w-1/2 border-2 border-gray-400 py-3 bg-gray-100 text-center text-xl': 'w-1/2 border-2 border-gray-400 py-3 cursor-pointer bg-gray-300 text-center text-xl'}>Ventas</div>
+            <div onClick={e => setTab('creditos')} className={ tab == 'creditos' ? 'w-1/2 border-2 border-gray-400 py-3 bg-gray-100 text-center text-xl': 'w-1/2 border-2 border-gray-400 py-3 cursor-pointer bg-gray-300 text-center text-xl'}>Creditos</div>
+          </div>
           <div className="overflow-x-auto bg-white rounded shadow">
-        <table className="w-full whitespace-nowrap">
-          <thead>
-            <tr className="font-bold text-left">
-              <th className="px-6 pt-5 pb-4">Fecha</th>
-              <th className="px-6 pt-5 pb-4">Cliente</th>
-              <th className="px-6 pt-5 pb-4">Total</th>
-              <th className="px-6 pt-5 pb-4" colSpan="2">
-                Tipo de Pago
-              </th>
-            </tr>
-          </thead>
-          {
-            Object.entries(VentasPorMeses).map((ventas, index)=>{
-              let totalMes = 0;
-              return (
-                <tbody >
-                  <tr  key={index}>
-                    <td colSpan="5" className='text-center text-lg font-bold' key={index}>{ventas[0]}</td>
-                  </tr>
-                  {
-                                    
-              ventas[1].map(({ id, cliente, vendedor_id, tipoPago, created_at , total}, index) => {
-                totalMes += total
-                return(
-                <tr
-                  key={index}
-                  className="hover:bg-gray-100 focus-within:bg-gray-100"
-                >
-                  <td className="border-t">
-                    <InertiaLink
-                      href={route('ventas.edit', id)}
-                      className="flex items-center px-6 py-4 focus:text-indigo-700 focus:outline-none"
-                    >
-                      {moment(created_at).locale("es").calendar()}
-                      
-                    </InertiaLink>
-                  </td>
-                  <td className="border-t">
-                    <InertiaLink
-                      tabIndex="1"
-                      className="flex items-center px-6 py-4 focus:text-indigo focus:outline-none"
-                      href={route('ventas.edit', id)}
-                    >
-                      {cliente}
-                    </InertiaLink>
-                  </td>
-                  <td className="border-t">
-                    <InertiaLink
-                      tabIndex="-1"
-                      href={route('ventas.edit', id)}
-                      className="flex items-center px-6 py-4 focus:text-indigo focus:outline-none"
-                    >
-                      {tipoPago}
-                    </InertiaLink>
-                  </td>
-                  <td className="border-t">
-                    <InertiaLink
-                      tabIndex="-1"
-                      href={route('ventas.edit', id)}
-                      className="flex items-center px-6 py-4 focus:text-indigo focus:outline-none"
-                    >
-                      {total}
-                    </InertiaLink>
-                  </td>
-                  <td className="w-px border-t">
-                    <InertiaLink
-                      tabIndex="-1"
-                      href={route('ventas.edit', id)}
-                      className="flex items-center px-4 focus:outline-none"
-                    >
-                      <Icon
-                        name="cheveron-right"
-                        className="block w-6 h-6 text-gray-400 fill-current"
-                      />
-                    </InertiaLink>
-                  </td>
-                </tr>
-                )
-            })
+              {
+                tab == 'ventas' &&
+                  <table className="w-full whitespace-nowrap">
+                    <thead>
+                      <tr className="font-bold text-left">
+                        <th className="px-6 pt-5 pb-4">Fecha</th>
+                        <th className="px-6 pt-5 pb-4">Cliente</th>
+                        <th className="px-6 pt-5 pb-4">Tipo de Pago</th>
+                        <th className="px-6 pt-5 pb-4" colSpan="2">
+                          Total
+                        </th>
+                      </tr>
+                    </thead>
+                    {
+                      Object.entries(VentasPorMeses).map((ventas, index)=>{
+                        let totalMes = 0;
+                        return (
+                          <tbody >
+                            <tr  key={index}>
+                              <td colSpan="5" className='text-center text-lg font-bold' key={index}>{ventas[0]}</td>
+                            </tr>
+                            {
+                                              
+                        ventas[1].map(({ id, cliente, vendedor_id, tipoPago, created_at , total}, index) => {
+                          totalMes += total
+                          return(
+                          <tr
+                            key={index}
+                            className="hover:bg-gray-100 focus-within:bg-gray-100"
+                          >
+                            <td className="border-t">
+                              <InertiaLink
+                                href={route('ventas.edit', id)}
+                                className="flex items-center px-6 py-4 focus:text-indigo-700 focus:outline-none"
+                              >
+                                {moment(created_at).locale("es").calendar()}
+                                
+                              </InertiaLink>
+                            </td>
+                            <td className="border-t">
+                              <InertiaLink
+                                tabIndex="1"
+                                className="flex items-center px-6 py-4 focus:text-indigo focus:outline-none"
+                                href={route('ventas.edit', id)}
+                              >
+                                {cliente}
+                              </InertiaLink>
+                            </td>
+                            <td className="border-t">
+                              <InertiaLink
+                                tabIndex="-1"
+                                href={route('ventas.edit', id)}
+                                className="flex items-center px-6 py-4 focus:text-indigo focus:outline-none"
+                              >
+                                {tipoPago}
+                              </InertiaLink>
+                            </td>
+                            <td className="border-t">
+                              <InertiaLink
+                                tabIndex="-1"
+                                href={route('ventas.edit', id)}
+                                className="flex items-center px-6 py-4 focus:text-indigo focus:outline-none"
+                              >
+                                {total}
+                              </InertiaLink>
+                            </td>
+                            <td className="w-px border-t">
+                              <InertiaLink
+                                tabIndex="-1"
+                                href={route('ventas.edit', id)}
+                                className="flex items-center px-4 focus:outline-none"
+                              >
+                                <Icon
+                                  name="cheveron-right"
+                                  className="block w-6 h-6 text-gray-400 fill-current"
+                                />
+                              </InertiaLink>
+                            </td>
+                          </tr>
+                          )
+                      })
 
-                  }
-                   <tr  key={index}>
-                    <td colSpan="3" className="justify-end text-right font-bold" key={index}>Total {ventas[0]}</td>
-                    <td colSpan="2" key={index} className="text-left px-1 font-bold">{totalMes}</td>
-                  </tr>
-                </tbody>
+                            }
+                            <tr  key={index}>
+                              <td colSpan="3" className="justify-end text-right font-bold" key={index}>Total Venta {ventas[0]}</td>
+                              <td colSpan="2" key={index} className="text-left px-1 font-bold">{totalMes}</td>
+                            </tr>
+                          </tbody>
 
-              )
-           
-              // {ventas[1].length === 0 && (
-              //   <tr>
-              //     <td className="px-6 py-4 border-t" colSpan="4">
-              //       No hay ventas aún
-              //     </td>
-              //   </tr>
-              // )}
-            })
-          }
-         
-        </table>
+                        )
+                    
+                        // {ventas[1].length === 0 && (
+                        //   <tr>
+                        //     <td className="px-6 py-4 border-t" colSpan="4">
+                        //       No hay ventas aún
+                        //     </td>
+                        //   </tr>
+                        // )}
+                      })
+                    }
+                  
+                  </table>
+              }
+              {
+                tab == 'creditos' &&
+                <table className="w-full whitespace-nowrap">
+                <thead>
+                  <tr className="font-bold text-left">
+                    <th className="px-6 pt-5 pb-4">Fecha</th>
+                    <th className="px-6 pt-5 pb-4">Cliente</th>
+                    <th className="px-6 pt-5 pb-4">Tipo de Pago</th>
+                    <th className="px-6 pt-5 pb-4" colSpan="2">
+                      Total
+                    </th>
+                  </tr>
+                </thead>
+                {
+                  Object.entries(VentasCreditoPorMeses).map((ventas, index)=>{
+                    let totalMes = 0;
+                    return (
+                      <tbody >
+                        <tr  key={index}>
+                          <td colSpan="5" className='text-center text-lg font-bold' key={index}>{ventas[0]}</td>
+                        </tr>
+                        {
+                                          
+                    ventas[1].map(({ id, cliente, vendedor_id, tipoPago, created_at , total}, index) => {
+                      totalMes += total
+                      return(
+                      <tr
+                        key={index}
+                        className="hover:bg-gray-100 focus-within:bg-gray-100"
+                      >
+                        <td className="border-t">
+                          <InertiaLink
+                            href={route('ventas.edit', id)}
+                            className="flex items-center px-6 py-4 focus:text-indigo-700 focus:outline-none"
+                          >
+                            {moment(created_at).locale("es").calendar()}
+                            
+                          </InertiaLink>
+                        </td>
+                        <td className="border-t">
+                          <InertiaLink
+                            tabIndex="1"
+                            className="flex items-center px-6 py-4 focus:text-indigo focus:outline-none"
+                            href={route('ventas.edit', id)}
+                          >
+                            {cliente}
+                          </InertiaLink>
+                        </td>
+                        <td className="border-t">
+                          <InertiaLink
+                            tabIndex="-1"
+                            href={route('ventas.edit', id)}
+                            className="flex items-center px-6 py-4 focus:text-indigo focus:outline-none"
+                          >
+                            {tipoPago}
+                          </InertiaLink>
+                        </td>
+                        <td className="border-t">
+                          <InertiaLink
+                            tabIndex="-1"
+                            href={route('ventas.edit', id)}
+                            className="flex items-center px-6 py-4 focus:text-indigo focus:outline-none"
+                          >
+                            {total}
+                          </InertiaLink>
+                        </td>
+                        <td className="w-px border-t">
+                          <InertiaLink
+                            tabIndex="-1"
+                            href={route('ventas.edit', id)}
+                            className="flex items-center px-4 focus:outline-none"
+                          >
+                            <Icon
+                              name="cheveron-right"
+                              className="block w-6 h-6 text-gray-400 fill-current"
+                            />
+                          </InertiaLink>
+                        </td>
+                      </tr>
+                      )
+                  })
+
+                        }
+                        <tr  key={index}>
+                          <td colSpan="3" className="justify-end text-right font-bold" key={index}>Total Credito {ventas[0]}</td>
+                          <td colSpan="2" key={index} className="text-left px-1 font-bold">{totalMes}</td>
+                        </tr>
+                      </tbody>
+
+                    )
+                
+                    // {ventas[1].length === 0 && (
+                    //   <tr>
+                    //     <td className="px-6 py-4 border-t" colSpan="4">
+                    //       No hay ventas aún
+                    //     </td>
+                    //   </tr>
+                    // )}
+                  })
+                }
+              
+              </table>
+              }
       </div>
           </div>
       </div>

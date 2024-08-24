@@ -17,7 +17,7 @@ export default ({ className }) => {
       <MainMenuItem text="Compañias" link="organizations" icon="office" />
       <MainMenuItem text="Clientes" link="contacts" icon="users" />
       <MainMenuItem text="Creditos" link="contacts-credit" icon="users" />
-  
+      <MainMenuItem text="Gastos" link="gastos" icon="apple" />
       <MainMenuItem text="Reporte" link="reports" icon="printer" />
       
         

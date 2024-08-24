@@ -44,12 +44,12 @@ const Create = () => {
     tipoPago: '',
     ventas: [],
     multiplePayments : '',
-    payments: [],
-    phone: '',
+    payments: []
   });
 
   const [carrito, setCarrito] = useState([]);
   const [pagos, setPagos] = useState([]);
+  const [servicio, setServicio] = useState(null);
   const [pin, setPin] = useState('');
   const [messagePin, setMessagePin] = useState('');
   const [pagado, setPagado] = useState(0);
@@ -178,10 +178,6 @@ const Create = () => {
       }
 
 
-      if(!inventarioColectivoExisteInTienda(producto)){
-        reset()
-        return
-      }
       //Agg scaned product to the shopcart and set new values
       const newProduct = producto.product;
       newProduct.cantidad = 1;
@@ -197,23 +193,30 @@ const Create = () => {
         newProduct.descuento = 0;
         newProduct.total_producto = newProduct.cantidad * newProduct.whole_sell_price;
       }
+     
       //check is the car is empty 
       if (carrito.length == 0) {
         setCarrito([...carrito, newProduct]);
+        //SumaTotal();
+
       } else {
         //if the article exists, it doesnt make anything
         if (carrito.find(item => item.codebar === newProduct.codebar)) {
         } else {
           setCarrito([...carrito, newProduct]);
+         // SumaTotal();
+
         }
 
       }
 
       reset();
 
+     // SumaTotal();
 
     }
     reset();
+ // SumaTotal();
 
     console.log(usuarios)
   }, [producto]);
@@ -226,40 +229,19 @@ const Create = () => {
  
 
 
-  // const setDescuento = (index, descuento) => {
-  //   carrito[index].descuento = descuento;
-  //   if(tipoCliente){
-  //     carrito[index].real_sell_price = carrito[index].sell_price - (carrito[index].sell_price * descuento);
-  //     carrito[index].total_producto = carrito[index].cantidad * carrito[index].real_sell_price;
-  //   }else{
-  //     carrito[index].real_sell_price = carrito[index].whole_sell_price - (carrito[index].whole_sell_price * descuento);
-  //     carrito[index].total_producto = carrito[index].cantidad * carrito[index].real_sell_price;
-  //   }
-  
-  //   setCarrito([...carrito]);
-  //   SumaTotal();
-  // };
-
-  const inventarioColectivoExisteInTienda = (p) =>{
-    console.log(p)
-    if(p.product.dbType == 'colectivo'){
-      let existe = false;
-      let organizations = null;
-        if(p.existenciaDividida != null && p.existenciaDividida != undefined){
-          organizations = JSON.parse(p.existenciaDividida)
-          existe =  !!organizations.find(e => (e.organization_id == auth.user.organization_id && parseInt(e.cantidad) > 0 ))
-        }
-      if(!existe){
-        let stockData = organizations.filter(e => parseInt(e.cantidad) > 0).reduce((acc, item)=> acc + item.company_name+": "+item.cantidad+" unidades, ", "")
-        setData('vendedor_id', 0)
-        setData('organization_id' ,0)
-        alert("Este usuario esta registrando en una tienda donde no hay existencia del producto, hacer transferencia primero desde "+stockData)
-        return false
-      }
-      return true
+  const setDescuento = (index, descuento) => {
+    carrito[index].descuento = descuento;
+    if(tipoCliente){
+      carrito[index].real_sell_price = carrito[index].sell_price - (carrito[index].sell_price * descuento);
+      carrito[index].total_producto = carrito[index].cantidad * carrito[index].real_sell_price;
+    }else{
+      carrito[index].real_sell_price = carrito[index].whole_sell_price - (carrito[index].whole_sell_price * descuento);
+      carrito[index].total_producto = carrito[index].cantidad * carrito[index].real_sell_price;
     }
-    return true
-  }
+  
+    setCarrito([...carrito]);
+    SumaTotal();
+  };
 
   const savePayments = () =>{
     setData('multiplePayments', JSON.stringify(pagos))
@@ -407,7 +389,7 @@ const Create = () => {
             {
               tipoCliente ?
               ( <TextInput
-                className="w-full pb-8 pr-6 lg:w-1/4"
+                className="w-full pb-8 pr-6 lg:w-1/3"
                 label="Cliente"
                 name="first_name"
                 errors={errors.cliente}
@@ -418,7 +400,7 @@ const Create = () => {
               :
               (
                 <SelectInput
-              className="w-full pb-8 pr-6 lg:w-1/4"
+              className="w-full pb-8 pr-6 lg:w-1/3"
               label="Mayorista"
               name="cliente"
               errors={errors.cliente}
@@ -434,7 +416,7 @@ const Create = () => {
               
             }
             <SelectInput
-              className="w-full pb-8 pr-6 lg:w-1/4"
+              className="w-full pb-8 pr-6 lg:w-1/3"
               label="Vendedor"
               name="organization_id"
               errors={errors.vendedor_id}
@@ -447,15 +429,7 @@ const Create = () => {
               ))}
             </SelectInput>
             <TextInput
-              className="w-full pb-8 pr-6 lg:w-1/4"
-              label="Telefono"
-              name="phone"
-              value={data.phone}
-              errors={errors.phone}
-              onChange={e => setData('phone', e.target.value)}
-            />
-            <TextInput
-              className="w-full pb-8 pr-6 lg:w-1/4"
+              className="w-full pb-8 pr-6 lg:w-1/3"
               label="Fecha"
               name="first_name"
               disabled

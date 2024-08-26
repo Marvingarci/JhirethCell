@@ -25,6 +25,11 @@ class Inventario extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class, 'organization_id');
+    }
     
     public function scopeFilter($query, array $filters)
     {

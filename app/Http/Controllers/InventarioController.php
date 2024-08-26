@@ -46,7 +46,7 @@ class InventarioController extends Controller
 
     public function buscarProducto()
     {
-        $inventario = Inventario::where('codebar',Request::only('search', 'trashed'))->first();
+        $inventario = Inventario::where('codebar',Request::only('search', 'trashed'))->with('organization')->first();
         return Inertia::render('Inventories/Index', [
             'filters' => Request::all('search'),
             'producto'=> New ProductCollection(

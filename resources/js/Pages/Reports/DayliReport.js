@@ -70,7 +70,7 @@ const DayliReport = () => {
         >
 
       <h1 className="mb-8 text-3xl font-bold">Reporte Ventas diarias</h1>
-      <div className="bg-white rounded shadow">
+      <div className="bg-white rounded shadow overflow-x-auto">
       <table className=" whitespace-nowrap w-full">
       <thead>
                   <tr className="font-bold text-left">
@@ -139,7 +139,7 @@ const DayliReport = () => {
               {
                 gastos.length > 0 &&
                 <>
-                <table className=" whitespace-nowrap w-full">
+                <table className=" whitespace-nowrap w-full ">
                   <thead>
                     <tr className="font-bold text-left">
                       <th className="px-6 pt-5 pb-4 text-center">Gasto</th>

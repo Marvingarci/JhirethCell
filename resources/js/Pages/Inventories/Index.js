@@ -86,7 +86,7 @@ const Index = () => {
               <div className="text-lg"> { producto[0].created_at.substring(0,10) }</div>
               <p className="font-bold text-lg " >Imei</p>
               <div className="text-lg"> { inventario?.imei}</div>
-              { producto[0].dbType == 'colectivo' && ( 
+              { producto[0].dbType == 'colectivo' ? ( 
                 <>
                 <p className="font-bold text-lg " >Existencia</p>
                 <div className="text-lg"> 
@@ -104,6 +104,11 @@ const Index = () => {
                 }
                 </div>
                 </>
+                ):(
+                  <>
+                  <p className="font-bold text-lg " >Existencia</p>
+                  <div className="text-lg"> { inventario?.organization?.name}</div>
+                  </>
                 )
               }
               <p className="font-bold text-lg " >Actual estado</p>

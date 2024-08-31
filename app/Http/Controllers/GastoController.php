@@ -22,7 +22,7 @@ class GastoController extends Controller
     {
         $organizations = Organization::all();
         return Inertia::render('Gastos/Index', [
-            'filters' => Request::all('search', 'trashed'),
+            'filters' => Request::all('search', 'date', 'organization'),
             'gastos' => new GastoCollection(
                 Gasto::
                     orderBy('created_at')

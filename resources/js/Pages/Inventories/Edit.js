@@ -3,12 +3,10 @@ import Helmet from 'react-helmet';
 import { Inertia } from '@inertiajs/inertia';
 import { InertiaLink, usePage, useForm } from '@inertiajs/inertia-react';
 import Layout from '@/Shared/Layout';
-import DeleteButton from '@/Shared/DeleteButton';
 import LoadingButton from '@/Shared/LoadingButton';
 import TextInput from '@/Shared/TextInput';
 import SelectInput from '@/Shared/SelectInput';
 import TrashedMessage from '@/Shared/TrashedMessage';
-import Icon from '@/Shared/Icon';
 
 const colores = [
   'verde','azul','naranja','negro','blanco','morado','amarillo','rojo','gris', 'indefinido'
@@ -230,6 +228,7 @@ const Edit = () => {
                             auth.user.owner && (
                           <td className="border-t">
                             <button
+                              type='button'
                               onClick={e => destroy(id)}
                               className="bg-newblue-200 ring-2 text-white py-2 px-1 rounded-xl m-1"
                             >

@@ -14,21 +14,22 @@ const Edit = () => {
   const { categorias, usuarios, producto, venta, vendedores } = usePage().props;
   const { data, setData, errors, post, processing, reset } = useForm({
     vendedor_id: '',
-    ventas_id: venta[0].id,
+    ventas_id: venta.id,
     cantidad: '',
     comentario: '',
-    cliente: venta[0].cliente,
-    total: venta[0].total,
-    restante: venta[0].restante,
-    limite_pago: venta[0].limite_pago,
-    tipoPago: venta[0].tipoPago,
-    created_at: venta[0].created_at
+    cliente: venta.cliente,
+    total: venta.total,
+    restante: venta.restante,
+    limite_pago: venta.limite_pago,
+    tipoPago: venta.tipoPago,
+    created_at: venta.created_at,
+    tipoPagoAbono: 'efectivo',
   });
 
   const pdfExportComponent = React.useRef(null);
 
   console.log(venta);
-  const [carrito, setCarrito] = useState(venta[0].venta_detalles);
+  const [carrito, setCarrito] = useState(venta.venta_detalles);
   const [WarrantyProduct, setWarrantyProduct] = useState(null);
   const [readyToPrit, setReadyToPrint] = useState(false);
 
@@ -46,13 +47,13 @@ const Edit = () => {
 
   function becomeSold() {
     if (confirm('Esta venta se pondrá como efectiva, ¿Está seguro?')) {
-      console.log(venta[0].id, venta[0].venta_detalles)
+      console.log(venta.id, venta.venta_detalles)
       Inertia.put(
         route('ventas.actualizar', {
-          id: venta[0].id,
-          venta_detalles: venta[0].venta_detalles
+          id: venta.id,
+          venta_detalles: venta.venta_detalles
         }),
-        { id: venta[0].id, venta_detalles: venta[0].venta_detalles },
+        { id: venta.id, venta_detalles: venta.venta_detalles },
         {
           onSuccess: page => {},
           onError: error => {
@@ -103,7 +104,7 @@ const Edit = () => {
   }
 
   const addPayment =()=>{
-    if(data.cantidad > venta[0].restante){
+    if(data.cantidad > venta.restante){
       alert('Esta cantidad es mayor a la restante, cambiarla')
       return false;
     }
@@ -113,7 +114,8 @@ const Edit = () => {
       cantidad: data.cantidad,
       vendedor_id : data.vendedor_id,
       ventas_id : data.ventas_id,
-      comentario : data.comentario
+      comentario : data.comentario,
+      concepto : data.tipoPagoAbono,
     }
 
       console.log(values)
@@ -123,7 +125,7 @@ const Edit = () => {
         {
           onSuccess: page => {
             console.log(page)
-            reset('cantidad','vendedor_id','restante', 'comentario')
+            reset('cantidad','vendedor_id','restante', 'tipoPagoAbono', 'comentario')
           },
           onError: error => {
             console.log(error);
@@ -138,11 +140,11 @@ const Edit = () => {
       Inertia.put(
         route('ventas.destroy', {
           id: data.ventas_id,
-          venta_detalles: venta[0].venta_detalles,
+          venta_detalles: venta.venta_detalles,
           razonDev: 'eliminacion'
         }),
         {  id: data.ventas_id,
-          venta_detalles: venta[0].venta_detalles,
+          venta_detalles: venta.venta_detalles,
           razonDev: 'eliminacion' },
         {
           onSuccess: page => {
@@ -187,7 +189,7 @@ const Edit = () => {
             name="first_name"
             disabled
             value={vendedores
-              .filter(u => venta[0].vendedor_id == u.id)
+              .filter(u => venta.vendedor_id == u.id)
               .map(filter => filter.first_name + ' ' + filter.last_name)}
           />
           <TextInput
@@ -197,12 +199,22 @@ const Edit = () => {
             disabled
             value={moment(data.created_at).locale("es").format("Do MM YYYY")}
           />
+          {
+            venta.limite_pago != null &&
+            <TextInput
+              className="w-full pb-8 pr-6 lg:w-1/5"
+              label="Tipo de Pago Inicial"
+              name="first_name"
+              disabled
+              value={'Credito'}
+            />
+          }
           <TextInput
             className="w-full pb-8 pr-6 lg:w-1/5"
-            label="Tipo de Pago"
+            label="Tipo de Pago Actual"
             name="first_name"
             disabled
-            value={data.tipoPago}
+            value={venta.tipoPago}
           />
           { data.limite_pago != null &&
            <TextInput
@@ -299,30 +311,43 @@ const Edit = () => {
         </div>
       </div>
       {
-        (data.tipoPago == 'credito' || data.tipoPago == 'multiple') &&
+        (venta.tipoPago == 'credito' || venta.tipoPago == 'multiple' || venta.limite_pago != null) &&
         <div className="overflow-x-auto   bg-white rounded shadow">
           {data.tipoPago == 'credito' &&
           <>
           
-          <h1 className="text-xl font-bold py-2">Pagos  restante: {data.restante}</h1>
+          <h1 className="text-xl font-bold py-2">Pagos  restante: {venta.restante}</h1>
           <div className="flex flex-row gap-4 items-center justify-between">
           <TextInput
-                  className="w-full p-4 pr-6 lg:w-1/4"
+                  className="w-full p-4 pr-6 lg:w-1/5"
                   label="Pago Parcial"
                   name="first_name"
                   errors={errors.cantidad}
                   value={data.cantidad}
                   onChange={e => setData('cantidad', e.target.value)}
                 />
+              <SelectInput
+                  label="Pago"
+                  className="w-full p-4 pr-6 lg:w-1/5"
+                  errors={errors.tipoPagoAbono}
+                  value={data.tipoPagoAbono}
+                  onChange={e => setData('tipoPagoAbono', e.target.value)}
+                >
+                  <option value=""></option>
+                  <option value="efectivo">Efectivo</option>
+                  <option value="transferencia">Transferencia</option>
+                  <option value="pos">POS</option>
+                </SelectInput>
+
            <TextInput
-                  className="w-full p-4 pr-6 lg:w-1/4"
+                  className="w-full p-4 pr-6 lg:w-1/5"
                   label="Comentario"
                   errors={errors.comentario}
                   value={data.comentario}
                   onChange={e => setData('comentario', e.target.value)}
                 />
          <SelectInput
-                className="w-full p-4 pr-6 lg:w-1/4"
+                className="w-full p-4 pr-6 lg:w-1/5"
                 label="Vendedor"
                 name="organization_id"
                 errors={errors.vendedor_id}
@@ -355,14 +380,14 @@ const Edit = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {venta[0].pagos.map(
+                  {venta.pagos.map(
                     (
                       p,
                       index
                     ) => (
                       <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                         <td className="border-t px-6 pt-5 pb-4">{moment(p.created_at).locale("es").format("Do MMM YYYY")}</td>
-                        <td className="border-t px-6 pt-5 pb-4">{p.vendedor_id}</td>
+                        <td className="border-t px-6 pt-5 pb-4">{p.vendedor}</td>
                         <td className="border-t px-6 pt-5 pb-4">{p.concepto}</td>
                         <td className="border-t px-6 pt-5 pb-4">{p.cantidad}</td>
                         <td className="border-t px-6 pt-5 pb-4">{p.comentario}</td>

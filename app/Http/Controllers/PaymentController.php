@@ -15,6 +15,7 @@ use App\Models\Category;
 use App\Models\Inventario;
 use App\Models\Ventas;
 use App\Models\VentaDetalle;
+use App\Models\Registro;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
@@ -51,29 +52,66 @@ class PaymentController extends Controller
      */
     public function store(PaymentStoreRequest $request)
     {
-        $payment = Payment::create($request->validated());
+        DB::beginTransaction();
 
-        $venta = Ventas::where('id',$request['ventas_id'])->with('venta_detalles')->first();
-        $venta->restante = $venta->restante - $payment->cantidad;
-        $venta->update();
-        
-        if($venta->restante == 0){
+        try {
+            $payment = Payment::create($request->validated());
 
-            $venta->tipoPago = 'efectivo';
-            $venta->fecha_efectiva = Carbon::now();
+            $venta = Ventas::where('id',$request['ventas_id'])->with('venta_detalles')->first();
+            $venta->restante = $venta->restante - $payment->cantidad;
             $venta->update();
-
+            
             $ventas = $venta->venta_detalles;
+            if($venta->restante == 0){
 
-            //Inventario::where('codebar', $request->venta_detalles['product_code'])->update(['status' => 'vendido']);
-            foreach ($ventas as $v) {
-                $venta_detalle = VentaDetalle::find($v["id"]);
-                $venta_detalle->estado = 'efectivo';
-                $venta_detalle->update();
+                $venta->tipoPago = 'efectivo';
+                $venta->fecha_efectiva = Carbon::now();
+                $venta->update();
+
+
+                foreach ($ventas as $v) {
+                    $venta_detalle = VentaDetalle::find($v["id"]);
+                    $venta_detalle->estado = 'efectivo';
+                    $venta_detalle->update();
+                }
             }
-        }
 
-        return Redirect::back()->with('success', 'Payment agregado con éxito.');
+            $log = 'El usuario ' . Auth::user()->name . ' ' . Auth::user()->last_name . ' ha realizado un abono en '.$payment->concepto.' de L ' . $payment->cantidad . ' a la venta #' . $venta->id . ', quedando un saldo pendiente de L ' . $venta->restante .
+            ' con fecha limite de pago: ' .Carbon::parse($venta->limite_pago)->format('Y-m-d') .'.';
+
+            $ventas = $ventas->toArray();
+            $inventoriesIds = array_reduce($ventas, function ($carry, $item) {
+                $carry[] = $item['product_code'];
+                return $carry;
+            }, []);
+
+            $productsIds = array_reduce($ventas, function ($carry, $item) {
+                $carry[] = $item['product_id'];
+                return $carry;
+            }, []);
+
+            $registroLog = Registro::create([
+                'user_id' => Auth::user()->id,
+                'organization_id' => Auth::user()->organization_id,
+                'module' => 'Ventas',
+                'venta_id' => $venta->id,
+                'inventario_id' => $inventoriesIds,
+                'product_id' => $productsIds,
+                'action' => 'Abono a Venta',
+                'description' => $log,
+                'note' => ($venta->restante == 0) ? 'Venta convertida a efectivo' : ''
+            ]);
+
+            DB::commit();
+
+
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            dd($e->getMessage());
+            return Redirect::back()->with('error', 'Error al agregar el pago.');
+        }
+        return Redirect::to('/ventas/'.$request['ventas_id'].'/edit')->with('success', 'Pago agregado con éxito.');
     }
 
     /**

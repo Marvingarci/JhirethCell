@@ -18,11 +18,13 @@ use App\Models\User;
 use App\Models\Product;
 use App\Models\Servicios;
 use App\Models\Payment;
+use App\Models\Registro;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Http\Controllers\RegistroController;
 
 class VentasController extends Controller
 {
@@ -71,7 +73,11 @@ class VentasController extends Controller
      */
     public function store(VentaStoreRequest $request)
     {
-        $hoy = Carbon::now();
+
+
+        DB::beginTransaction();
+        try {
+            $hoy = Carbon::now();
         $productos = Product::all();
         $request['restante'] = $request['total'];
         $registro = Ventas::create($request->validated());
@@ -116,7 +122,7 @@ class VentasController extends Controller
                 'category_id' => $venta['category_id'], 
                 'producto'=> $venta['name'], 
                 'cantidad'=>$venta['cantidad'], 
-                'precio'=> $venta['sell_price'], 
+                'precio'=> $venta['real_sell_price'], 
                 'descuento'=>$venta['descuento'], 
                 'total_producto'=>$venta['total_producto'], 
                 'costo_servicio'=>$venta['costo_servicio'], 
@@ -128,7 +134,6 @@ class VentasController extends Controller
 
             if($venta['category_id'] != 4){
                 if($venta['dbType'] == 'colectivo' ){
-                    // Bajar el inventario a productos colectivos
                     $inve = Inventario::where('codebar', $venta['codebar'])->first();
                     $inve->existencia = $inve->existencia - $venta['cantidad'] ;
                     $organizations = $inve->existenciaDividida == null ? [] : json_decode($inve->existenciaDividida);
@@ -150,16 +155,21 @@ class VentasController extends Controller
                     }
                 }
             }
-
-            
-
-            // foreach ($productos as $producto) {
-            //     if($venta['id'] == $producto->id){
-            //         $producto->existencia = $producto->existencia - $venta['cantidad'];
-            //         $producto->update();
-            //     }
-            // }
         }
+
+
+        RegistroController::logNewVenta($registro, $ventas);
+
+        DB::commit();
+
+        }catch (\Exception $e) {
+            DB::rollBack();
+            dd($e->getMessage());
+
+            return back()->withErrors(['error' => 'Order failed. Please try again.']);
+        }
+
+
         if($request->tipoPago == 'pendiente'){
             return Redirect::back()->with('success', 'Venta rapida agregada.');
 
@@ -190,7 +200,7 @@ class VentasController extends Controller
     public function edit($id)
     {
         return Inertia::render('Sells/Edit', [
-            'venta' => Ventas::with(['venta_detalles','pagos'])->where('id',$id)->get(),
+            'venta' => Ventas::with(['venta_detalles','pagos'])->where('id',$id)->first(),
             'vendedores'=> User::all(['id','first_name','last_name']),
             'categorias'=> Category::All()
         ]);
@@ -205,20 +215,52 @@ class VentasController extends Controller
      */
     public function update(VentaUpdateRequest $request)
     {
-        $venta = Ventas::find($request['id']);
-        $venta->tipoPago = 'efectivo';
-        $venta->fecha_efectiva = Carbon::now();
-        $venta->update();
+        DB::beginTransaction();
 
-        $ventas = $request['venta_detalles'];
+        try{
+            $venta = Ventas::find($request['id']);
+            $venta->tipoPago = 'efectivo';
+            $venta->fecha_efectiva = Carbon::now();
+            $venta->update();
+    
+            $ventas = $request['venta_detalles'];
+    
+            foreach ($ventas as $v) {
+                $venta_detalle = VentaDetalle::find($v["id"]);
+                $venta_detalle->estado = 'efectivo';
+                $venta_detalle->update();
+            }
 
-        //Inventario::where('codebar', $request->venta_detalles['product_code'])->update(['status' => 'vendido']);
-        foreach ($ventas as $v) {
-            $venta_detalle = VentaDetalle::find($v["id"]);
-            $venta_detalle->estado = 'efectivo';
-            $venta_detalle->update();
+            $inventoriesIds = array_reduce($ventas, function ($carry, $item) {
+                $carry[] = $item['product_code'];
+                return $carry;
+            }, []);
+
+            $productsIds = array_reduce($ventas, function ($carry, $item) {
+                $carry[] = $item['product_id'];
+                return $carry;
+            }, []);
+            
+            $registroLog = Registro::create([
+                'user_id' => $venta->vendedor_id,
+                'organization_id' => $venta->organization_id,
+                'module' => 'Ventas',
+                'venta_id' => $venta->id,
+                'inventario_id' =>$inventoriesIds,
+                'product_id' => $productsIds,
+                'action' => 'Venta convertida a efectivo',
+                'description' => 'El usuario '.Auth::user()->first_name.' '.Auth::user()->last_name.' convirtio la venta #'.$venta->id.' a efectivo.',
+                'note' => ''
+            ]);
+
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            dd($e->getMessage());
+
+            return back()->withErrors(['error' => 'Order failed. Please try again.']);
         }
-
         
         return Redirect::route('ventas')->with('success', 'Venta convertida a efectivo.');
     }
@@ -254,10 +296,15 @@ class VentasController extends Controller
      */
     public function destroy(HttpRequest $request)
     {   
+
+
+        DB::beginTransaction();
+
+        try {
+
         $venta = Ventas::find($request['id']);
         $ventaAEliminar = Ventas::where('id',$request['id'])->with('venta_detalles')->first();
 
-        //$venta_detalle = VentaDetalle::find($request->venta_detalles['id']);
         switch ($request['razonDev']) {
             case 'buena':
                     $producto = Product::find($request->venta_detalles['product_id']);
@@ -329,6 +376,17 @@ class VentasController extends Controller
      
 
         $venta->delete();
+
+        RegistroController::logDeleteVenta($venta, $ventaAEliminar->venta_detalles);
+
+        DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            dd($e->getMessage());
+
+            return back()->withErrors(['error' => 'Order failed. Please try again.']);
+        }
       
         if($request['razonDev'] == 'eliminacion'){
             return Redirect::route('ventas')->with('success', 'Exito');
@@ -340,39 +398,65 @@ class VentasController extends Controller
     public function deleteItem(HttpRequest $request)
     {
         
-        
-        $ventaDetalleToDelete = VentaDetalle::find($request['product_id']);
-        $venta = Ventas::find($request['venta_id']);
-
-        if(isset($ventaDetalleToDelete)){
-            $venta->total = $venta->total - $ventaDetalleToDelete->total_producto;
-            $venta->save();
-        }
-
-        $producto = Product::find($ventaDetalleToDelete->product_id);
-        if($ventaDetalleToDelete['category_id'] != 4){
-            if($producto['dbType'] == 'colectivo'){
-                // Bajar el inventario a productos colectivos
-                $inve = Inventario::where('codebar', $ventaDetalleToDelete['product_code'])->first();
-                $inve->existencia = $inve->existencia + $ventaDetalleToDelete['cantidad'] ;
-                $organizations = $inve->existenciaDividida == null ? [] : json_decode($inve->existenciaDividida);
-                if(count($organizations) > 0){
-                    foreach ($organizations as $orga) {
-                        if($orga->organization_id == $venta['organization_id']){
-                            $orga->cantidad += $ventaDetalleToDelete['cantidad'];
-                        }
-                    }   
-
-                    $inve->existenciaDividida = json_encode($organizations);
-                }
-                $inve->save();
-            }else{
-                Inventario::where('codebar', $ventaDetalleToDelete['product_code'])->update(['status' => 'stock']);
+        DB::beginTransaction();
+        try{
+            $ventaDetalleToDelete = VentaDetalle::find($request['product_id']);
+            $venta = Ventas::find($request['venta_id']);
+    
+            if(isset($ventaDetalleToDelete)){
+                $venta->total = $venta->total - $ventaDetalleToDelete->total_producto;
+                $venta->save();
             }
-        }
-        
-        $ventaDetalleToDelete->delete();
+    
+            $producto = Product::find($ventaDetalleToDelete->product_id);
+            if($ventaDetalleToDelete['category_id'] != 4){
+                if($producto['dbType'] == 'colectivo'){
+                    // Bajar el inventario a productos colectivos
+                    $inve = Inventario::where('codebar', $ventaDetalleToDelete['product_code'])->first();
+                    $inve->existencia = $inve->existencia + $ventaDetalleToDelete['cantidad'] ;
+                    $organizations = $inve->existenciaDividida == null ? [] : json_decode($inve->existenciaDividida);
+                    if(count($organizations) > 0){
+                        foreach ($organizations as $orga) {
+                            if($orga->organization_id == $venta['organization_id']){
+                                $orga->cantidad += $ventaDetalleToDelete['cantidad'];
+                            }
+                        }   
+    
+                        $inve->existenciaDividida = json_encode($organizations);
+                    }
+                    $inve->save();
+                }else{
+                    Inventario::where('codebar', $ventaDetalleToDelete['product_code'])->update(['status' => 'stock']);
+                }
+            }
+            
+            $ventaDetalleToDelete->delete();
 
+            $log = 'El usuario '.Auth::user()->first_name.' '.Auth::user()->last_name.' elimino el producto '.$ventaDetalleToDelete['producto'].' de la venta #'.$venta->id.' => '.$venta->tipoPago.
+            ($venta->tipoPago == 'credito' ? ' a '.$venta->dias_credito.' dias.' : '');
+
+            $existencia = RegistroController::getExistenciaEnTexto($ventaDetalleToDelete['product_id'], $ventaDetalleToDelete['producto']);
+
+            $registroLog = Registro::create([
+                'user_id' => $venta->vendedor_id,
+                'organization_id' => $venta->organization_id,
+                'module' => 'Ventas',
+                'venta_id' => $venta->id,
+                'inventario_id' =>[$ventaDetalleToDelete['product_code']],
+                'product_id' => [$ventaDetalleToDelete['product_id']],
+                'action' => 'Eliminar Producto de Venta',
+                'description' => $log,
+                'note' => $existencia
+            ]);
+
+            DB::commit();
+
+        }catch (\Exception $e) {
+            DB::rollBack();
+            dd($e->getMessage());
+
+            return back()->withErrors(['error' => 'Order failed. Please try again.']);
+        }
 
         return Redirect::back()->with('success', 'Articulo eliminado de Venta');
     }

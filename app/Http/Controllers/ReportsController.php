@@ -12,9 +12,11 @@ use App\Models\VentaDetalle;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Http\Request;
 use App\Http\Resources\ProductCollection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request as HttpRequest;
+use App\Http\Resources\VentaCollection;
 
 class ReportsController extends Controller
 {
@@ -53,11 +55,18 @@ class ReportsController extends Controller
         $Ventas_hoy = Ventas::where([
             ['created_at', 'like', $today->format('Y-m-d') . '%'],
             ['tipoPago', '!=', 'credito'],
+            ['limite_pago', null],
             ['organization_id', $user->organization_id]
             ])->with('venta_detalles')->get();
+        $paymentsToday = Payment::
+        where([['created_at', 'like', $today->format('Y-m-d') . '%']])
+        ->with(['venta', 'user' ])
+        ->get();
+
         return Inertia::render('Reports/DayliReport',[
             'ventas'=> $Ventas_hoy,
             'gastos'=> $gastosByDay,
+            'payments'=> $paymentsToday
         ]);
     }
 
@@ -118,7 +127,7 @@ class ReportsController extends Controller
         ]);    
     }
 
-    public function separateReportByDay(Request $request)
+    public function separateReportByDay(HttpRequest $request)
     {
         $today = $request->day; 
         $organization_id = $request->organization; 
@@ -156,7 +165,7 @@ class ReportsController extends Controller
         ]);     
     }
 
-    public function dailyReportByDay(Request $request)
+    public function dailyReportByDay(HttpRequest $request)
     {
         $today = $request->day; 
         $organization_id = $request->organization;
@@ -165,14 +174,20 @@ class ReportsController extends Controller
         $Ventas_hoy = Ventas::where([
             ['created_at', 'like', $today . '%'],
             ['tipoPago', '!=', 'credito'],
+            ['limite_pago', null],
             ['organization_id', $organization_id]
-            ])->with('venta_detalles')->get();
-
-       
+            ])
+            ->with('venta_detalles')->get();
+        $paymentsToday = Payment::
+        where([['created_at', 'like', $today . '%']])
+        ->with(['venta', 'user' ])
+        ->get();
 
         return Inertia::render('Reports/DayliReport',[
             'ventas'=> $Ventas_hoy,
             'gastos'=> $gastosByDay,
+            'payments'=> $paymentsToday
+
         ]);     
     }
 
@@ -181,10 +196,29 @@ class ReportsController extends Controller
         $today = Carbon::today();
         $organizations = Organization::all();
 
-        $Ventas_hoy = Ventas::where([['created_at', 'like', $today->format('Y-m-d') . '%'],['tipoPago', 'credito']])->with('venta_detalles')->get();
+        // $Ventas_hoy = Ventas::where([['created_at', 'like', $today->format('Y-m-d') . '%'],['tipoPago', 'credito']])->with('venta_detalles')->get();
+        return Inertia::render('Reports/CreditReport',[
+            'filters' => Request::all('search', 'date', 'organization'),
+            'ventas'=> new VentaCollection(
+                    Ventas::where('tipoPago', 'credito')
+                    ->filter(Request::only('search', 'date', 'organization'))
+                    ->with('venta_detalles')
+                    ->paginate()
+                    ->appends(Request::all())
+            )
+        ]);    
+    }
+
+    public function creditReportByDay(HttpRequest $request)
+    {
+        $today = $request->day; 
+        $organization_id = $request->organization; 
+
+        $Ventas_hoy = Ventas::where([['created_at', 'like', $today->format('Y-m-d') . '%'],['tipoPago', 'credito']])->with('venta_detalles')
+        ->where([['fecha_efectiva', 'like', $today . '%']])->where([['organization_id', $organization_id ]])->get();
+        
         return Inertia::render('Reports/CreditReport',[
             'ventas'=> $Ventas_hoy,
-            'organizations'=> $organizations
         ]);    
     }
 
@@ -202,7 +236,7 @@ class ReportsController extends Controller
         ]);    
     }
 
-    public function inventarioPorTienda(Request $request)
+    public function inventarioPorTienda(HttpRequest $request)
     {
         $organization_id = $request->organization; 
         $organizations = Organization::all();
@@ -255,20 +289,5 @@ class ReportsController extends Controller
         }
         return $found;
     }
-    
 
-    public function creditReportByDay(Request $request)
-    {
-        $today = $request->day; 
-        $organization_id = $request->organization; 
-        $organizations = Organization::all();
-
-        $Ventas_hoy = Ventas::where([['created_at', 'like', $today->format('Y-m-d') . '%'],['tipoPago', 'credito']])->with('venta_detalles')
-        ->where([['fecha_efectiva', 'like', $today . '%']])->where([['organization_id', $organization_id ]])->get();
-        
-        return Inertia::render('Reports/CreditReport',[
-            'ventas'=> $Ventas_hoy,
-            'organizations'=> $organizations,
-        ]);    
-    }
 }

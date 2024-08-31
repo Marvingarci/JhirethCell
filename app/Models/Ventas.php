@@ -9,6 +9,8 @@ class Ventas extends Model
 {
     use HasFactory;
 
+    protected $appends = ['has_many_payments', 'is_credito'];
+
     protected $fillable = [
         'cliente',
         'contact_id',
@@ -44,18 +46,28 @@ class Ventas extends Model
         return $this->hasOne(User::class, 'id' , 'vendedor_id');
     }
 
+    public function getHasManyPaymentsAttribute()
+    {
+        return $this->pagos()->count() >= 1 ? true : false;
+    }
+
+    public function getIsCreditoAttribute()
+    {
+        return ($this->has_many_payments && $this->limite_pago != null) ? true : false;
+    }
+
+
 
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
             $query->where('cliente', 'like', '%'.$search.'%')
-            ->orWhere('tipoPago', 'like', '%'.$search.'%');
-        })->when($filters['trashed'] ?? null, function ($query, $trashed) {
-            // if ($trashed === 'with') {
-            //     $query->withTrashed();
-            // } elseif ($trashed === 'only') {
-            //     $query->onlyTrashed();
-            // }
+            ->orWhere('tipoPago', 'like', '%'.$search.'%')
+            ->orWhere('id', 'like', '%'.$search.'%');
+        })->when($filters['date'] ?? null, function ($query, $date) {
+            $query->where('created_at', 'like', $date . '%');
+        })->when($filters['organization'] ?? null, function ($query, $organization) {
+            $query->where('organization_id', $organization);
         });
     }
 }

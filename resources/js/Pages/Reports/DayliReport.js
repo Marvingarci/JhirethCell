@@ -9,12 +9,13 @@ import TextInput from '@/Shared/TextInput';
 import { Inertia } from '@inertiajs/inertia';
 
 const DayliReport = () => {
-  const { ventas, gastos, auth, organizations } = usePage().props;
+  const { ventas, gastos, payments, auth, organizations } = usePage().props;
   const [fecha, setFecha] = useState(0);
   const [organization, setOrganization] = useState(auth.user.organization_id);
 
   var total=0;
   var totalGastos=0;
+  var totalPayments=0;
 
   const [readyToPrit, setReadyToPrint] = useState(true);
   const pdfExportComponentA = React.useRef(null);
@@ -78,17 +79,13 @@ const DayliReport = () => {
                     <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
                     <th className="px-6 pt-5 pb-4 text-center">Producto</th>
                     <th className="px-6 pt-5 pb-4 text-center">Tipo Venta</th>
-                    <th className="px-6 pt-5 pb-4 text-center" >Precio</th>
-                    <th className="px-auto pt-5 pb-4 text-center">Cantidad</th>
                     <th className="px-6 pt-5 pb-4 text-center">Total Producto</th>
                   </tr>
                 </thead>
                 <tbody>
                   {ventas.map((venta) => (
                       
-                      venta.venta_detalles.map((detalle)=>{
-                        total += parseInt(detalle.total_producto) 
-                        return(
+                     
                         <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                            <td className="border-t justify-center text-center items-center">
                     <InertiaLink
@@ -102,30 +99,29 @@ const DayliReport = () => {
                             {venta.cliente}
                         </td> 
 
-                        <td className="border-t justify-center text-center items-center">
-                            {detalle.producto}
+                        <td className="border-t justify-center text-center items-center flex flex-col">
+                          {
+                             venta.venta_detalles.map((detalle)=>{
+                              total += parseInt(detalle.total_producto) 
+                              return (
+                                <span>{detalle.fullName}</span>
+                              )
+                            })
+                          }     
                         </td>
                         <td className="border-t justify-center text-center items-center">
                             {venta.tipoPago}
                         </td>
                         <td className="border-t justify-center text-center items-center">
-                            {detalle.precio}
+                            {venta.total}
                         </td>
-                        <td className="border-t justify-center text-center items-center">
-                            {detalle.cantidad}
-                        </td>
-                        <td className="border-t justify-center text-center items-center">
-                            {detalle.total_producto}
-                        </td>
-                        </tr>)
-
-                      })
+                        </tr>
+                        
+                    
                        
                     )
                   )}
                   <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
-                    <td className="border-t justify-center text-center items-center"></td>
-                    <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
                     <td className="border-t justify-center text-center items-center"></td>
@@ -136,6 +132,67 @@ const DayliReport = () => {
                   </tr>
                 </tbody>
               </table>
+              {
+                payments.length > 0 &&
+                <>
+                <table className=" whitespace-nowrap w-full ">
+                  <thead>
+                    <tr className="font-bold text-left">
+                      <th className="px-6 pt-5 pb-4 text-center">Abono</th>
+                      <th className="px-6 pt-5 pb-4 text-center">Cliente</th>
+                      <th className="px-6 pt-5 pb-4 text-center">Venta</th>
+                      <th className="px-6 pt-5 pb-4 text-center">Tipo de Pago</th>
+                      <th className="px-6 pt-5 pb-4 text-center">Monto</th>
+                      
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {payments.map((payment) => (
+                      totalPayments += parseInt(payment.cantidad),
+                      <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                        <td className="border-t justify-center text-center items-center">
+                          <InertiaLink
+                            href={route('ventas.edit', payment.venta.id)}
+                            className="flex items-center px-6 py-4 text-indigo-700 focus:outline-none"
+                          >
+                            Ver Pago
+                          </InertiaLink>
+                        </td>
+                        <td className="border-t justify-center text-center items-center">
+                          {payment.venta.cliente}
+                        </td>
+                        <td className="border-t justify-center text-center items-center">
+                        <InertiaLink
+                            href={route('ventas.edit', payment.venta.id)}
+                            className="flex items-center px-6 py-4 text-indigo-700 focus:outline-none"
+                          >
+                          Ver Venta {payment.venta.id}
+                          </InertiaLink>
+                        </td>
+                        <td className="border-t justify-center text-center items-center">
+                          {payment.concepto}
+                        </td>
+                        <td className="border-t justify-center text-center items-center">
+                          {payment.cantidad}
+                        </td>
+                      </tr>
+                    ))}
+                    <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
+                      <td className="border-t justify-center text-center items-center"></td>
+                      <td className="border-t justify-center text-center items-center"></td>
+                      <td className="border-t justify-center text-center items-center"></td>
+                      <td className="border-t justify-center text-center items-center font-bold">Total Abonos</td>
+                      <td className="border-t justify-center text-center items-center font-bold">
+                        {totalPayments}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              <div className="flex justify-end">
+                <h1 className="font-bold text-2xl px-5 py-2">Total Ingresos: {total + totalPayments}</h1>
+              </div>
+              </>
+              }
               {
                 gastos.length > 0 &&
                 <>
@@ -183,7 +240,7 @@ const DayliReport = () => {
                   </tbody>
                 </table>
               <div className="flex justify-end">
-                <h1 className="font-bold text-2xl px-5 py-2">Total Real: {total - totalGastos}</h1>
+                <h1 className="font-bold text-2xl px-5 py-2">Total Real: {(total+totalPayments) - totalGastos}</h1>
               </div>
               </>
               }

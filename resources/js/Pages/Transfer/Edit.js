@@ -41,7 +41,7 @@ const Edit = () => {
     description: transferencia?.description,
     items: '',
     product_id : transferencia?.product_id,
-    confirmation: transferencia.confirmation == null ? false : true,
+    confirmation: transferencia?.confirmation == null ? false : true,
     _method : 'PUT'
   });
 

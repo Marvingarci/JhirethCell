@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
-class PaymentStoreRequest extends FormRequest
+class StoreRegistroRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,7 +13,7 @@ class PaymentStoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return false;
     }
 
     /**
@@ -26,11 +24,7 @@ class PaymentStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'ventas_id' => ['required'],
-            'vendedor_id' => ['required'],
-            'comentario' => ['required'],
-            'cantidad' => ['required','numeric'], 
-            'concepto' => ['required']           
+            //
         ];
     }
 }

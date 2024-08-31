@@ -13,8 +13,8 @@ const Index = () => {
     data,
     meta: { links }
   } = ventas_dia;
-
-  console.log(user)
+ 
+  console.log(data)
   return (
     <div>
       <h1 className="mb-8 text-3xl font-bold">Caja</h1>

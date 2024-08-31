@@ -11,6 +11,7 @@ use Inertia\Inertia;
 use App\Models\Organization;
 use App\Models\Category;
 use App\Models\Inventario;
+use App\Models\Registro;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -64,9 +65,28 @@ class ProductController extends Controller
      */
     public function store(ProductStoreRequest $request)
     {
-        Auth::user()->account->products()->create(
-            $request->validated()
-        );
+        DB::beginTransaction();
+        try {
+            Auth::user()->account->products()->create(
+                $request->validated()
+            );
+
+            $registroLogNewProduct = Registro::create([
+                'user_id' => Auth::user()->id,
+                'organization_id' => Auth::user()->organization_id,
+                'module' => 'Productos',
+                'product_id' => [Product::latest()->first()->id],
+                'action' => 'Agregar Producto',
+                'description' => 'El usuario ' . Auth::user()->name . ' agrego un producto nuevo llamado ' . Product::latest()->first()->name . ' con id ' . Product::latest()->first()->id
+                . ' con un precio de mayorista de L ' . Product::latest()->first()->whole_sell_price . ' y un precio de venta al publico de L ' . Product::latest()->first()->sell_price . ', ',
+                'note' => ''
+            ]);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return Redirect::back()->with('error', 'Error al agregar producto.');
+        }
 
         return Redirect::route('products')->with('success', 'Producto agregado.');
     }
@@ -107,8 +127,43 @@ class ProductController extends Controller
      */
     public function update(ProductUpdateRequest $request)
     {
-        $product = Product::find($request->id);
-        $product->update($request->validated());
+
+        DB::beginTransaction();
+
+        try{
+
+            $product = Product::find($request->id);
+            $product->name = $request->name;
+            $product->sell_price = $request->sell_price;
+            $product->cost_price = $request->cost_price;
+            $product->whole_sell_price = $request->whole_sell_price;
+            $product->dbType = $request->dbType;
+            $product->color = $request->color;
+            $product->category_id = $request->category_id;
+
+            $dirty = $product->getDirty();
+            $log = 'El usuario ' . Auth::user()->name . ' edito el producto ' . $product->name . ' con id ' . $product->id . ' cambiando los siguientes campos: ';
+            foreach ($dirty as $key => $value) {
+                $log .= $key . ' de ' . $product->getOriginal($key) . ' a ' . $value . ', ';
+            }
+            
+            $product->save();
+            $registroLogUpdateProduct = Registro::create([
+                'user_id' => Auth::user()->id,
+                'organization_id' => Auth::user()->organization_id,
+                'module' => 'Productos',
+                'product_id' => [$product->id],
+                'action' => 'Editar Producto',
+                'description' => $log,
+                'note' => ''
+            ]);
+
+    
+            DB::commit();
+        }catch(\Exception $e){
+            DB::rollBack();
+            return Redirect::back()->with('error', 'Error al editar producto.');
+        }
 
         return Redirect::back()->with('success', 'Producto Editado.');
     }
@@ -121,8 +176,26 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {   
-        $product=Product::find($id);
-        $product->delete();
+        DB::beginTransaction();
+        try{
+            $product = Product::find($id);
+            $product->delete();
+
+            $registroLogDeleteProduct = Registro::create([
+                'user_id' => Auth::user()->id,
+                'organization_id' => Auth::user()->organization_id,
+                'module' => 'Productos',
+                'product_id' => [$product->id],
+                'action' => 'Eliminar Producto',
+                'description' => 'El usuario ' . Auth::user()->name . ' elimino el producto ' . $product->name . ' con id ' . $product->id . ' con un precio de mayorista de L ' . $product->whole_sell_price . ' y un precio de venta al publico de L ' . $product->sell_price . ', ',
+                'note' => ''
+            ]);
+
+            DB::commit();
+        }catch(\Exception $e){
+            DB::rollBack();
+            return Redirect::back()->with('error', 'Error al eliminar producto.');
+        }
 
         return Redirect::route('products')->with('success', 'Producto borrado.');
     }

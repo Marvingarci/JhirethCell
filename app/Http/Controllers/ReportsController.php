@@ -61,6 +61,9 @@ class ReportsController extends Controller
         $paymentsToday = Payment::
         where([['created_at', 'like', $today->format('Y-m-d') . '%']])
         ->with(['venta', 'user' ])
+        ->whereHas('venta', function($query) use($user){
+            $query->where('organization_id', $user->organization_id);
+        })
         ->get();
 
         return Inertia::render('Reports/DayliReport',[
@@ -167,6 +170,7 @@ class ReportsController extends Controller
 
     public function dailyReportByDay(HttpRequest $request)
     {
+        $user = Auth::user();
         $today = $request->day; 
         $organization_id = $request->organization;
         
@@ -181,6 +185,9 @@ class ReportsController extends Controller
         $paymentsToday = Payment::
         where([['created_at', 'like', $today . '%']])
         ->with(['venta', 'user' ])
+        ->whereHas('venta', function($query) use($user){
+            $query->where('organization_id', $user->organization_id);
+        })
         ->get();
 
         return Inertia::render('Reports/DayliReport',[

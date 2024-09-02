@@ -157,5 +157,6 @@ Route::get('gastos/{gasto}/edit')->name('gastos.edit')->uses('GastoController@ed
 Route::put('gastos/{gasto}')->name('gastos.update')->uses('GastoController@update')->middleware('auth');
 Route::delete('gastos/{gasto}')->name('gastos.destroy')->uses('GastoController@destroy')->middleware('auth');
 
-
-
+// registro
+Route::get('registro')->name('registro')->uses('RegistroController@index')->middleware( 'auth');
+Route::get('registro/{gasto}/edit')->name('registro.edit')->uses('RegistroController@edit')->middleware('auth');

@@ -10,6 +10,8 @@ use App\Http\Resources\GastoCollection;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Redirect;
+use App\Models\Registro;
+use Illuminate\Support\Facades\DB;
 
 class GastoController extends Controller
 {
@@ -55,9 +57,30 @@ class GastoController extends Controller
      */
     public function store(StoreGastoRequest $request)
     {
-        Gasto::create(
-            $request->validated()
-        );
+
+        DB::beginTransaction();
+
+        try{
+
+            Gasto::create(
+                $request->validated()
+            );
+            $RegistroLogGasto = Registro::create([
+                'user_id' => auth()->user()->id,
+                'organization_id' => auth()->user()->organization_id,
+                'module' => 'Gastos',
+                'action' => 'Crear Gasto',
+                'description' => 'El usuario '.auth()->user()->first_name.' '.auth()->user()->last_name.' creo el gasto '.$request->title.' / '.$request->description.' por un monto de L '.$request->total.' en la organizacion '.auth()->user()->organization->name,
+                'note' => 'Gasto creado'
+            ]);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            dd($e->getMessage());
+            return Redirect::route('gastos.create')->with('error', 'Error al crear el gasto.');
+        }
+
 
         return Redirect::route('gastos')->with('success', 'Gasto creado.');
     }
@@ -96,9 +119,31 @@ class GastoController extends Controller
      */
     public function update(UpdateGastoRequest $request, Gasto $gasto)
     {
-        $gasto->update(
-            $request->validated()
-        );
+
+        DB::beginTransaction();
+        try{
+            $gasto->update(
+                $request->validated()
+            );
+
+            $RegistroLogGasto = Registro::create([
+                'user_id' => auth()->user()->id,
+                'organization_id' => auth()->user()->organization_id,
+                'module' => 'Gastos',
+                'action' => 'Actualizar Gasto',
+                'description' => 'El usuario '.auth()->user()->first_name.' '.auth()->user()->last_name.' actualizo el gasto '.$gasto->title.' / '.$gasto->description.' por un monto de L '.$gasto->total.' en la organizacion '.auth()->user()->organization->name,
+                'note' => 'Gasto actualizado'
+            ]);
+    
+           
+
+            DB::commit();
+        }   catch (\Exception $e) {
+            DB::rollBack();
+            dd($e->getMessage());
+            return Redirect::route('gastos.edit', $gasto)->with('error', 'Error al actualizar el gasto.');
+        }
+
 
         return Redirect::route('gastos.edit', $gasto)->with('success', 'Gasto actualizado.');
     }
@@ -111,7 +156,28 @@ class GastoController extends Controller
      */
     public function destroy(Gasto $gasto)
     {
-        $gasto->delete();
+
+        DB::beginTransaction();
+        try{
+            $gasto->delete();
+
+            $RegistroLogGasto = Registro::create([
+                'user_id' => auth()->user()->id,
+                'organization_id' => auth()->user()->organization_id,
+                'module' => 'Gastos',
+                'action' => 'Eliminar Gasto',
+                'description' => 'El usuario '.auth()->user()->first_name.' '.auth()->user()->last_name.' elimino el gasto '.$gasto->title.' / '.$gasto->description.' por un monto de L '.$gasto->total.' en la organizacion '.auth()->user()->organization->name,
+                'note' => 'Gasto eliminado'
+            ]);
+
+            DB::commit();
+
+        }catch (\Exception $e) {
+            DB::rollBack();
+            dd($e->getMessage());
+            return Redirect::route('gastos')->with('error', 'Error al eliminar el gasto.');
+        }
+
 
         return Redirect::route('gastos')->with('success', 'Gasto eliminado.');
     }

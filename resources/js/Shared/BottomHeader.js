@@ -87,6 +87,7 @@ export default () => {
                 Mi Perfil
               </InertiaLink>
               {auth.user.owner == 1 && (
+                <>
                 <InertiaLink
                   href={route('users')}
                   className="block px-6 py-2 hover:bg-newblue-100 hover:text-white"
@@ -94,6 +95,14 @@ export default () => {
                 >
                   Administrar Usuarios
                 </InertiaLink>
+                 <InertiaLink
+                 href={route('registro')}
+                 className="block px-6 py-2 hover:bg-newblue-100 hover:text-white"
+                 onClick={() => setMenuOpened(false)}
+               >
+                 Registros
+               </InertiaLink>
+               </>
               )}
 
               <InertiaLink

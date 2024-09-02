@@ -18,11 +18,15 @@ class Payment extends Model
         'concepto'
     ];
 
-    protected $appends = ['vendedor'];
+    protected $appends = ['vendedor', 'organization'];
 
     public function venta()
     {
         return $this->belongsTo(Ventas::class, 'ventas_id' , 'id');
+    }
+
+    public function getOrganizationAttribute(){
+        return $this->venta->organization_id;
     }
 
     public function user()

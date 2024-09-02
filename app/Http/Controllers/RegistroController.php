@@ -7,6 +7,9 @@ use App\Models\Inventario;
 use App\Models\Product;
 use App\Http\Requests\StoreRegistroRequest;
 use App\Http\Requests\UpdateRegistroRequest;
+use Illuminate\Support\Facades\Request;
+use App\Http\Resources\RegistroCollection;
+use Inertia\Inertia;
 
 class RegistroController extends Controller
 {
@@ -16,8 +19,22 @@ class RegistroController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        //
+    {   
+        $modules = Registro::distinct()->pluck('module');
+        $actions = Registro::distinct()->pluck('action');
+        return Inertia::render('Registro/Index', [
+            'filters' => Request::all('search', 'date', 'organization', 'module', 'action', 'venta_id', 'user_id', 'product_id', 'inventario_id'),
+            'registros' => new RegistroCollection(
+                Registro::
+                    orderBy('created_at')
+                    ->filter(Request::only('search', 'date', 'organization', 'module', 'action', 'venta_id', 'user_id', 'product_id', 'inventario_id'))
+                    ->paginate()
+                    ->appends(Request::all())
+            ),
+            'modules' => $modules,
+            'actions' => $actions
+        ]);
+
     }
 
     public static function getExistenciaEnTexto($id, $name){
@@ -43,8 +60,8 @@ class RegistroController extends Controller
         $productsIds = [];
         foreach ($ventas as $venta) {
             if($venta['category_id'] != 4){
-                $inventariosIds[] = $venta['id'];
-                $productsIds[] = !isset($venta['codebar']) ? null : $venta['codebar']; 
+                $inventariosIds[] = $venta['codebar'];
+                $productsIds[] = !isset($venta['id']) ? null : $venta['id']; 
                 $existencia .= self::getExistenciaEnTexto($venta['id'], $venta['name']);
             }
             $log .= $venta['cantidad'].' '.$venta['name'].' con codigo/imei '.$venta['codebar'].' a L '.$venta['real_sell_price']

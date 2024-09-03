@@ -6,7 +6,7 @@ import SelectInput from '@/Shared/SelectInput';
 import pickBy from 'lodash/pickBy';
 import moment from 'moment';
 
-export default ({show_orga = false, show_date = false}) => {
+export default ({show_orga = false, show_date = false, show_month = false, user_id = 1}) => {
   const { filters, auth, organizations } = usePage().props;
   const [opened, setOpened] = useState(false);
 
@@ -15,7 +15,8 @@ export default ({show_orga = false, show_date = false}) => {
     search: filters.search || '',
     trashed: filters.trashed || '',
     organization: filters.organization || auth.user.organization_id,
-    date : filters.date || ''
+    date : filters.date || '',
+    month : filters.month || moment().format('YYYY-MM')
   });
 
   const prevValues = usePrevious(values);
@@ -26,7 +27,8 @@ export default ({show_orga = false, show_date = false}) => {
       search: '',
       trashed: '',
       organization: auth.user.organization_id,
-      date: moment().format('YYYY-MM-DD')
+      date: moment().format('YYYY-MM-DD'),
+      month: moment().format('YYYY-MM')
     });
   }
 
@@ -37,10 +39,21 @@ export default ({show_orga = false, show_date = false}) => {
       const query = Object.keys(pickBy(values)).length
         ? pickBy(values)
         : { remember: 'forget' };
+      console.log(route(route().current()))
+      // if route is users.edit we need to send the user id to the route, this would be the path "users/{user}/edit"
+      // take account the route().current() returns a Router object
+     if(route(route().current()).name == 'users.edit'){
+      // use the user_id prop to send the user id
+      Inertia.get(route(route().current(), user_id), query, {
+        replace: true,
+        preserveState: true
+      });
+    } else {
       Inertia.get(route(route().current()), query, {
         replace: true,
         preserveState: true
       });
+    }
     }
   }, [values]);
 
@@ -97,6 +110,19 @@ export default ({show_orga = false, show_date = false}) => {
           onChange={handleChange}
           placeholder="Fecha"
         />
+        }
+        {
+          show_month &&
+          <input
+          className="relative w-full px-6 py-3 form-input focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          autoComplete="off"
+          autoFocus
+          type="month"
+          name="month"
+          value={values.month}
+          onChange={handleChange}
+          placeholder="Mes"
+          />
         }
       </div>
       <button

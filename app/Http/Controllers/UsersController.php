@@ -6,6 +6,7 @@ use App\Http\Requests\UserDeleteRequest;
 use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\UserCollection;
+use App\Http\Resources\VentaCollection;
 use App\Http\Resources\UserResource;
 use App\Models\Organization;
 use App\Models\User;
@@ -54,29 +55,52 @@ class UsersController extends Controller
 
     public function edit(User $user)
     {
-        $VentasPorMeses = Ventas::where('vendedor_id', $user->id)
-        ->where('tipoPago', '!=', 'credito')
-        ->with('venta_detalles')
-        ->orderBy('created_at', 'desc')
-        ->get()
-        ->groupBy(function($val) {
-            return Carbon::parse($val->created_at)->format('F Y');
-        });
+        // I want to filter the VentaPorMeses and VentaCreditoPorMeses by the user id by month 
+        // the created_at field is a timestamp with this format ex. 2024-09-02 16:01:05
+        // $VentasPorMes = new VentaCollection(Ventas::where('vendedor_id', $user->id)
+        //     ->where('tipoPago', '!=', 'credito')
+        //     ->with('venta_detalles')
+        //     ->orderBy('created_at', 'desc')
+        //     ->filter(Request::only('search', 'month'))
+        //     ->paginate()
+        //     ->appends(Request::all())
+        // );
 
-        $VentasCreditoPorMeses = Ventas::where('vendedor_id', $user->id)
-        ->where('tipoPago', 'credito')
-        ->with('venta_detalles')
-        ->orderBy('created_at', 'desc')
-        ->get()
-        ->groupBy(function($val) {
-            return Carbon::parse($val->created_at)->format('F Y');
-        });
 
+
+        // $VentasCreditoPorMes = Ventas::where('vendedor_id', $user->id)
+        // ->where('tipoPago', 'credito')
+        // ->with('venta_detalles')
+        // ->orderBy('created_at', 'desc')
+        // ->get()
+        // ->groupBy(function($val) {
+        //     return Carbon::parse($val->created_at)->format('F Y');
+        // });
+
+        if (!Request::has('month')) {
+            Request::merge(['month' => Carbon::now()->format('YYYY-MM')]);
+        }
+        
         return Inertia::render('Users/Edit', [
+            'filters' => Request::all('search', 'month', 'date'),
             'user' => new UserResource($user),
-            'organizations' => Organization::all(),
-            'VentasPorMeses' => $VentasPorMeses,
-            'VentasCreditoPorMeses' => $VentasCreditoPorMeses,
+            'VentasPorMes' => new VentaCollection(
+                
+                Ventas::where('vendedor_id', $user->id)
+                ->where('tipoPago', '!=', 'credito')
+                ->with('venta_detalles')
+                ->orderBy('created_at', 'desc')
+                ->filter(Request::only('search', 'month', 'date'))
+                ->get()
+            ),
+            'VentasCreditoPorMes' => new VentaCollection(
+                Ventas::where('vendedor_id', $user->id)
+                ->where('tipoPago', 'credito')
+                ->with('venta_detalles')
+                ->orderBy('created_at', 'desc')
+                ->filter(Request::only('search', 'month', 'date'))
+                ->get()
+            )
         ]);
     }
 

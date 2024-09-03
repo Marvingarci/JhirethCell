@@ -68,6 +68,9 @@ class Ventas extends Model
             $query->where('created_at', 'like', $date . '%');
         })->when($filters['organization'] ?? null, function ($query, $organization) {
             $query->where('organization_id', $organization);
-        });
+        })->when($filters['month'] ?? null, function ($query, $month) {
+            $query->where('fecha_efectiva', 'like', $month . '%');
+        })
+        ;
     }
 }

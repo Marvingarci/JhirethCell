@@ -7,13 +7,15 @@ import DeleteButton from '@/Shared/DeleteButton';
 import LoadingButton from '@/Shared/LoadingButton';
 import TextInput from '@/Shared/TextInput';
 import SelectInput from '@/Shared/SelectInput';
-import FileInput from '@/Shared/FileInput';
 import TrashedMessage from '@/Shared/TrashedMessage';
+import SearchFilter from '@/Shared/SearchFilter';
 import moment from 'moment';
 import Icon from '@/Shared/Icon';
 
 const Edit = () => {
-    const {user, organizations, VentasPorMeses, VentasCreditoPorMeses} = usePage().props;
+    const {user, organizations, VentasPorMes, VentasCreditoPorMes} = usePage().props;
+
+    // const {data: VentasPorMesData, meta: {links}} = VentasPorMes;
     const {
         data,
         setData,
@@ -35,7 +37,8 @@ const Edit = () => {
         _method: 'PUT'
     });
     const [tab, setTab] = useState('ventas')
-
+    let totalMes = 0;
+    let totalMesCredito = 0;
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -56,7 +59,7 @@ const Edit = () => {
         }
     }
 
-    console.log(VentasPorMeses)
+    console.log(VentasPorMes)
 
     return (
       <div>
@@ -167,6 +170,7 @@ const Edit = () => {
             </div>
           </form>
         </div>
+        <SearchFilter show_month={true} user_id={user.id}/>
         <div className='m-5 bg-white rounded-md'>
           <div className='flex mb-4'>
             <div onClick={e => setTab('ventas')} className={ tab == 'ventas' ? 'w-1/2 border-2 border-gray-400 py-3 bg-gray-100 text-center text-xl': 'w-1/2 border-2 border-gray-400 py-3 cursor-pointer bg-gray-300 text-center text-xl'}>Ventas</div>
@@ -174,7 +178,7 @@ const Edit = () => {
           </div>
           <div className="overflow-x-auto bg-white rounded shadow">
               {
-                tab == 'ventas' &&
+                (tab == 'ventas' && VentasPorMes.length > 0) &&
                   <table className="w-full whitespace-nowrap">
                     <thead>
                       <tr className="font-bold text-left">
@@ -186,17 +190,13 @@ const Edit = () => {
                         </th>
                       </tr>
                     </thead>
-                    {
-                      Object.entries(VentasPorMeses).map((ventas, index)=>{
-                        let totalMes = 0;
-                        return (
                           <tbody >
-                            <tr  key={index}>
-                              <td colSpan="5" className='text-center text-lg font-bold' key={index}>{ventas[0]}</td>
+                            <tr>
+                              <td colSpan="5" className='text-center text-lg font-bold'>{moment(VentasPorMes[0].created_at).locale("es").format("YYYY MMMM")}</td>
                             </tr>
-                            {
-                                              
-                        ventas[1].map(({ id, cliente, vendedor_id, tipoPago, created_at , total}, index) => {
+                           
+                       {                       
+                        VentasPorMes.map(({ id, cliente, limite_pago,  tipoPago, created_at , total}, index) => {
                           totalMes += total
                           return(
                           <tr
@@ -208,7 +208,7 @@ const Edit = () => {
                                 href={route('ventas.edit', id)}
                                 className="flex items-center px-6 py-4 focus:text-indigo-700 focus:outline-none"
                               >
-                                {moment(created_at).locale("es").calendar()}
+                              {limite_pago != null && <strong>Fue Credito / </strong>}  {moment(created_at).locale("es").format("DD MMMM")}
                                 
                               </InertiaLink>
                             </td>
@@ -255,29 +255,23 @@ const Edit = () => {
                           )
                       })
 
-                            }
-                            <tr  key={index}>
-                              <td colSpan="3" className="justify-end text-right font-bold" key={index}>Total Venta {ventas[0]}</td>
-                              <td colSpan="2" key={index} className="text-left px-1 font-bold">{totalMes}</td>
+                        }
+                            <tr>
+                              <td colSpan="3" className="justify-end text-right font-bold">Total Venta {                            
+                              moment(VentasPorMes[0].created_at).locale("es").
+                              format('MMMM')
+                              }</td>
+                              <td colSpan="2"  className="text-left px-1 font-bold">{totalMes}</td>
                             </tr>
                           </tbody>
 
-                        )
+        
                     
-                        // {ventas[1].length === 0 && (
-                        //   <tr>
-                        //     <td className="px-6 py-4 border-t" colSpan="4">
-                        //       No hay ventas aún
-                        //     </td>
-                        //   </tr>
-                        // )}
-                      })
-                    }
                   
                   </table>
               }
               {
-                tab == 'creditos' &&
+                (tab == 'creditos' && VentasCreditoPorMes.length > 0)  &&
                 <table className="w-full whitespace-nowrap">
                 <thead>
                   <tr className="font-bold text-left">
@@ -289,18 +283,15 @@ const Edit = () => {
                     </th>
                   </tr>
                 </thead>
-                {
-                  Object.entries(VentasCreditoPorMeses).map((ventas, index)=>{
-                    let totalMes = 0;
-                    return (
+  
                       <tbody >
-                        <tr  key={index}>
-                          <td colSpan="5" className='text-center text-lg font-bold' key={index}>{ventas[0]}</td>
+                        <tr  >
+                          <td colSpan="5" className='text-center text-lg font-bold'>{moment(VentasCreditoPorMes[0].created_at).locale("es").format('YYYY MMMM')}</td>
                         </tr>
                         {
                                           
-                    ventas[1].map(({ id, cliente, vendedor_id, tipoPago, created_at , total}, index) => {
-                      totalMes += total
+                     VentasCreditoPorMes.map(({ id, cliente, vendedor_id, tipoPago, created_at , total}, index) => {
+                      totalMesCredito += total
                       return(
                       <tr
                         key={index}
@@ -356,26 +347,15 @@ const Edit = () => {
                         </td>
                       </tr>
                       )
-                  })
-
-                        }
-                        <tr  key={index}>
-                          <td colSpan="3" className="justify-end text-right font-bold" key={index}>Total Credito {ventas[0]}</td>
-                          <td colSpan="2" key={index} className="text-left px-1 font-bold">{totalMes}</td>
+                      })
+                    } 
+                        <tr>
+                          <td colSpan="3" className="justify-end text-right font-bold">Total Credito {moment(VentasCreditoPorMes[0].created_at).locale("es").format('YYYY MMMM')}</td>
+                          <td colSpan="2"  className="text-left px-1 font-bold">{totalMesCredito}</td>
                         </tr>
                       </tbody>
 
-                    )
-                
-                    // {ventas[1].length === 0 && (
-                    //   <tr>
-                    //     <td className="px-6 py-4 border-t" colSpan="4">
-                    //       No hay ventas aún
-                    //     </td>
-                    //   </tr>
-                    // )}
-                  })
-                }
+
               
               </table>
               }

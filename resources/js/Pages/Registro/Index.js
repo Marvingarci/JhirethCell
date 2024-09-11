@@ -6,18 +6,18 @@ import Pagination from '@/Shared/Pagination';
 import moment from 'moment';
 
 const Index = () => {
-    const { registros, organizations, auth, modules, actions } = usePage().props;
+    const { registros, organizations, auth, modules, actions, users } = usePage().props;
     const { data, meta: {
         links
     } } = registros;
 
-    console.log(data)
+    console.log(users)
 
     return (
         <div>
-            <h1 className="mb-8 text-3xl font-bold">Registro</h1>
+            <h1 className="mb-8 text-3xl font-bold">Registro(funcionando desde el 2 de septiembre 2024)</h1>
             <div className="flex items-center justify-between mb-6">
-                <SearchFilterRegistro modules={modules} actions={actions}/>
+                <SearchFilterRegistro modules={modules} actions={actions} users={users}/>
                 {/* <InertiaLink className="btn-indigo focus:outline-none"
                     href={
                         route('registro.create')

@@ -79,19 +79,24 @@ class Registro extends Model
 
     public function getProductsAttribute()
     {
-        return Product::whereIn('id', $this->product_id)->get();
+        if ($this->product_id) {
+            return Product::whereIn('id', $this->product_id)->get();
+        }
+        return null;
     }
     
     public function getInventariosAttribute()
     {
-        return Inventario::whereIn('id', $this->inventario_id)->get();
+        if ($this->inventario_id) {
+            return Inventario::whereIn('id', $this->inventario_id)->get();
+        }
+        return null;
     }
 
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where('title', 'like', '%'.$search.'%')
-            ->orWhere('description', 'like', '%'.$search.'%');
+            $query->where('description', 'like', '%'.$search.'%');
         })->when($filters['date'] ?? null, function ($query, $date) {
             $query->where('created_at', 'like', $date . '%');
         })->when($filters['organization'] ?? null, function ($query, $organization) {
@@ -101,7 +106,7 @@ class Registro extends Model
         })->when($filters['venta_id'] ?? null, function ($query, $venta_id) {
             $query->where('venta_id', $venta_id);
         })->when($filters['action'] ?? null, function ($query, $action) {
-            $query->where('action', $venta_id);
+            $query->where('action', $action);
         })->when($filters['user_id'] ?? null, function ($query, $user_id) {
             $query->where('user_id', $user_id);
         })->when($filters['product_id'] ?? null, function ($query, $product_id) {

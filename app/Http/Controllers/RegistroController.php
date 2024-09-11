@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Registro;
 use App\Models\Inventario;
 use App\Models\Product;
+use App\Models\User;
 use App\Http\Requests\StoreRegistroRequest;
 use App\Http\Requests\UpdateRegistroRequest;
 use Illuminate\Support\Facades\Request;
@@ -22,6 +23,13 @@ class RegistroController extends Controller
     {   
         $modules = Registro::distinct()->pluck('module');
         $actions = Registro::distinct()->pluck('action');
+        // this users is just ids of users
+        // how to get the user name from the id?
+
+        // $users = Registro::distinct()->pluck('user_id');
+        $users = Registro::distinct()->pluck('user_id');
+        $users = User::whereIn('id', $users)->get();
+        
         return Inertia::render('Registro/Index', [
             'filters' => Request::all('search', 'date', 'organization', 'module', 'action', 'venta_id', 'user_id', 'product_id', 'inventario_id'),
             'registros' => new RegistroCollection(
@@ -32,7 +40,8 @@ class RegistroController extends Controller
                     ->appends(Request::all())
             ),
             'modules' => $modules,
-            'actions' => $actions
+            'actions' => $actions,
+            'users' => $users
         ]);
 
     }

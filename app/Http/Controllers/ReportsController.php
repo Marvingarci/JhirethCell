@@ -170,7 +170,6 @@ class ReportsController extends Controller
 
     public function dailyReportByDay(HttpRequest $request)
     {
-        $user = Auth::user();
         $today = $request->day; 
         $organization_id = $request->organization;
         
@@ -185,8 +184,8 @@ class ReportsController extends Controller
         $paymentsToday = Payment::
         where([['created_at', 'like', $today . '%']])
         ->with(['venta', 'user' ])
-        ->whereHas('venta', function($query) use($user){
-            $query->where('organization_id', $user->organization_id);
+        ->whereHas('venta', function($query) use($organization_id){
+            $query->where('organization_id', $organization_id);
         })
         ->get();
 

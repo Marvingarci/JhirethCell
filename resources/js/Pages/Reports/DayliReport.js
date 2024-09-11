@@ -15,6 +15,8 @@ const DayliReport = () => {
 
   var total=0;
   var totalGastos=0;
+  var totalPOS = 0;
+  var totalTransfer = 0;
   var totalPayments=0;
 
   const [readyToPrit, setReadyToPrint] = useState(true);
@@ -37,6 +39,8 @@ const DayliReport = () => {
       }
     );
   }
+
+  console.log(payments)
 
   return (
     <div>
@@ -83,8 +87,11 @@ const DayliReport = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {ventas.map((venta) => (
-                      
+                  {
+                    
+                  ventas.map((venta) => (
+                      venta.tipoPago == 'pos' ? totalPOS += parseInt(venta.total) : null,
+                      venta.tipoPago == 'transferencia' ? totalTransfer += parseInt(venta.total) : null,
                      
                         <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                            <td className="border-t justify-center text-center items-center">
@@ -148,6 +155,8 @@ const DayliReport = () => {
                   </thead>
                   <tbody>
                     {payments.map((payment) => (
+                       payment.concepto == 'pos' ? totalPOS += parseInt(payment.cantidad) : null,
+                       payment.concepto == 'transferencia' ? totalTransfer += parseInt(payment.cantidad) : null,
                       totalPayments += parseInt(payment.cantidad),
                       <tr className="hover:bg-gray-100 focus-within:bg-gray-100">
                         <td className="border-t justify-center text-center items-center">
@@ -240,7 +249,10 @@ const DayliReport = () => {
                   </tbody>
                 </table>
               <div className="flex justify-end">
-                <h1 className="font-bold text-2xl px-5 py-2">Total Real: {(total+totalPayments) - totalGastos}</h1>
+                <h1 className="font-bold text-2xl px-5 py-2">Total Real: L {(total+totalPayments) - totalGastos}</h1>
+              </div>
+              <div className="flex justify-end">               
+                <h1 className="font-bold text-2xl px-5 py-2">Total menos transferencias({totalTransfer}) y POS({totalPOS}): L {(total+totalPayments) - totalGastos - totalTransfer - totalPOS}</h1>
               </div>
               </>
               }

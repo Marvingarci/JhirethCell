@@ -6,7 +6,7 @@ import SelectInput from '@/Shared/SelectInput';
 import pickBy from 'lodash/pickBy';
 import moment from 'moment';
 
-export default ({actions, modules}) => {
+export default ({actions, modules, users}) => {
   const { filters, auth, organizations } = usePage().props;
   const [opened, setOpened] = useState(false);
 
@@ -18,6 +18,9 @@ export default ({actions, modules}) => {
     module: filters.module || '',
     venta_id: filters.venta_id || '',
     action: filters.action || '',
+    product_id: filters.product_id || '',
+    inventario_id: filters.inventario_id || '',
+    user_id: filters.user_id || '',
   });
 
   const prevValues = usePrevious(values);
@@ -30,7 +33,10 @@ export default ({actions, modules}) => {
       date: '',
         module: '',
         venta_id: '',
-        action: ''
+        action: '',
+        product_id: '',
+        inventario_id: '',
+        user_id: '',
     });
   }
 
@@ -72,12 +78,32 @@ export default ({actions, modules}) => {
           onChange={handleChange}
           placeholder="Buscar..."
         />
+      <input
+          className="relative w-full px-6 py-3 form-input focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          autoComplete="off"
+          autoFocus
+          type="text"
+          name="product_id"
+          value={values.product_id}
+          onChange={handleChange}
+          placeholder="Producto"
+        />
+        <input
+          className="relative w-full px-6 py-3 form-input focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          autoComplete="off"
+          autoFocus
+          type="text"
+          name="inventario_id"
+          value={values.inventario_id}
+          onChange={handleChange}
+          placeholder="Inventario"
+        />
          <SelectInput
                 className="w-full "
                 value={values.module}
                 onChange={e => setValues({...values, module: e.target.value})}
               >
-                <option value="">Selecccione Modulo</option>
+                <option value="">Modulo</option>
                 {
                   modules.map((item, index)=>{
                     return(<option id={index} value={item}>{item}</option>)
@@ -88,12 +114,12 @@ export default ({actions, modules}) => {
         <SelectInput
                 className="w-full "
                 value={values.action}
-                onChange={e => setValues({...values, organization: e.target.value})}
+                onChange={e => setValues({...values, action: e.target.value})}
               >
-                <option value="">Seleccciona Accion</option>
+                <option value="">Accion</option>
                 {
                   actions.map((action, index)=>{
-                    return(<option value={index}>{action}</option>)
+                    return(<option index={index} value={action}>{action}</option>)
                   })
                 }
         </SelectInput>
@@ -103,10 +129,23 @@ export default ({actions, modules}) => {
                 value={values.organization}
                 onChange={e => setValues({...values, organization: e.target.value})}
               >
-                <option value="">Seleccciona Tienda</option>
+                <option value="">Tienda</option>
                 {
                   organizations.map(orga=>{
                     return(<option value={orga.id}>{orga.name}</option>)
+                  })
+                }              
+        </SelectInput>
+
+        <SelectInput
+                className="w-full "
+                value={values.user_id}
+                onChange={e => setValues({...values, user_id: e.target.value})}
+              >
+                <option value="">Usuario</option>
+                {
+                  users.map(({id, first_name, last_name}, index)=>{
+                    return(<option value={id}>{first_name+' '+last_name}</option>)
                   })
                 }              
         </SelectInput>

@@ -287,11 +287,11 @@ const Edit = () => {
           {/* fin tabla */}
         </div>
         <div className="flex items-center justify-end px-8 py-4 space-x-1 bg-gray-100 border-t border-gray-200">
-          {data.tipoPago == 'credito' && (
+          {/* {data.tipoPago == 'credito' && (
             <LoadingButton onClick={e => becomeSold()} className="btn-indigo">
               Pagado
             </LoadingButton>
-          )}
+          )} */}
 
           <LoadingButton
             loading={processing}

@@ -15,6 +15,7 @@ const Index = () => {
   const { data, setData, errors, put, processing } = useForm({
     id: inventario?.id ||'',
     codebar: inventario?.codebar || '',
+    status: inventario?.status || '',
   });
 
 
@@ -27,6 +28,7 @@ const Index = () => {
     }else{
         data.codebar = '';
         data.id ='';
+        data.status = '';
     }
     if(data.status = ''){
       cargarStatus()
@@ -39,6 +41,7 @@ const Index = () => {
   const cargardata =()=>{
     data.codebar = inventario?.codebar;
     data.id = inventario?.id;
+    data.status = inventario?.status;
     console.log(data)
   }
 
@@ -46,7 +49,7 @@ const Index = () => {
   }
 
   const updateStatus=()=>{
-    if (confirm('Se realizara el siguiente pago, ¿Está seguro?')) {
+    if (confirm('Se cambiara el estado del producto, ¿Está seguro?')) {
      
         put(
           route('inventario.update', data.id),
@@ -121,7 +124,7 @@ const Index = () => {
                 producto[0].dbType == 'individual' &&
               <SelectInput
               className="w-full pb-8 pr-6 lg:w-1/2"
-              value={inventario?.status}
+              value={data?.status}
               onChange={e => setData('status', e.target.value)}
             >
               <option value=""></option>

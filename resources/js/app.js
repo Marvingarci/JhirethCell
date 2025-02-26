@@ -4,6 +4,9 @@ import { InertiaApp } from '@inertiajs/inertia-react';
 import { InertiaProgress } from '@inertiajs/progress';
 import * as Sentry from '@sentry/browser';
 import '@progress/kendo-theme-default/dist/all.css';
+import AWS from 'aws-sdk';
+
+
 
 InertiaProgress.init({
   color: '#ED8936',

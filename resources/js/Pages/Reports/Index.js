@@ -18,6 +18,7 @@ const Index = ({children}) => {
           <a onClick={()=> Inertia.get(route('reports.divididos'))} className="font-bold transition ease-in-out  hover:text-white hover:bg-newGreen-100 rounded-xl py-3 text-newGreen-100 bg-white px-16">Reporte Separado</a> 
           <a onClick={()=> Inertia.get(route('reports.abonos'))} className="font-bold transition ease-in-out  hover:text-white hover:bg-newGreen-100 rounded-xl py-3 text-newGreen-100 bg-white px-16">Reporte Abonos</a> 
           <a onClick={()=> Inertia.get(route('reports.inventario'))} className="font-bold transition ease-in-out  hover:text-white hover:bg-newGreen-100 rounded-xl py-3 text-newGreen-100 bg-white px-16">Reporte Inventario</a> 
+          <a onClick={()=> Inertia.get(route('reports.asistencia'))} className="font-bold transition ease-in-out  hover:text-white hover:bg-newGreen-100 rounded-xl py-3 text-newGreen-100 bg-white px-16">Reporte Asistencia</a>
       </div>
 
       <div>

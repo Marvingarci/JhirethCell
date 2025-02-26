@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -41,12 +42,16 @@ class DashboardController extends Controller
         ->orderBy('total', 'desc')
         ->limit(3)
         ->get();
+        
 
 
+        $today = Carbon::today();
 
         return Inertia::render('Dashboard/Index',[
             'mas_vendidos' => $mas_vendidos,
-            'best_clientes' => $mejores_clientes
+            'best_clientes' => $mejores_clientes,
+            'usuarios'=> User::all(['id','first_name','last_name', 'organization_id']), 
+            'asistencia_hoy' => DB::table('asistence')->whereDate('created_at', $today)->get()
         ]);
     }
 }

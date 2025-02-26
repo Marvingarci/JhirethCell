@@ -11,6 +11,8 @@ use App\Http\Requests\UpdateRegistroRequest;
 use Illuminate\Support\Facades\Request;
 use App\Http\Resources\RegistroCollection;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\DB;
 
 class RegistroController extends Controller
 {
@@ -167,9 +169,13 @@ class RegistroController extends Controller
      * @param  \App\Models\Registro  $registro
      * @return \Illuminate\Http\Response
      */
-    public function edit(Registro $registro)
+    public function registrarES($id)
     {
-        //
+        DB::table('asistence')->insert([
+            'user_id'=> $id,
+            'created_at'=> now()
+        ]);
+        return Redirect::back()->with('success', 'Entrada/Salida marcada correctamente');
     }
 
     /**

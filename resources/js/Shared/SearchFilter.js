@@ -6,17 +6,18 @@ import SelectInput from '@/Shared/SelectInput';
 import pickBy from 'lodash/pickBy';
 import moment from 'moment';
 
-export default ({show_orga = false, show_date = false, show_month = false, user_id = 1}) => {
+export default ({show_orga = false, show_date = false, show_month = false, show_week = false, user_id = 1}) => {
   const { filters, auth, organizations } = usePage().props;
   const [opened, setOpened] = useState(false);
 
   const [values, setValues] = useState({
-    role: filters.role || '', // role is used only on users page
-    search: filters.search || '',
-    trashed: filters.trashed || '',
-    organization: filters.organization || auth.user.organization_id,
-    date : filters.date || '',
-    month : filters.month || moment().format('YYYY-MM')
+    role: filters?.role || '', // role is used only on users page
+    search: filters?.search || '',
+    trashed: filters?.trashed || '',
+    organization: filters?.organization || auth.user.organization_id,
+    date : filters?.date || '',
+    month : filters?.month || moment().format('YYYY-MM'),
+    week : filters?.week || moment().format('YYYY-MM-DD')
   });
 
   const prevValues = usePrevious(values);
@@ -28,7 +29,8 @@ export default ({show_orga = false, show_date = false, show_month = false, user_
       trashed: '',
       organization: auth.user.organization_id,
       date: moment().format('YYYY-MM-DD'),
-      month: moment().format('YYYY-MM')
+      month: moment().format('YYYY-MM'),
+      week: moment().format('YYYY-MM-DD')
     });
   }
 
@@ -120,6 +122,20 @@ export default ({show_orga = false, show_date = false, show_month = false, user_
           type="month"
           name="month"
           value={values.month}
+          onChange={handleChange}
+          placeholder="Mes"
+          />
+        }
+
+{
+          show_week &&
+          <input
+          className="relative w-full px-6 py-3 form-input focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          autoComplete="off"
+          autoFocus
+          type="week"
+          name="week"
+          value={values.week}
           onChange={handleChange}
           placeholder="Mes"
           />

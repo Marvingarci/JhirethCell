@@ -5,18 +5,22 @@ namespace App\Http\Controllers;
 use App\Models\Organization;
 use App\Models\Payment;
 use App\Models\Product;
+use App\Models\Inventario;
 use Inertia\Inertia;
 use App\Models\Ventas;
 use App\Models\Gasto;
 use App\Models\VentaDetalle;
+use App\Models\Asistence;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Resources\ProductCollection;
+use App\Http\Resources\InventarioCollection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Http\Request as HttpRequest;
 use App\Http\Resources\VentaCollection;
+use App\Http\Resources\AsistenceCollection;
 
 class ReportsController extends Controller
 {
@@ -210,10 +214,28 @@ class ReportsController extends Controller
                     ->filter(Request::only('search', 'date', 'organization'))
                     ->with('venta_detalles')
                     ->paginate()
+                    ->appends(Request::all()
+                    )
+            )
+        ]);    
+    }
+
+    public function AsistenceReport()
+    {
+        $today = Carbon::today();
+        $organizations = Organization::all();
+
+        return Inertia::render('Reports/AsistenceReport',[
+            'filters' => Request::all('search', 'date', 'organization'),
+            'asistencia'=> new AsistenceCollection(
+                    Asistence::filter(Request::only('search', 'week'))                                     
+                    ->orderBy('created_at', 'desc')
+                    ->paginate(70)
                     ->appends(Request::all())
             )
         ]);    
     }
+
 
     public function creditReportByDay(HttpRequest $request)
     {
@@ -231,14 +253,15 @@ class ReportsController extends Controller
     public function inventarioReport()
     {
         $today = Carbon::today();
-        $organizations = Organization::all();
 
-        // $pre = new ProductCollection(
-        //     Product::orderBy('name')->get());
+        $pre = new InventarioCollection(
+            Inventario::filter(Request::only('organization')) 
+            ->paginate(25)
+            ->appends(Request::all())
+        );
 
         return Inertia::render('Reports/InventarioReport',[
-            // 'products'=> $pre,
-            'organizations'=> $organizations
+            'products'=> $pre,
         ]);    
     }
 

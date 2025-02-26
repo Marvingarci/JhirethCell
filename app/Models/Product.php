@@ -18,12 +18,18 @@ class Product extends Model
         'whole_sell_price',
         'dbType',
         'color',
-        'category_id'
+        'category_id',
+        'existenciaDividida'
     ];
 
     protected $casts = [
         'existenciaDividida' => 'array',
         'realExistencia' => 'integer',
+    ];
+
+    protected $appends = [
+        'existenciaDividida',
+        'realExistencia',
     ];
 
     public function category()
@@ -120,6 +126,11 @@ class Product extends Model
         return "Hello";
     }
 
+    public function existenciaDividida()
+{
+    return $this->hasMany(Inventario::class)->select('organization_id', 'existenciaDividida');
+}
+
     public function inventarios()
     {
         return $this->hasMany(Inventario::class);
@@ -127,14 +138,16 @@ class Product extends Model
     
     public function scopeFilter($query, array $filters)
     {
-        $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where('name', 'like', '%'.$search.'%');
-        })->when($filters['trashed'] ?? null, function ($query, $trashed) {
-            // if ($trashed === 'with') {
-            //     $query->withTrashed();
-            // } elseif ($trashed === 'only') {
-            //     $query->onlyTrashed();
-            // }
-        });
+        if (!empty($filters['organization'])) {
+            $organizationId = $filters['organization'];
+            $query->get()->filter(function ($product) use ($organizationId) {
+                return collect($product->existenciaDividida)
+                    ->contains('organization_id', $organizationId);
+            });
+        }
+    
+        if (!empty($filters['search'])) {
+            $query->where('name', 'like', '%' . $filters['search'] . '%');
+        }
     }
 }

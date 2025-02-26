@@ -62,6 +62,7 @@ Route::get('reports')->name('reports')->uses('ReportsController')->middleware('a
 Route::get('reports/diarios')->name('reports.diarios')->uses('ReportsController@dailyReport')->middleware('auth');
 Route::post('reports/diarioPorDia')->name('reports.diarioPorDia')->uses('ReportsController@dailyReportByDay')->middleware('auth');
 Route::get('reports/creditos')->name('reports.creditos')->uses('ReportsController@creditReport')->middleware('auth');
+Route::get('reports/asistencia')->name('reports.asistencia')->uses('ReportsController@AsistenceReport')->middleware('auth');
 Route::get('reports/separados')->name('reports.divididos')->uses('ReportsController@separateReport')->middleware('auth');
 Route::post('reports/separadosPorDia')->name('reports.divididosPorDia')->uses('ReportsController@separateReportByDay')->middleware('auth');
 Route::get('reports/abonos')->name('reports.abonos')->uses('ReportsController@paymentsReport')->middleware('auth');
@@ -160,3 +161,4 @@ Route::delete('gastos/{gasto}')->name('gastos.destroy')->uses('GastoController@d
 // registro
 Route::get('registro')->name('registro')->uses('RegistroController@index')->middleware( 'auth');
 Route::get('registro/{gasto}/edit')->name('registro.edit')->uses('RegistroController@edit')->middleware('auth');
+Route::get('registroes/{id}')->name('registro.es')->uses('RegistroController@registrarES')->middleware('auth');

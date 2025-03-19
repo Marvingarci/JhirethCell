@@ -76,12 +76,13 @@ module.exports = {
         900: '#3c366b'
       },
       newblue:{
-        100: '#00c7bd',
-        200: '#008ab0'
+        100: '#fff',
+        200: '#ac92ec'
       },
       newGreen:{
         100: '#94d40b'
-      }
+      },
+      
     }
   },
   variants: {

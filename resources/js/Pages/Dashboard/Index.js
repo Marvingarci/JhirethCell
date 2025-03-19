@@ -101,14 +101,14 @@ const Dashboard = () => {
               Producto mas Vendido
             </h1>
             <h2 className="text-lg text-center font-bold text-green-400">
-              {mas_vendidos[0].producto}
+              {mas_vendidos[0]?.producto}
             </h2>
             <p className="text-5xl text-center font-black oldstyle-nums">
-              {mas_vendidos[0].total_vendido}
+              {mas_vendidos[0]?.total_vendido}
             </p>
           </div>
           <div className="flex justify-center">
-            {mas_vendidos.map((p, index) => (
+            {mas_vendidos && mas_vendidos.map((p, index) => (
               <div
                 key={index}
                 className="flex flex-col justify-center items-center w-1/3"
@@ -125,7 +125,7 @@ const Dashboard = () => {
         <div className="flex flex-row justify-center text-center items-center bg-white shadow-xl rounded-xl">
         <p className="text-lg font-bold w-1/4">Mejores Clientes</p>
           <div className="w-3/4">
-            <Pie
+            {/* <Pie
             width="200"
               className="pb-2"
               data={{
@@ -155,7 +155,7 @@ const Dashboard = () => {
               options={{
                 maintainAspectRatio: false
               }}
-            />
+            /> */}
             </div>
 
         </div>
